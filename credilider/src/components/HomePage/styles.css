@@ -1,0 +1,41 @@
+.text-content {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 500; 
+    max-width: 24em;   
+}
+
+.container .content {
+    display: flex;
+    justify-content: space-evenly;
+    gap: .6em;
+}
+
+.text-content h1 {
+    color: #ab8022;
+    font-size: 2.5rem;
+}
+
+.disclaimer {
+    display: flex;
+    font-size: small;
+    font-weight: 500;
+    color: #0b0d10;
+}
+
+@media screen and (max-width: 820px) {
+    .image-content {
+      display: none;
+    }
+
+    .text-content h1 {
+      font-size: 3rem;
+    }
+  
+    .main-content .highlight-text {
+      font-size: 2rem; /* Ajustar el tamaño de la fuente */
+    }
+  
+    .main-content .disclaimer {
+      font-size: 0.875rem; /* Disminuir la fuente para el disclaimer */
+    }
+  }

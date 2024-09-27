@@ -3,13 +3,6 @@
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
   }
 
-  .header-content, .header-options, .option{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-  }
-
  .option {
   justify-content: space-between;
   align-items: center;

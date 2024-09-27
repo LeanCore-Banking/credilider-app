@@ -1,59 +1,102 @@
 'use client'
 
-import { CreditCardIcon, MailIcon, PhoneIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import "./style.css";
-import { useRouter } from "next/navigation";
+import { useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { CreditCardIcon, PhoneIcon, MailIcon, MenuIcon, XIcon, Newspaper } from 'lucide-react'
+import Logo from "../../../public/logo-credilider-small.png"
+import styles from './ResponsiveHeader.module.css'
 
+export default function ResponsiveHeader() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-const Header: React.FC = () => {
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
-  const router = useRouter()
+  const headerOptions = [
+    { icon: CreditCardIcon, text: 'Paga tu cuota aquí', ref: '/paga-tu-cuota' },
+    { icon: PhoneIcon, text: 'Contacto celular', ref: '/contacto-celular' },
+    { icon: MailIcon, text: 'Contáctanos vía E-mail', ref: '/contacto-email' },
+    { icon: Newspaper, text: 'Cotizar', ref: '/products' },
+  ]
 
-  const navigateToProductPage = () => {
-    //router.push(`/products/?shopId=${param}`)
-  }
+  const navItems = [
+    { text: "Inicio", ref: "/" },
+    { text: "Solicita tu crédito", ref: "/solicita-tu-credito" },
+    { text: "Viabilidad de crédito online", ref: "/viabilidad-credito-online" },
+    { text: "Medios de pago", ref: "/medios-de-pago" },
+  ]
 
   return (
-    <div>
-      <header className="header-home">
-        <div className="container">
-          <div className="header-content">
-            <div className="logo">
-              <Image src="/placeholder.svg?height=40&width=120" alt="Credilider Logo" width={120} height={40} />
-            </div>
-            <div className="header-options">
-              <div className="option">
-                <CreditCardIcon className="icon" />
-                <span>Paga tu cuota aquí</span>
-              </div>
-              <div className="divider hidden-md">|</div>
-              <div className="option">
-                <PhoneIcon className="icon" />
-                <span>Contacto celular</span>
-              </div>
-              <div className="divider hidden-md">|</div>
-              <div className="option">
-                <MailIcon className="icon" />
-                <span>Contáctanos vía E-mail</span>
-              </div>
-              <div className="divider hidden-md">|</div>
-              <Link href={`/products`}>
-                <button className="quote-button">
-                  Cotizar
-                </button>
+    <div className={styles.headerWrapper}>
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <div className={styles.logo}>
+            <Image src="" alt="credilider-logo" width={200} height={120} />
+          </div>
+          <div className={styles.headerOptions}>
+            {headerOptions.map((option, index) => (
+              <Link key={index} href={option.ref}>
+                <div className={`${styles.option} ${option.text === "Cotizar" ? styles.cotizarOption : ''}`}>
+                  <option.icon className={styles.icon} />
+                  <span>{option.text}</span>
+                  {index < headerOptions.length - 1 && <span className={styles.divider}>|</span>}
+                </div>
               </Link>
+            ))}
+          </div>
+
+          <button className={styles.menuButton} onClick={toggleMenu}>
+            {isMenuOpen ? <XIcon className={styles.icon} /> : <MenuIcon className={styles.icon} />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile menu */}
+      <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
+        <div className={styles.mobileNavItems}>
+          {navItems.map((item, index) => (
+            item.text !== "Inicio" &&
+            <Link key={index} href={item.ref} >
+              <div key={index} className={styles.mobileNavItem}>
+                {item.text}
+              </div>
+            </Link>
+          ))}
+        </div>
+        <div className={styles.mobileHeaderOptions}>
+          {headerOptions.map((option, index) => (
+            <Link key={index} href={option.ref} >
+              <div key={index} className={styles.mobileOption}>
+                <option.icon className={styles.icon} />
+                <span>{option.text}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop navigation */}
+      <nav className={styles.desktopNav}>
+        <div className={styles.navContent}>
+          <div className={styles.navItems}>
+            {navItems.map((item, index) => (
+              <button key={index} className={styles.navItem}>
+                {item.text}
+              </button>
+            ))}
+          </div>
+          <div className={styles.contactInfo}>
+            <div className={styles.contactItem}>
+              <PhoneIcon className={styles.icon} />
+              <span>123-456-7890</span>
+            </div>
+            <div className={styles.contactItem}>
+              <MailIcon className={styles.icon} />
+              <span>info@credilider.com</span>
             </div>
           </div>
         </div>
-      </header>
+      </nav>
     </div>
   )
 }
-
-export default Header;
-
-
-
-

@@ -1,1 +1,9 @@
 
+.headerWrapper {
+    scroll-behavior: smooth;
+  }
+
+  html{
+    margin: 2em;
+  }
+  
