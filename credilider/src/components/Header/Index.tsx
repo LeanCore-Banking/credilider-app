@@ -1,12 +1,23 @@
+'use client'
+
 import { CreditCardIcon, MailIcon, PhoneIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import "./style.css";
+import { useRouter } from "next/navigation";
 
-const Header = () => {
-  
+
+const Header: React.FC = () => {
+
+  const router = useRouter()
+
+  const navigateToProductPage = () => {
+    //router.push(`/products/?shopId=${param}`)
+  }
+
   return (
     <div>
-      <header className="header">
+      <header className="header-home">
         <div className="container">
           <div className="header-content">
             <div className="logo">
@@ -28,10 +39,10 @@ const Header = () => {
                 <span>Contáctanos vía E-mail</span>
               </div>
               <div className="divider hidden-md">|</div>
-              <Link href="/products">
-              <button className="quote-button">
-                Cotizar
-              </button>
+              <Link href={`/products`}>
+                <button className="quote-button">
+                  Cotizar
+                </button>
               </Link>
             </div>
           </div>

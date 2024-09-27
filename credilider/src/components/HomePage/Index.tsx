@@ -1,11 +1,15 @@
+'use client'
 import { CreditCardIcon, MailIcon, PhoneIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/router"
 import "./styles.css"
 import Header from "../Header/Index"
+import useMotoStore from "@/store/UseMotoStore"
 
 
-const HomePage = () => { 
+const HomePage: React.FC= () => { 
+
 
 
     return ( 

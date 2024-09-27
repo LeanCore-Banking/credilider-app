@@ -27,12 +27,6 @@
   box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px;
-}
-
 .header-content, .footer-content, .navigation-content {
   display: flex;
   justify-content: space-between;
