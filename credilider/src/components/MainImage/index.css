@@ -7,8 +7,6 @@
   .image-wrapper {
     position: relative;
     margin-bottom: 16px;
-    /* Establece un tamaño fijo para el contenedor de la imagen principal */
-    width: 600px;
     height: 400px;
   }
   

@@ -6,4 +6,71 @@
   html{
     margin: 2em;
   }
+
+  :root {
+
+    /* Colors: */
+    --unnamed-color-418aef: #418AEF;
+    --unnamed-color-00955c: #00955C;
+    --unnamed-color-ffffff: #FFFFFF;
+    --unnamed-color-393939: #393939;
+    --unnamed-color-707070: #707070;
+    --header-color-b4924e: #B4924E;
+    --unnamed-color-0a0a0a: #0A0A0A;
+    
+    /* Font/text values */
+    --unnamed-font-family-roboto: Roboto;
+    --unnamed-font-family-roboto-condensed: Roboto Condensed;
+    --unnamed-font-style-normal: normal;
+    --unnamed-font-weight-normal: normal;
+    --unnamed-font-weight-bold: bold;
+    --unnamed-font-size-15: 15px;
+    --unnamed-font-size-17: 17px;
+    --unnamed-font-size-18: 18px;
+    --unnamed-font-size-35: 35px;
+    --unnamed-character-spacing-0: 0px;
+    --unnamed-line-spacing-18: 18px;
+    --unnamed-line-spacing-23: 23px;
+    --unnamed-line-spacing-41: 41px;
+    --unnamed-text-transform-uppercase: uppercase;
+    }
+    
+    /* Character Styles */
+    .unnamed-character-style-1 {
+    font-family: var(--unnamed-font-family-roboto);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-normal);
+    font-size: var(--unnamed-font-size-17);
+    line-height: var(--unnamed-line-spacing-23);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-0a0a0a);
+    }
+    .unnamed-character-style-2 {
+    font-family: var(--unnamed-font-family-roboto-condensed);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-bold);
+    font-size: var(--unnamed-font-size-35);
+    line-height: var(--unnamed-line-spacing-41);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-393939);
+    text-transform: var(--unnamed-text-transform-uppercase);
+    }
+    .unnamed-character-style-3 {
+    font-family: var(--unnamed-font-family-roboto);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-normal);
+    font-size: var(--unnamed-font-size-18);
+    line-height: var(--unnamed-line-spacing-23);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-0a0a0a);
+    }
+    .unnamed-character-style-4 {
+    font-family: var(--unnamed-font-family-roboto-condensed);
+    font-style: var(--unnamed-font-style-normal);
+    font-weight: var(--unnamed-font-weight-normal);
+    font-size: var(--unnamed-font-size-15);
+    line-height: var(--unnamed-line-spacing-18);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-0a0a0a);
+    }
   

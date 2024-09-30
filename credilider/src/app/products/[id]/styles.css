@@ -1,0 +1,89 @@
+
+.detail-container{
+    display: flex;
+    justify-content: space-between;
+    background-color: #f8f5f5;
+    overflow: hidden;
+}
+
+.detail-img{
+    width: 30%;
+    height: 100%;
+    background-color: #f8f5f5;
+}
+
+.inputs-row{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 70%;
+    padding: 1em;
+}
+
+.inputs-values{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em;
+}
+
+.quotes-content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inputs-bottom-content{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1em;
+}
+
+#p-detail-btn-send{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1em;
+}
+
+.inputs-bottom-content input{
+    width: 85%;
+}
+
+.quotes-content{
+    font-size: 14px;
+    background: rgb(228, 227, 227);
+    border-radius: 10px;
+    margin: 1em;
+}
+
+.quote-data-row {
+    padding: 1em;
+}
+
+.quote-data-row h3{
+    margin: 0;
+}
+
+.quote_data-head{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    margin-bottom: 1.4em;
+}
+
+#quote-value, #quote-month{
+    font-weight: bold;
+}
+
+#quote-value{
+font-size: 18px;
+}
+.vertical-line{
+    border-left: 1px solid #8f8d8d;
+    height: 11em;
+    margin: 0 1em 0 1em;
+}
+  
