@@ -1,0 +1,165 @@
+.filterRow {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    min-height: 8.5em;
+    margin-bottom: .2em;
+  }
+  
+  .filterInputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .dropdownWrapper,
+  .searchWrapper {
+    width: 100%;
+  }
+
+
+  .dropContent,
+  .searchContent {
+    position: relative;
+    width: 100%;
+  }
+  
+.dropContent{
+  font-size: 14px;
+  text-align: left;
+  padding: .2em;
+  border: 1px solid rgb(183, 181, 181);
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: #f8f5f5;
+  color: rgb(88, 86, 86);
+  position: relative;
+  --active-col: #302e2e;
+}
+
+
+  .dropdownBtnSort {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    min-width: 7em;
+  }
+  
+  .dropdown {
+    position: relative;
+    overflow: hidden;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-top: none;
+    height: 0;
+    transition: height 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    padding-left: .5em;
+
+  }
+  
+  .dropdownOpen {
+    height: 4.9em;;
+    border-radius: 0 0 5px 5px;
+   
+  }
+
+  .dropdownOpen div {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+   
+  }
+  
+  .sortOption {
+    display: block;
+    padding: 0 0 0 .5em;
+    cursor: pointer;
+  }
+  
+  .sortOption:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .searchContent {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.5rem;
+    background-color: #f8f5f5;
+
+  }
+  
+  .searchIcon {
+    margin-right: 0.5rem;
+  }
+  
+  .searchInput {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background-color: #f8f5f5;
+
+  }
+  
+  .creditButton {
+    width: 100%;
+    padding: 0.75rem;
+    background-color:  #00955C;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .creditButton:hover {
+    background-color:  #016841;
+  }
+  
+  /* Media queries para diseño responsive */
+  @media (min-width: 768px) {
+    .filterRow {
+      flex-direction: row;
+      justify-content: space-between;
+      min-height: 9.5em;
+      margin-top: 1em;
+
+    }
+  
+    .filterInputs {
+      position:relative;
+      flex-direction: row;
+      width: 70%;
+      gap: 2em;
+      align-self: start;
+    }
+  
+    .dropdownWrapper{
+      width: 15%;
+    }
+
+    .searchWrapper {
+      width: 30%;
+      min-width: 7em;
+    }
+  
+    .creditButtonContainer {
+      width: 28%;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .filterInputs {
+      width: 80%;
+    }
+  
+    .creditButtonContainer {
+      width: 18%;
+    }
+  }

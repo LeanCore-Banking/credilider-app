@@ -9,8 +9,7 @@
   box-shadow: 0 0 10px 0 rgba(0, 0, 10, 0.3);
 }
 .product-card_image {
-max-height: 9.7em;
-  background: rgb(151, 146, 156);
+  max-height: 10em;
   background-size: cover;
   background-position: center;
   border-radius: 10px;
@@ -28,8 +27,20 @@ max-height: 9.7em;
   gap: 3px;
 }
 .info-card {  
+  display: flex;
+  flex-direction: column;
     padding: .5em 0;
     border-bottom: 1px solid #8f8d8d;
+}
+
+#info-card-model {
+  font-size: 18px;
+  font-weight: 600;
+}
+#info-card-marcaTipo {
+  font-size: 14px;
+  font-weight: 400;
+  color: #393939;
 }
 
 .info-price{
@@ -38,6 +49,14 @@ max-height: 9.7em;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #8f8d8d;
+    margin: 5px 0 5px 0;
+    padding-bottom: 5px;
+}
+.info-price span {
+  font-size: 14px;
+  font-weight: 400;
+  color: #393939;
+  ;
 }
 
 .btn-r-arrow a{

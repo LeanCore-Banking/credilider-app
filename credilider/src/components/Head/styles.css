@@ -1,0 +1,23 @@
+.header-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row1 {
+    height: 2em;
+    width: 100%;
+    background: rgb(165, 115, 41);
+  }
+  
+  .row2 {
+    height: 3em;
+    width: 100%;
+  }
+  
+  .img-container {
+    background: rgb(220, 220, 217);
+    height: 5em;
+    width: 8em;
+    position: absolute;
+    left: 6em;
+  }

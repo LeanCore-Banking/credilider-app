@@ -17,11 +17,23 @@ interface Product {
 const ProductCard = ({ product }: { product: Product }) => {
 
     //console.log(`https://lh3.googleusercontent.com/d/${product.imagen.split('id=')[1]}=s100`);
+    const firstImage = product.imagen && Array.isArray(product.imagen) ? product.imagen[0] : '';
+
+    const arrayColores = product.color.split(",").map(color => color.trim());
+    console.log('arrayColores:', arrayColores);
+
+    function formatNumber(number: number): string {
+        return number.toLocaleString('en-US');
+      }
+
+      const priceFormated = formatNumber(product.precio);
+      
+
 
     return (
         <div className="product-card">
             <div className="product-card_image">
-                <img src={`https://lh3.googleusercontent.com/d/${product.imagen.split('id=')[1]}=s200`} alt={product.modelo} />
+            <img src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`} alt={product.modelo} />
             </div>
             <div className="product-card__info">
                 <div className="color-list">
@@ -30,11 +42,11 @@ const ProductCard = ({ product }: { product: Product }) => {
                     <span style={{ backgroundColor: 'rgb(199, 133, 41)', borderRadius: '50%', display: 'inline-block', width: '15px', height: '15px' }}></span>
                 </div>
                 <div className="info-card">
-                    <span>{product.modelo}</span>
-                    <span>{product.marcaTipo}</span>
+                    <span id="info-card-model">{product.modelo}</span>
+                    <span id="info-card-marcaTipo">{product.marcaTipo}</span>
                 </div>
                 <div className="info-price">
-                    <h3>{`$ ${product.precio}`}</h3>
+                    <h3>{`$${priceFormated}`}</h3>
                     <span>Con papeles</span>
                 </div>
             </div>

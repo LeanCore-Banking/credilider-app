@@ -1,0 +1,12 @@
+
+.quote-data-row {
+    border-right: 1px solid #2f2e2e;
+    padding-right: 2em;
+    margin-right: 2em;
+  }
+  
+  .quote-data-row:last-child {
+    border-right: none; /* Sin borde para el último bloque */
+  }
+
+

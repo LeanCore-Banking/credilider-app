@@ -1,102 +1,136 @@
 .moto-container {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 16px;
-  }
-  
-  .image-wrapper {
-    position: relative;
-    margin-bottom: 16px;
-    height: 400px;
-  }
-  
-  .main-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Mantiene la proporción de la imagen */
-  }
-  
-  .maximize-button {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    background-color: white;
-    padding: 8px;
-    border-radius: 50%;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-  }
-  
-  .maximize-button:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .icon {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-  }
-  
-  .dialog-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-    max-width: 800px;
-    width: 100%;
-  }
-  
-  .full-image {
-    width: 100%;
-    height: auto;
-  }
-  
-  .close-button {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    background-color: white;
-    padding: 8px;
-    border-radius: 50%;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-  }
-  
-  .close-button:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .thumbnail-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    /* Tamaño fijo para las miniaturas */
-    width: 100%;
-    height: 100px;
-  }
-  
-  .thumbnail-button {
-    border: none;
-    padding: 0;
-    cursor: pointer;
-  }
-  
-  .thumbnail-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .thumbnail-button.active .thumbnail-image {
-    border: 2px solid blue;
-  }
-  
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.image-wrapper {
+  position: relative;
+  margin-bottom: 2em;
+  height: 50%;
+  background: indianred;
+}
+
+.col-detail{
+  width: 100%;
+}
+
+#col-detail-img {
+  max-width: 30%;
+  padding-right: 1em;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Mantiene la proporción de la imagen */
+}
+
+.maximize-button {
+  font-size: medium;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  cursor: pointer;
+}
+
+.maximize-button:hover {
+  border: 1px solid #8f8d8d;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: whitesmoke;
+}
+
+.maximize-icon{
+  width: 30px;
+  height: 30px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+  max-width: 600px;
+  width: 100%;
+}
+
+.full-image {
+  width: 100%;
+  height: auto;
+}
+
+.close-button {
+  position: absolute;
+  top: -19px;
+  right: -80px;
+  font-weight: 600;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.thumbnail-grid {
+  display: flex;
+  justify-content: start;
+  gap: 16px;
+  margin-bottom: 2em;
+}
+
+.thumbnail-button {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 12%;
+  height: 100%;
+  background: blueviolet;
+  border-radius: 5px;
+}
+
+.thumbnail-button-popup {
+  width: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.thumbnail-popup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 1em;
+}
+
+#header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.name{
+  display: flex;
+  flex-direction: column;
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid #8f8d8d;
+  border-radius: 5px;
+}
+
+.thumbnail-button.active .thumbnail-image {
+  border: 2px solid #b4924e;
+}

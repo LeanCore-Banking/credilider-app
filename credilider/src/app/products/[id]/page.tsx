@@ -1,8 +1,13 @@
-'use client'
+'use server'
 
 import MainImage from "@/components/MainImage/Index";
-import { useProduct } from "../../../hooks/useProductDetail";
+//import { useProduct } from "../../../hooks/useProductDetail";
 import './styles.css';
+import QuoteColDetail from "@/components/QuoteColDetail/Index";
+import { useQuery } from "@tanstack/react-query";
+import { Quote } from "@/app/lib/definitions";
+import { defaultQuotes } from "@/app/lib/default-data";
+import { fectchMotoById } from "@/app/lib/data";
 
 
 type ProductDetail = {
@@ -10,185 +15,55 @@ type ProductDetail = {
         id: string;
     }
 }
-
-
-const ProductDetails: React.FC<ProductDetail> = ({ params }) => {
+const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
     const { id } = params;
-    const { data } = useProduct(id);
-    console.log(data);
 
+    console.log('id:', id);
+
+    const motoData = await fectchMotoById(id);
+    console.log('motodata:', motoData);
 
     return (
         <div>
             <h1>Detalles del producto</h1>
             <div className="detail-container">
-                <div className="col-detail detail-img">
-                    {/* IMAGE detail Product Carrousel component */}
-                    <MainImage />
-                    <div>
-                        <div className="name">
-                            <span>Model</span>
-                            <span>marca</span>
-                        </div>
-                        <div className="colors-list">
-                            <span style={{ backgroundColor: 'red', borderRadius: '50%', display: 'inline-block', width: '20px', height: '20px' }}></span>
-                            <span style={{ backgroundColor: 'black', borderRadius: '50%', display: 'inline-block', width: '20px', height: '20px' }}></span>
-                            <span style={{ backgroundColor: 'blue', borderRadius: '50%', display: 'inline-block', width: '20px', height: '20px' }}></span>
-                        </div>
+                <section className="col-detail" id="col-detail-img">
+                    {/* Img detail Product Carrousel component */}
+                    <MainImage data={motoData} />
+                    <div className="block-description-container">
+                        <header id="header">
+                            <div className="name">
+                                <span id="modelo">GSX-S1000</span>
+                                <span id="marca-tipo">Suzuki / Alto cilindraje</span>
+                            </div>
+                            <div className="colors-list">
+                                <span style={{ backgroundColor: 'red', borderRadius: '50%', display: 'inline-block', width: '20px', height: '20px' }}></span>
+                                <span style={{ backgroundColor: 'black', borderRadius: '50%', display: 'inline-block', width: '20px', height: '20px' }}></span>
+                                <span style={{ backgroundColor: 'blue', borderRadius: '50%', display: 'inline-block', width: '20px', height: '20px' }}></span>
+                            </div>
+                        </header>
 
-                        <div>
+                        <div id="detail-description">
                             <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptates.
-                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eum odio beatae ipsum tempore,
-                                necessitatibus voluptates quis? Quasi adipisci consequuntur reiciendis voluptatum,
-                                culpa enim tempore expedita vero possimus? Ratione, alias ut!
+                                El placer del rendimiento absoluto.
+                                La GSX-S1000 es más que capaz de ofrecer la emocionante experiencia de conducción y el rendimiento ideal de una motocicleta deportiva lista para el entorno de conducción actual. La potencia es suministrada por un motor de cuatro tiempos DOHC refrigerado por líquido de 999 cm3 de alto rendimiento, que hereda el verdadero ADN de las superbikes ganadoras. Este motor adaptado para la calle se basa en una arquitectura central que se beneficia del conocimiento adquirido durante décadas de desarrollo de la GSX-R1000 para ganar innumerables victorias en carreras, así como tecnologías avanzadas desarrolladas para las carreras de MotoGP.
                             </p>
                         </div>
-                        <div>
-                            <span>Price desde: $ {data?.precio}</span>
-                            <span>Con papeles</span>
+                        <div id="price-container">
+                            <span >Precio desde:  </span>
+                            <span className="value-field"> $ {'$$$$$'}</span>
+                            <span id="price-container-disclaimer">Valor con papeles</span>
                         </div>
 
                     </div>
-
-                </div>
-
-                <div className="col-detail">
-
-                    <div className="inputs-row">
-                        <h2>Cotizar esta moto</h2>
-                        <div className="inputs-values">
-                            <div>
-                                <label>Cuota inicial</label>
-                                <input type="text" />
-                            </div>
-                            <div>
-                                <label>Descuento %</label>
-                                <input type="text" />
-                            </div>
-                            <div>
-                                <label>valor a financiar</label>
-                                <div>$60.0000</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="quotes-content">
-
-                        <div className="quote-data-row">
-                            <div className="quote_data-head">
-                                <span>Cuota mensual</span>
-                                <span id="quote-value">$1200.000</span>
-                                <span id="quote-month">24 meses</span>
-                            </div>
-                            <div className="quote_data-content">
-                                <div>
-                                    <span>Taza efectiva anual</span>
-                                    <span>16%</span>
-                                </div>
-                                <div>
-                                    <span>Taza mensual vencida</span>
-                                    <span>16.2%</span>
-                                </div>
-                                <div>
-                                    <span>Seguro vida (mes)</span>
-                                    <span>$45.000</span>
-                                </div>
-                                <div>
-                                    <span>Total valor a pagar </span>
-                                    <span>$82.000.456</span>
-                                </div>
-
-                            </div>
-                        </div>
-                        <span className="vertical-line"></span>
-                        <div className="quote-data-row">
-                            <div className="quote_data-head">
-                                <span>Cuota mensual</span>
-                                <span id="quote-value">$1200.000</span>
-                                <span id="quote-month">36 meses</span>
-                            </div>
-                            <div className="quote_data-content">
-                                <div>
-                                    <span>Taza efectiva anual</span>
-                                    <span>16%</span>
-                                </div>
-                                <div>
-                                    <span>Taza mensual vencida</span>
-                                    <span>16.2%</span>
-                                </div>
-                                <div>
-                                    <span>Seguro vida (mes)</span>
-                                    <span>$45.000</span>
-                                </div>
-                                <div>
-                                    <span>Total valor a pagar </span>
-                                    <span>$82.000.456</span>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <span className="vertical-line"></span>
-                        <div className="quote-data-row">
-                            <div className="quote_data-head">
-                                <span>Cuota mensual</span>
-                                <span id="quote-value">$1200.000</span>
-                                <span id="quote-month">48 meses</span>
-                            </div>
-                            <div className="quote-data-content">
-                                <div>
-                                    <span>Taza efectiva anual</span>
-                                    <span>16%</span>
-                                </div>
-                                <div>
-                                    <span>Taza mensual vencida</span>
-                                    <span>16.2%</span>
-                                </div>
-                                <div>
-                                    <span>Seguro vida (mes)</span>
-                                    <span>$45.000</span>
-                                </div>
-                                <div>
-                                    <span>Total valor a pagar </span>
-                                    <span>$82.000.456</span>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        
-                    </div>
-
-
-                        <div className="inputs-bottom-content">
-                            <div>
-                                <label>Nombre y apellido</label>
-                                <input type="text" />
-                            </div>
-                            <div>
-                                <label>Escribir el correo</label>
-                                <input type="text" />
-                            </div>
-                            <div>
-                                <label>Escribir el telefono</label>
-                                <input id="bottom-content-input" type="text" />
-                            </div>
-                        </div>
-
-                        <div id="p-detail-btn-send">
-                            <button >
-                                Enviar cotización
-                            </button>
-                        </div>
-
-                </div>
-
+                </section>
+                <div className="vertical-line-section"></div>
+                {/* convertir en componente cliente */}
+                <QuoteColDetail quoteDefault={defaultQuotes} />
             </div>
 
         </div>
     )
-
 }
 
 export default ProductDetails;

@@ -24,95 +24,6 @@
   height: 38px;
 }
 
-.dropdown {
-  overflow: hidden;
-  width: 100%;
-  position: relative;
-  height: 0;
-  transition: height 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.dropdown-open {
-  height: 3.9em;
-}
-
-#dropdownBtnSort::before {
-  align-items: center;
-  justify-content: space-between;
-  display: flex;
-  position: absolute;
-  content: "";
-  height: 2px;
-  width: calc(100% - 20px);
-  background-color: var(--active-sort-col);
-  left: 10px;
-  top: 2px;
-}
-
-.sortOption:hover {
-  background-color: #e9e6e6;
-}
-
-.drop-content {
-  font-size: 14px;
-  text-align: left;
-  padding: .5em;
-  border: 1px solid rgb(183, 181, 181);
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: #f8f5f5;
-  color: rgb(88, 86, 86);
-  position: relative;
-  --active-col: #302e2e;
-}
-#dropdownBtnSort i {
-  float: right;
-  transform: rotate(0deg);
-}
-#dropdownSortOptions {
-  display: flex;
-  background-color: #f8f5f5;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.sortOption {
-  padding: 10px 10px 0 0;
-  text-decoration: none;
-}
-
-.sortOption span {
-  float: right;
-}
-
-.search-content {
-  display: flex;
-  width: 100%;
-  max-width: 400px; /* Ajusta según tus necesidades */
-}
-
-.search-input {
-  width: 100%;
-  padding: 10px 40px 10px 30px; /* Espaciado para el ícono */
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.search-icon {
-  position: absolute;
-  top: 7px;
-  right: 210px;
-  pointer-events: none; /* Para que no interfiera con el clic en el input */
-  color: #aaa; /* Ajusta el color según el diseño */
-}
-
-#dropdownBtnSort {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .credit-button-container {
   height: 4em;
 }
@@ -130,29 +41,8 @@
   color: #343232;
 }
 
-.header-row {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 2em;
-}
 
-.row1 {
-  height: 2em;
-  width: 100%;
-  background: rgb(165, 115, 41);
-}
 
-.row2 {
-  height: 3em;
-  width: 100%;
-}
 
-.img-container {
-  background: rgb(220, 220, 217);
-  height: 5em;
-  width: 8em;
-  position: absolute;
-  left: 6em;
-}
 
 

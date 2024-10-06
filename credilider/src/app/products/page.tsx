@@ -5,6 +5,10 @@ import axios from 'axios';
 import './index.css';
 import { SearchIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import ProductCardSkeleton from '@/components/ProductCard/Skeleton';
+import { FilterRow } from '@/components/FilterRow/Index';
+import { Head } from '@/components/Head/Index';
+import { roboto, robotoCondensed } from '../fonts/fonts';
 
 
 
@@ -18,6 +22,7 @@ interface Moto {
   imagen: string;
 }
 
+
 const fetchMotos = async (): Promise<Moto[]> => {
   const response = await axios.get(
     `https://script.google.com/macros/s/AKfycbwKqKdyD5GVNlOqYnFEAjUOlzCKODEOyyFosrPkZxeGyA7MF-GRofUmE7kN8r7lIaZuZA/exec?action=listMotos`
@@ -26,9 +31,9 @@ const fetchMotos = async (): Promise<Moto[]> => {
 };
 
 const Products: React.FC = () => {
-  const [sortOrder, setSortOrder] = useState<string>(''); // Estado para almacenar el criterio de orden
-  const [searchTerm, setSearchTerm] = useState<string>(''); // Estado para almacenar el término de búsqueda
-  const [sortedMotos, setSortedMotos] = useState<Moto[]>([]); // Estado para las motos ordenadas
+  const [sortOrder, setSortOrder] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortedMotos, setSortedMotos] = useState<Moto[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const dropFilterHandler = () => {
@@ -40,7 +45,6 @@ const Products: React.FC = () => {
     queryFn: fetchMotos,
   });
 
-  // Evitar actualizaciones infinitas con useEffect solo cuando motos cambia
   useEffect(() => {
     if (motos) {
       let filteredMotos = motos;
@@ -65,7 +69,6 @@ const Products: React.FC = () => {
     }
   }, [motos, sortOrder, searchTerm]);
 
-  if (isLoading) return <div>Cargando...</div>;
   if (error instanceof Error) return <div>Error: {error.message}</div>;
 
   // Manejar cambio en el criterio de orden
@@ -79,60 +82,28 @@ const Products: React.FC = () => {
   };
 
   return (
-    <div>
-      <header className='header-row'>
-        <div className="img-container">
-          <img src="" alt="logo-credilider" />
-        </div>
-        <div className="row1">
-
-        </div>
-        <div className="row2">
-
-        </div>
-      </header>
-
-      <div className="filter-row">
-        <div className="filter-inputs">
-          {/* Dropdown para ordenar por precio */}
-          <div className="dropdown-wrapper">
-            <div className="drop-content">
-              <div id="dropdownBtnSort" onClick={dropFilterHandler}>Sort By  {isDropdownOpen ? <ChevronUp /> : <ChevronDown />} </div>
-              <div className={`dropdown ${isDropdownOpen ? 'dropdown-open' : ''}`}>
-                <div id="dropdownSortOptions" className="dropdownSortOptions">
-                  <a className="sortOption" onClick={() => handleSortChange('price-asc')}>Menor precio</a>
-                  <a className="sortOption" onClick={() => handleSortChange('price-desc')}>Mayor precio</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="search-wrapper">
-            <div className="search-content">
-              <SearchIcon className="search-icon" />
-
-              <input
-                type="text"
-                placeholder="Buscar producto"
-                className="search-input"
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-            </div>
-          </div>
-        </div>
-        <div className='credit-button-container'>
-          <button className="credit-button">PEDIR CRÉDITO YA</button>
-        </div>
-      </div>
-
+    <div  className={`${robotoCondensed.className}`}>
+      <Head />
+      {/* Pasando props al componente FilterRow */}
+      <FilterRow
+        searchTerm={searchTerm}
+        onSearchChange={handleSearchChange}
+        onSortChange={handleSortChange}
+        isDropdownOpen={isDropdownOpen}
+        toggleDropdown={dropFilterHandler}
+      />
       <div className='products-grid'>
-        {sortedMotos.map((moto: Moto) => (
-          <ProductCard key={moto.id} product={moto} />
-        ))}
+        {isLoading
+          ? Array.from({ length: 8 }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))
+          : sortedMotos.map((moto: Moto) => (
+            <ProductCard key={moto.id} product={moto} />
+          ))}
       </div>
     </div>
   );
 };
 
 export default Products;
+
