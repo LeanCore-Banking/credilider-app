@@ -50,15 +50,15 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = async ({ quoteDefault}) =>
                 <div className="inputs-row">
                     <span>Cotizar esta moto</span>
                     <div className="inputs-values">
-                        <div>
+                        <div id="input-cuota-inicial">
                             <label>Cuota inicial</label>
                             <input type="text" name="initialFee" />
                         </div>
-                        <div>
+                        <div id="input-descuento">
                             <label>Descuento %</label>
                             <input type="text" name="discount" />
                         </div>
-                        <div>
+                        <div id="valor-financiar">
                             <label>Valor a financiar</label>
                             <div>$60.0000</div>
                         </div>

@@ -8,6 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Quote } from "@/app/lib/definitions";
 import { defaultQuotes } from "@/app/lib/default-data";
 import { fectchMotoById } from "@/app/lib/data";
+import { Suspense } from 'react';
+import { Head } from "@/components/Head/Index";
+
 
 
 type ProductDetail = {
@@ -20,16 +23,17 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
 
     console.log('id:', id);
 
-    const motoData = await fectchMotoById(id);
-    console.log('motodata:', motoData);
+  /*   const motoData = await fectchMotoById(id);
+    console.log('motodata:', motoData); */
 
     return (
         <div>
-            <h1>Detalles del producto</h1>
             <div className="detail-container">
                 <section className="col-detail" id="col-detail-img">
                     {/* Img detail Product Carrousel component */}
-                    <MainImage data={motoData} />
+                    <Suspense fallback={<div>Loading...Main</div>}>
+                    <MainImage /* data={motoData} */ />
+                    </Suspense>
                     <div className="block-description-container">
                         <header id="header">
                             <div className="name">
@@ -59,7 +63,9 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                 </section>
                 <div className="vertical-line-section"></div>
                 {/* convertir en componente cliente */}
-                <QuoteColDetail quoteDefault={defaultQuotes} />
+                <Suspense fallback={<div>Loading...$$$$$$</div>}>
+                    <QuoteColDetail quoteDefault={defaultQuotes} />
+                </Suspense>
             </div>
 
         </div>

@@ -3,8 +3,6 @@
   display: flex;
   justify-content: space-evenly;
   background-color: #f8f8f8;
-  overflow: hidden;
-  padding: 1.5em;
 }
 
 .block-description-container {
@@ -13,9 +11,9 @@
   gap: 1em;
 }
 
-#modelo{
-    font-size: 16px;
-    font-weight: bold;
+#modelo {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 #marca-tipo {
@@ -42,9 +40,10 @@
 .inputs-values {
   display: flex;
   align-items: center;
-  margin: 2em 0 2em 0;
+  margin: 2em 1em 2em 0;
   margin-top: 2em;
   gap: 1em;
+  flex-wrap: wrap;
 }
 
 .inputs-values label {
@@ -58,15 +57,32 @@
   gap: 0.2em;
 }
 
+#input-cuota-inicial {
+  width: 35%;
+}
+
+#input-descuento {
+  max-width: 15%;
+}
+#valor-financiar {
+  width: 35%;
+}
+
+#valor-financiar div {
+  border-radius: 5px;
+  border: 1px solid #8f8d8d;
+  height: 2.3em;
+  padding: 5px;
+  background: #d3d1d1;
+}
+
 .inputs-values div input {
   border-radius: 5px;
   border: 1px solid #8f8d8d;
   height: 2.3em;
-  
 }
 
 .quotes-content {
-  width: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -74,18 +90,21 @@
   background: #e7e6e6;
   border-radius: 10px;
   padding: 1.5em;
-  margin-bottom: 3em;
+  margin: 0 1em 3em 0;
 }
 
 .inputs-bottom-content {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  padding: 1em;
+  align-self: center;
+  justify-content: space-between;
 }
 
 .inputs-bottom-content div {
   display: flex;
   flex-direction: column;
+  width: 30%;
 }
 
 .inputs-bottom-content div input {
@@ -94,9 +113,9 @@
   height: 2.3em;
 }
 
-.inputs-bottom-content label{
-    font-size: 12px;
-    font-weight: 400;
+.inputs-bottom-content label {
+  font-size: 12px;
+  font-weight: 400;
 }
 
 #p-detail-btn-send {
@@ -106,15 +125,26 @@
   padding: 1em;
 }
 
+#p-detail-btn-send button {
+  width: 10em;
+  padding: 0.75rem;
+  background-color: #00955c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .quote-data-row h3 {
   margin: 0;
 }
 
-.quote-data-row{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 30%;
+.quote-data-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 30%;
 }
 
 .quote_data-head {
@@ -141,25 +171,25 @@
   height: 15em;
 }
 
-.vertical-line-section{
-    border-left: 1px solid #8f8d8d;
-    height: 120vh;
-    margin: 0 2em 0 .3em;
+.vertical-line-section {
+  border-left: 1px solid #8f8d8d;
+  height: 120vh;
+  margin: 0 2em 0 0.3em;
 }
 
-.detail-container #price-container{
-    display: flex;
-    flex-direction: column;
+.detail-container #price-container {
+  display: flex;
+  flex-direction: column;
 }
 
-#price-container .value-field{
-    font-size: 24px;
-    font-weight: 600;
+#price-container .value-field {
+  font-size: 24px;
+  font-weight: 600;
 }
 
-#price-container-disclaimer{
-    font-size: 12px;
-    font-weight: 400;
+#price-container-disclaimer {
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .quote-body div {
@@ -181,51 +211,163 @@
   font-weight: bold;
 }
 
-.data-container{
-display: flex;
-justify-content: space-around;
-width: 100%;
+.data-container {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
 }
 
 /* popup detalle del producto */
 
 .image-navigation {
-    display: flex;
-    align-items: center;
-    position: relative;
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.full-image {
+  display: block;
+  margin: 0 auto;
+}
+
+.nav-left-button {
+  background-color: #b4924e;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-70%);
+}
+
+.col-detail {
+  max-width: 75%;
+}
+
+.nav-right-button {
+  background-color: #b4924e;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(70%);
+}
+
+/* Estilos base (Mobile-first) */
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  padding: 10px;
+  /* Otros estilos base */
+}
+
+/* Teléfonos pequeños y tablets medianas(320px - 768px) */
+@media (min-width: 320px) and (max-width: 860px) {
+  .detail-container {
+    flex-direction: column;
+  }
+
+  .vertical-line-section {
+    border-bottom: 1px solid #8f8d8d;
+    height: unset;
+  }
+
+  .col-detail {
+    max-width: unset;
+    padding: 1em;
+  }
+
+  #col-detail-img {
+    min-width: 100%;
+    padding: 1em;
+  }
+
+  #p-detail-btn-send {
+    justify-content: center;
+  }
+
+  .thumbnail-button {
+    max-width: 10%;
+  }
+}
+
+/* Portátiles y pequeñas pantallas de escritorio (1025px - 1200px) */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .inputs-bottom-content {
+    flex-direction: column;
+    padding-right: 1em;
+  }
+
+  .inputs-bottom-content div {
     width: 100%;
   }
 
-  
-  .full-image {
-    display: block;
-    margin: 0 auto;
+  .quotes-content {
+    margin: 0 1em 1em 0;
   }
 
-  .nav-left-button {
-    background-color: #B4924E;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translateX(-70%);
+  .inputs-values {
+    justify-content: space-between;
   }
 
-  .nav-right-button {
-    background-color: #B4924E;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translateX(70%);
+  #input-cuota-inicial {
+    width: 40%;
+  }
+}
+
+/* Escritorio (1201px - 1440px) */
+@media (min-width: 320px) and (max-width: 640px) {
+  .quotes-content {
+    margin: 0 1em 1em 0;
+  }
+  .inputs-values {
+    justify-content: space-between;
+  }
+  .inputs-bottom-content {
+    margin-bottom: 1em;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 620px) {
+  .quotes-content .data-container {
+    flex-direction: column;
   }
 
+  .quote-data-row {
+    border-right: none !important;
+    border-bottom: 1px solid #2f2e2e;
+  }
 
+  #input-descuento {
+    max-width: 20%;
+}
+}
+
+@media (min-width: 320px) and (max-width: 520px) {
+  .inputs-bottom-content{
+    flex-direction: column;
+  }
+  .inputs-bottom-content div{
+    width: 100%;
+  }
+
+  .inputs-values{
+    justify-content: unset;
+  }
+
+  #input-descuento{
+    max-width: 25%;
+  }
+
+  #input-cuota-inicial{
+    width: 59%;
+  }
+}
