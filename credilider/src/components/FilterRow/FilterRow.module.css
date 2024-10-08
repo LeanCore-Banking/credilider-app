@@ -90,20 +90,17 @@
     align-items: center;
     border: 1px solid #ccc;
     border-radius: 6px;
-    padding: 0.5rem;
     background-color: #f8f5f5;
+    height: 45px;
 
   }
-  
-  .searchIcon {
-    margin-right: 0.5rem;
-  }
-  
+ 
   .searchInput {
     flex-grow: 1;
     border: none;
     outline: none;
     background-color: #f8f5f5;
+    width: 100%;
 
   }
   
@@ -141,7 +138,7 @@
     }
   
     .dropdownWrapper{
-      width: 15%;
+      width: 20%;
     }
 
     .searchWrapper {

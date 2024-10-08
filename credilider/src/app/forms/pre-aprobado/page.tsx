@@ -2,8 +2,12 @@
 import useFormStore from '@/store/UseFormStore';
 import { useRouter } from 'next/navigation';
 import './styles.css';
+import '../solicitud-credito/index.css';
 import { useState } from 'react';
 import ProgressBar from '@/components/ProgressBar/Index';
+import { robotoCondensed } from '@/app/fonts/fonts';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 interface FormData {
   nombre: string;
@@ -30,7 +34,7 @@ const PreaprobadoForm = () => {
     setPopUpOtm(true);
     // Simulación de una llamada a un endpoint
     const response = await new Promise(resolve =>
-      setTimeout(() => resolve(`Pre-aprobado por $${Math.floor(Math.random() * 100000)}`), 1000)
+      setTimeout(() => resolve(`$${Math.floor(Math.random() * 100000)}`), 1000)
     )
     setOtmResponse(response as string);
     setResponse(response as string);
@@ -46,126 +50,148 @@ const PreaprobadoForm = () => {
   };
 
   return (
-    <div>
-      <ProgressBar currentStep={1} />
-      <form className="form-grid">
-        {/* Primera columna */}
-        <div className="column">
-          <div className="form-group">
-            <label htmlFor="nombreApellido">Nombre y apellido</label>
-            <input
-              id="nombreApellido"
-              name="nombreApellido"
-              value={formData.nombreApellido}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="ingresos">Ingresos</label>
-            <input
-              id="ingresos"
-              name="ingresos"
-              type="number"
-              value={formData.ingresos}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="telefono">Número de teléfono</label>
-            <input
-              id="telefono"
-              name="telefono"
-              type="tel"
-              value={formData.telefono}
-              onChange={handleInputChange}
-            />
-          </div>
+    <div className={`${robotoCondensed.className}`}>
+      <div className='pre-aprobado-container'>
+        <div className='pre-aprobado-title-solicitud-credito'>
+          <Link href='/products'>
+            <i>
+              <ArrowLeft href='/products' />
+            </i>
+          </Link>
+          <h2>Estudio de crèdito</h2>
         </div>
-
-        {/* Segunda columna */}
-        <div className="column">
-          <div className="form-group">
-            <label htmlFor="cedula">Número de cédula</label>
-            <input
-              id="cedula"
-              name="cedula"
-              value={formData.cedula}
-              onChange={handleInputChange}
-            />
-            <div className="checkbox-group">
-              <div className="checkbox-item">
-                <input
-                  type="checkbox"
-                  id="cc"
-                  checked={formData.tipoDocumento === 'CC'}
-                  onChange={() => handleCheckboxChange('CC')}
-                />
-                <label htmlFor="cc">CC</label>
-              </div>
-              <div className="checkbox-item">
-                <input
-                  type="checkbox"
-                  id="pasaporte"
-                  checked={formData.tipoDocumento === 'Pasaporte'}
-                  onChange={() => handleCheckboxChange('Pasaporte')}
-                />
-                <label htmlFor="pasaporte">Pasaporte</label>
-              </div>
+        <ProgressBar currentStep={1} />
+        <form className="form-grid">
+          {/* Primera columna */}
+          <div className="column">
+            <div className="form-group">
+              <label htmlFor="nombreApellido">Nombre y apellido</label>
+              <input
+                id="nombreApellido"
+                name="nombreApellido"
+                placeholder='Escriba su nombre y apellido'
+                value={formData.nombreApellido}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="ingresos">Ingresos</label>
+              <input
+                id="ingresos"
+                name="ingresos"
+                placeholder='$'
+                value={formData.ingresos}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="telefono">Número de teléfono</label>
+              <input
+                id="telefono"
+                name="telefono"
+                placeholder='Escriba su número de teléfono'
+                value={formData.telefono}
+                onChange={handleInputChange}
+              />
             </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="egresos">Egresos</label>
-            <input
-              id="egresos"
-              name="egresos"
-              type="number"
-              value={formData.egresos}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="form-group">
-            <button onClick={consultarPreAprobado} type="button" className="button">
-              Consultar pre-aprobado
-            </button>
-          </div>
-        </div>
 
-        {/* Tercera columna */}
-        <div className="column">
-          <div className="form-group">
-            <label htmlFor="fechaExpedicion">Fecha expedición</label>
-            <input
-              id="fechaExpedicion"
-              name="fechaExpedicion"
-              type="date"
-              value={formData.fechaExpedicion}
-              onChange={handleInputChange}
-            />
+          {/* Segunda columna */}
+          <div className="column" id='pre-aprobado-col-2'>
+            <div className="form-group">
+              <label htmlFor="cedula">Número de cédula</label>
+              <input
+                id="cedula"
+                name="cedula"
+                placeholder='Escriba su número de cédula'
+                value={formData.cedula}
+                onChange={handleInputChange}
+              />
+              <div className="checkbox-group">
+                <div className="checkbox-item">
+                  <input
+                    type="checkbox"
+                    id="cc"
+                    checked={formData.tipoDocumento === 'CC'}
+                    onChange={() => handleCheckboxChange('CC')}
+                  />
+                  <label htmlFor="cc">CC</label>
+                </div>
+                <div className="checkbox-item">
+                  <input
+                    type="checkbox"
+                    id="pasaporte"
+                    checked={formData.tipoDocumento === 'Pasaporte'}
+                    onChange={() => handleCheckboxChange('Pasaporte')}
+                  />
+                  <label htmlFor="pasaporte">Pasaporte</label>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="egresos">Egresos</label>
+              <input
+                id="egresos"
+                name="egresos"
+                placeholder='$'
+                value={formData.egresos}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group" id='pre-aprobado-btn'>
+              <button onClick={consultarPreAprobado} type="button" className="button-preaprobado">
+                Consultar pre-aprobado
+              </button>
+            </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="cuotaInicial">Cuota inicial</label>
-            <input
-              id="cuotaInicial"
-              name="cuotaInicial"
-              type="number"
-              value={formData.cuotaInicial}
-              onChange={handleInputChange}
-            />
+
+          {/* Tercera columna */}
+          <div className="column">
+            <div className="form-group">
+              <label htmlFor="fechaExpedicion">Fecha expedición</label>
+              <input
+                id="fechaExpedicion"
+                name="fechaExpedicion"
+                placeholder='Escriba la fecha de expedición'
+                value={formData.fechaExpedicion}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="cuotaInicial">Cuota inicial</label>
+              <input
+                id="cuotaInicial"
+                name="cuotaInicial"
+                placeholder='$'
+                value={formData.cuotaInicial}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="result-box">
+              <div className="result-title">Pre-aprobado por:
+
+              </div>
+              <div id='pre-aprobado-resp'>{response}</div>
+            </div>
           </div>
-          <div className="result-box">
-            <p className="result-title">Resultado de la consulta:</p>
-            <p>{response}</p>
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
       <div className="continuar-credito">
-        <button onClick={() => router.push('/forms/solicitud-credito')} className="button">Continuar con la solicitud de crédito</button>
+        <button onClick={() => router.push('/forms/solicitud-credito')} className="button-continuar">Continuar con mi crédito</button>
       </div>
       {popUpOtmOpen && (
-        <div className="pop-up">
-          <div className="pop-up-content">
-            <p>{responseOtm}</p>
-            <button onClick={() => setPopUpOtm(false)} className="button">Cerrar</button>
+        <div className="popup-otp-preaprobado-form">
+          <div className="popup-otp-preaprobado-content">
+            <h3>INGRESAR OTP</h3>
+            <input
+              id='input-otp'
+              type="text"
+              name='otp'
+              placeholder='Ingresar codigo' />
+            <button className="button">COPROBAR CÒDIGO</button>
+          </div>
+          <div className='popup-otp-preaprobado-closeBtn'>
+            <button onClick={() => setPopUpOtm(false)} className="button">CERRAR</button>
           </div>
         </div>
       )}

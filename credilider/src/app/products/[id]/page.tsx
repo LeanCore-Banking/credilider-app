@@ -23,8 +23,8 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
 
     console.log('id:', id);
 
-  /*   const motoData = await fectchMotoById(id);
-    console.log('motodata:', motoData); */
+   const motoData = await fectchMotoById(id);
+    console.log('motodata:', motoData);
 
     return (
         <div>
@@ -32,7 +32,7 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                 <section className="col-detail" id="col-detail-img">
                     {/* Img detail Product Carrousel component */}
                     <Suspense fallback={<div>Loading...Main</div>}>
-                    <MainImage /* data={motoData} */ />
+                    <MainImage data={motoData} />
                     </Suspense>
                     <div className="block-description-container">
                         <header id="header">
@@ -55,7 +55,7 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                         </div>
                         <div id="price-container">
                             <span >Precio desde:  </span>
-                            <span className="value-field"> $ {'$$$$$'}</span>
+                            <span className="value-field"> $ {motoData.precio}</span>
                             <span id="price-container-disclaimer">Valor con papeles</span>
                         </div>
 
@@ -63,8 +63,8 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                 </section>
                 <div className="vertical-line-section"></div>
                 {/* convertir en componente cliente */}
-                <Suspense fallback={<div>Loading...$$$$$$</div>}>
-                    <QuoteColDetail quoteDefault={defaultQuotes} />
+                <Suspense fallback={<div>Loading...#</div>}>
+                    <QuoteColDetail quoteDefault={defaultQuotes} price={motoData.precio} />
                 </Suspense>
             </div>
 

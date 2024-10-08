@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import axios from 'axios';
 
-const useMotoStore = create((set) => ({
+export const useMotoStore = create((set) => ({
   motos: [],
   loading: false,
   error: null,
@@ -19,4 +19,14 @@ const useMotoStore = create((set) => ({
   },
 }));
 
-export default useMotoStore;
+export const useErrorStore = create((set) => ({
+  errors: {
+      name: "",
+      email: "",
+      phone: ""
+  },
+  setErrors: (newErrors: { [key: string]: string }) => set((state:any) => ({
+      errors: { ...state.errors, ...newErrors }
+  })),
+} ));
+

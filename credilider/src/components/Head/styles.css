@@ -1,6 +1,7 @@
 .header-row {
     display: flex;
     flex-direction: column;
+    margin-bottom: 2em;
   }
 
   .row1 {
@@ -15,7 +16,6 @@
   }
   
   .img-container {
-    background: rgb(220, 220, 217);
     height: 5em;
     width: 8em;
     position: absolute;

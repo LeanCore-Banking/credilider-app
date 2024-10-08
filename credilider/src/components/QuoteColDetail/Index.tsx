@@ -1,58 +1,126 @@
-// QuoteColDetail.tsx
-'use server'
-
+'use client'
+import { useState, useEffect } from "react";
 import { Quote } from "@/app/lib/definitions";
 import "./styles.css";
 import { fetchQuotes } from "@/app/lib/data";
+import Link from "next/link";
+import { CheckCircle, User, Mail, Phone } from "lucide-react";
+import { QuotesCardSkeleton } from "../skeletons";
 
 type QuoteColDetailProps = {
-    quoteDefault: Quote[]; 
-
+    quoteDefault: Quote[];
+    price: number;
 };
 
-const QuoteColDetail: React.FC<QuoteColDetailProps> = async ({ quoteDefault}) => {
-     const quotesDefaut = quoteDefault;
-    // Función para manejar el envío del formulario
-    const handleSubmit = async (formData: FormData) => {
-        'use server'
-        // Aquí puedes procesar los datos enviados al servidor
-        const initialFee = formData.get('initialFee');
-        const discount = formData.get('discount');
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const phone = formData.get('phone');
-        
-        const dataToSend = {
-            initialFee,
-            discount,
-            name,
-            email,
-            phone,
-        };
-        
-        console.log("Datos del formulario enviados:", dataToSend);
-        // Aquí puedes realizar una llamada a tu API para enviar los datos
-        // await fetch('/api/send-quote', {
-            //     method: 'POST',
-            //     body: JSON.stringify(dataToSend),
-            //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                // });
-                
-                return dataToSend
-                
-            };
-            
+const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) => {
+    const [quotes, setQuotes] = useState<Quote[]>(quoteDefault);
+    const [loading, setLoading] = useState(false);
+    const [popupVisible, setPopupVisible] = useState(false);
+    const [userData, setUserData] = useState({
+        name: "",
+        email: "",
+        phone: ""
+    });
+    const [financeValue, setFinanceValue] = useState(price); // Estado para valor a financiar
+    const [initialFee, setInitialFee] = useState(0); // Estado para cuota inicial
+    const [errors, setErrors] = useState({
+        name: "",
+        email: "",
+        phone: ""
+    });
+
+    // Efecto para actualizar el valor a financiar cuando cambia la cuota inicial
+    useEffect(() => {
+        setFinanceValue(price - initialFee); // Resta la cuota inicial del precio
+    }, [initialFee, price]);
+
+    const validateField = (name: string, value: string) => {
+        let errorMessage = "";
+
+        switch (name) {
+            case "name":
+                if (!value) {
+                    errorMessage = "El nombre es obligatorio.";
+                }
+                break;
+            case "email":
+                if (!value) {
+                    errorMessage = "El correo es obligatorio.";
+                } else if (!/\S+@\S+\.\S+/.test(value)) {
+                    errorMessage = "El formato de correo no es válido.";
+                }
+                break;
+            case "phone":
+                if (!value) {
+                    errorMessage = "El teléfono es obligatorio.";
+                } else if (!/^\d{10}$/.test(value)) { // Valida que tenga 10 dígitos
+                    errorMessage = "El teléfono debe tener 10 dígitos.";
+                }
+                break;
+            default:
+                break;
+        }
+
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMessage }));
+    };
+
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        // Validar antes de enviar
+        /*      if (!userData.name || !userData.email || !userData.phone) {
+                 validateField("name", userData.name);
+                 validateField("email", userData.email);
+                 validateField("phone", userData.phone);
+                 return;
+             } */
+
+        setLoading(true);
+
+        const formData = new FormData(event.currentTarget);
+        const initialFee = parseFloat(formData.get('initialFee') as string) || 0;
+        const discount = parseFloat(formData.get('discount') as string) || 0;
+        const name = formData.get('name') as string;
+        const email = formData.get('email') as string;
+        const phone = formData.get('phone') as string;
+
+        try {
+            // Enviar el valor de financiar actualizado a fetchQuotes
+            const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue, name, email, phone);
+            setQuotes(updatedQuotes);
+            setUserData({ name, email, phone });
+            setPopupVisible(true); // Mostrar popup
+        } catch (error) {
+            console.error("Error fetching quotes:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const closePopup = () => {
+        setPopupVisible(false);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setUserData({ ...userData, [name]: value });
+        validateField(name, value); // Valida mientras el usuario escribe
+    };
+
     return (
         <div className="col-detail">
-            <form action={handleSubmit}>   
+            <form onSubmit={handleSubmit}>
                 <div className="inputs-row">
                     <span>Cotizar esta moto</span>
                     <div className="inputs-values">
                         <div id="input-cuota-inicial">
                             <label>Cuota inicial</label>
-                            <input type="text" name="initialFee" />
+                            <input
+                                type="text"
+                                name="initialFee"
+                                onChange={(e) => setInitialFee(parseFloat(e.target.value) || 0)} // Actualiza el valor de cuota inicial
+                            />
                         </div>
                         <div id="input-descuento">
                             <label>Descuento %</label>
@@ -60,64 +128,122 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = async ({ quoteDefault}) =>
                         </div>
                         <div id="valor-financiar">
                             <label>Valor a financiar</label>
-                            <div>$60.0000</div>
+                            <div>{`$${financeValue.toLocaleString()}`}</div> {/* Mostrar el valor actualizado */}
                         </div>
                     </div>
                 </div>
 
                 <div className="quotes-content">
                     <div className="data-container">
-                        {quotesDefaut.map((item, index) => (
-                            <div key={index} className="quote-data-row">
-                                <div className="quote_data-head">
-                                    <h3>Cuota mensual</h3>
-                                    <span id="quote-value">${item.monthlyFee.toLocaleString()}</span>
-                                    <span id="quote-month">{item.monthlyRate} Meses</span>
+                        {loading ? (
+                            <QuotesCardSkeleton />
+                        ) : (
+                            quotes.map((item, index) => (
+                                <div key={index} className="quote-data-row">
+                                    <div className="quote_data-head">
+                                        <h3>Cuota mensual</h3>
+                                        <span id="quote-value">${item.monthlyFee.toLocaleString()}</span>
+                                        <span id="quote-month">{item.monthlyRate} Meses</span>
+                                    </div>
+                                    <div className="quote-body">
+                                        <div>
+                                            <span>Tasa efectiva anual</span>
+                                            <span>{item.annualEffectiveRate}%</span>
+                                        </div>
+                                        <div>
+                                            <span>Tasa mensual vencida</span>
+                                            <span>{item.monthlyCupDue}%</span>
+                                        </div>
+                                        <div>
+                                            <span>Seguro vida (mes)</span>
+                                            <span>${item.monthLifeInsurance.toLocaleString()}</span>
+                                        </div>
+                                        <div className="value-to-pay">
+                                            <span>Valor a pagar</span>
+                                            <span>${(item.monthlyFee * item.monthlyRate).toLocaleString()}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="quote-body">
-                                    <div>
-                                        <span>Tasa efectiva anual</span>
-                                        <span>{item.annualEffectiveRate}%</span>
-                                    </div>
-                                    <div>
-                                        <span>Tasa mensual vencida</span>
-                                        <span>{item.monthlyCupDue}%</span>
-                                    </div>
-                                    <div>
-                                        <span>Seguro vida (mes)</span>
-                                        <span>${item.monthLifeInsurance.toLocaleString()}</span>
-                                    </div>
-                                    <div className="value-to-pay">
-                                        <span>Valor a pagar</span>
-                                        <span>${(item.monthlyFee * item.monthlyRate).toLocaleString()}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
-
                 <div className="inputs-bottom-content">
                     <div>
                         <label>Nombre y apellido</label>
-                        <input type="text" name="name" />
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Escriba su nombre y apellido"
+                            value={userData.name}
+                            onChange={handleInputChange}
+                            onBlur={() => validateField('name', userData.name)} // Validación cuando el campo pierde el foco
+                        />
+                        {errors.name && <span className="error-message-quotes">{errors.name}</span>}
+
                     </div>
                     <div>
                         <label>Escribir el correo</label>
-                        <input type="text" name="email" />
+                        <input
+                            type="text"
+                            name="email"
+                            placeholder="Escriba su correo electrònico"
+                            value={userData.email}
+                            onChange={handleInputChange}
+                            onBlur={() => validateField('email', userData.email)} // Validación cuando el campo pierde el foco
+                        />
+                        {errors.email && <span className="error-message-quotes">{errors.email}</span>}
+
                     </div>
                     <div>
                         <label>Escribir el teléfono</label>
-                        <input id="bottom-content-input" type="text" name="phone" />
+                        <input
+                            id="bottom-content-input"
+                            type="text" name="phone"
+                            placeholder="Escriba su numero de telefono"
+                            value={userData.phone}
+                            onChange={handleInputChange}
+                            onBlur={() => validateField('phone', userData.phone)} // Validación cuando el campo pierde el foco
+                        />
+                        {errors.phone && <span className="error-message-quotes">{errors.phone}</span>}
+
                     </div>
                 </div>
-
                 <div id="p-detail-btn-send">
                     <button type="submit">Enviar cotización</button>
                 </div>
             </form>
+
+            {/* Popup */}
+            {popupVisible && (
+                <div className="popup-overlay-quotesColDetail">
+                    <div className="popup-quotesColDetail">
+                        <div className="popup-quotesColDetail-icon" >
+                            <CheckCircle size={80} color="#B4924E" /> {/* Icono de OK */}
+                        </div>
+                        <div className="popup-quotesColDetail-text">
+                            <p>LA COTIZACIÒN</p>
+                            <p>FUE ENVIADA</p>
+                            <p>EXITOSAMENTE A:</p>
+                        </div>
+                        <div className="popup-info-quotesColDetail">
+                            <p><User size={15} /> {userData.name}</p> {/* Icono de usuario */}
+                            <p><Mail size={15} /> {userData.email}</p> {/* Icono de email */}
+                            <p><Phone size={15} /> {userData.phone}</p> {/* Icono de teléfono */}
+                        </div>
+                    </div>
+                    <div className="popup-buttons-quotesColDetail">
+                        <div className="popup-quotesColDetail-closeBtn">
+                            <button onClick={closePopup}>CERRAR</button>
+                        </div>
+                        <Link href="/forms/pre-aprobado">
+                            <button className="green-button-quotesColDetail">PEDIR CRÈDITO YA</button>
+                        </Link>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}
+};
 
 export default QuoteColDetail;

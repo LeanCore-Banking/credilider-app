@@ -1,6 +1,7 @@
 'use client'
 import { ChevronUp, ChevronDown, Search } from 'lucide-react'
 import styles from './FilterRow.module.css'
+import Link from 'next/link';
 
 interface FilterRowProps {
     searchTerm: string;
@@ -48,8 +49,11 @@ export const FilterRow: React.FC<FilterRowProps> = ({
                     </div>
                 </div>
             </div>
+           
             <div className={styles.creditButtonContainer}>
+            <Link href="/forms/pre-aprobado">
                 <button className={styles.creditButton}>PEDIR CRÉDITO YA</button>
+            </Link>
             </div>
         </div>
     )

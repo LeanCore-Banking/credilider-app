@@ -5,25 +5,6 @@
   padding: 16px;
 }
 
-.filter-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0 2.9em 1em;
-}
-
-.filter-inputs {
-  display: flex;
-  gap: 3em; /* Espacio entre los inputs */
-  position: relative;
-}
-
-.dropdown-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 38px;
-}
-
 .credit-button-container {
   height: 4em;
 }

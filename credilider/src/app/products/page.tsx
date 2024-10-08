@@ -24,10 +24,10 @@ interface Moto {
 
 
 const fetchMotos = async (): Promise<Moto[]> => {
- /*  const response = await axios.get(
+  const response = await axios.get(
     `https://script.google.com/macros/s/AKfycbwKqKdyD5GVNlOqYnFEAjUOlzCKODEOyyFosrPkZxeGyA7MF-GRofUmE7kN8r7lIaZuZA/exec?action=listMotos`
-  ); */
- 
+  );
+  return response.data;
 };
 
 const Products: React.FC = () => {

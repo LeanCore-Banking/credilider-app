@@ -1,0 +1,32 @@
+.step-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .step-item {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .step-item.active {
+    
+    border-bottom: 2px solid #B4924E;
+  }
+  
+  .progress-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .progress-bar-container{
+    width: 50%;
+  }
+
+  @media (min-width: 320px) and (max-width: 620px) {
+    .progress-bar-container{
+      width: 80%;
+    }
+  }

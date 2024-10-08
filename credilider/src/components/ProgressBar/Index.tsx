@@ -1,33 +1,22 @@
+import "./styles.css"
+
 interface ProgressBarProps {
   currentStep: number;
 }
 
 const ProgressBar = ({ currentStep }: ProgressBarProps) => {
     return (
-      <div>
-        <div style={{ display: 'flex' }}>
-          <div
-            style={{
-              flex: 1,
-              textAlign: 'center',
-              padding: '10px',
-              backgroundColor: currentStep === 1 ? '#4caf50' : '#ccc',
-            }}
-          >
-            Preaprobado
-          </div>
-          <div
-            style={{
-              flex: 1,
-              textAlign: 'center',
-              padding: '10px',
-              backgroundColor: currentStep === 2 ? '#4caf50' : '#ccc',
-            }}
-          >
-            Solicitud Crédito
-          </div>
+      <div className="progress-bar-container">
+      <div className="step-container">
+        <div className={`step-item ${currentStep === 1 ? 'active' : ''}`}>
+          1 Preaprobado
+        </div>
+        <div className={`step-item ${currentStep === 2 ? 'active' : ''}`}>
+          2 Solicitud Crédito
         </div>
       </div>
+    </div>
+    
     );
   };
   

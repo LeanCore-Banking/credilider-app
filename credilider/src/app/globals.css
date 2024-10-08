@@ -10,13 +10,12 @@
   :root {
 
     /* Colors: */
-    --unnamed-color-418aef: #418AEF;
-    --unnamed-color-00955c: #00955C;
-    --unnamed-color-ffffff: #FFFFFF;
-    --unnamed-color-393939: #393939;
-    --unnamed-color-707070: #707070;
-    --header-color-b4924e: #B4924E;
-    --unnamed-color-0a0a0a: #0A0A0A;
+    --green: #00955C;
+    --white: #FFFFFF;
+    --dark: #393939;
+    --gray: #707070;
+    --gold: #B4924E;
+    --black: #0A0A0A;
     
     /* Font/text values */
     --unnamed-font-family-roboto: Roboto;
@@ -112,6 +111,7 @@ body {
   scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
+  background: #f8f8f8;
 }
 
 /* Remove list styles on ul, ol elements with a class attribute */
