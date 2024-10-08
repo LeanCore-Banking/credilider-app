@@ -69,12 +69,12 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
         event.preventDefault();
 
         // Validar antes de enviar
-        /*      if (!userData.name || !userData.email || !userData.phone) {
+            if (!userData.name || !userData.email || !userData.phone) {
                  validateField("name", userData.name);
                  validateField("email", userData.email);
                  validateField("phone", userData.phone);
                  return;
-             } */
+             } 
 
         setLoading(true);
 
