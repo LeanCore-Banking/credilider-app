@@ -77,6 +77,56 @@ const shimmer =
               </div>
           </div>
       </div>
+      <div className="quote-data-row-quotes-card-skeleton">
+          <div className="quote_data-head-quotes-card-skeleton">
+              <h3 className="skeleton-quotes-card-skeleton"></h3>
+              <span id="quote-value" className="skeleton-quotes-card-skeleton"></span>
+              <span id="quote-month" className="skeleton-quotes-card-skeleton"></span>
+          </div>
+          <div className="quote-body-quotes-card-skeleton">
+              <div>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+              <div>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+              <div>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+              <div className="value-to-pay-quotes-card-skeleton">
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+          </div>
+      </div>
+      <div className="quote-data-row-quotes-card-skeleton">
+          <div className="quote_data-head-quotes-card-skeleton">
+              <h3 className="skeleton-quotes-card-skeleton"></h3>
+              <span id="quote-value" className="skeleton-quotes-card-skeleton"></span>
+              <span id="quote-month" className="skeleton-quotes-card-skeleton"></span>
+          </div>
+          <div className="quote-body-quotes-card-skeleton">
+              <div>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+              <div>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+              <div>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+              <div className="value-to-pay-quotes-card-skeleton">
+                  <span className="skeleton-quotes-card-skeleton"></span>
+                  <span className="skeleton-quotes-card-skeleton"></span>
+              </div>
+          </div>
+      </div>
       
   </div>
   

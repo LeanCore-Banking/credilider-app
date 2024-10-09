@@ -32,6 +32,9 @@ export default function RootLayout({
           {children}
         </Providers>
       </body>
+    {/*   <footer style={{ display: 'flex', justifyContent: 'center', padding:'1em' }}>
+        <p>&copy; 2024 Credilider. All rights reserved.</p>
+      </footer> */}
     </html>
   );
 }

@@ -73,10 +73,27 @@
   
 
   .data-container-quotes-card-skeleton {
-    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
     margin: 0 auto;
-    font-family: Arial, sans-serif;
-}
+    gap: 1em;
+  }
+
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .data-container-quotes-card-skeleton {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .data-container-quotes-card-skeleton {
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px;
+    }
+  }
 
 .skeleton-quotes-card-skeleton {
     background: #f0f0f0;
@@ -90,6 +107,7 @@
     border-radius: 8px;
     margin-bottom: 20px;
     overflow: hidden;
+    max-width: 180px;
 }
 
 .quote_data-head-quotes-card-skeleton {
@@ -106,7 +124,7 @@
 .quote_data-head-quotes-card-skeleton #quote-value {
     display: block;
     height: 30px;
-    width: 10px;
+    width: 80%;
     margin-bottom: 5px;
 }
 

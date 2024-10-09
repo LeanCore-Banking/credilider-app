@@ -8,6 +8,7 @@ import ProgressBar from '@/components/ProgressBar/Index';
 import { robotoCondensed } from '@/app/fonts/fonts';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import PopupSlider from '@/components/DialogOptions/Index';
 
 interface FormData {
   nombre: string;
@@ -32,6 +33,9 @@ const PreaprobadoForm = () => {
 
   const consultarPreAprobado = async () => {
     setPopUpOtm(true);
+
+    localStorage.setItem('formData', JSON.stringify(formData));
+
     // Simulación de una llamada a un endpoint
     const response = await new Promise(resolve =>
       setTimeout(() => resolve(`$${Math.floor(Math.random() * 100000)}`), 1000)
@@ -48,6 +52,8 @@ const PreaprobadoForm = () => {
   const handleCheckboxChange = (value: string) => {
     setFormData(prev => ({ ...prev, tipoDocumento: value }));
   };
+
+
 
   return (
     <div className={`${robotoCondensed.className}`}>
@@ -151,6 +157,7 @@ const PreaprobadoForm = () => {
               <label htmlFor="fechaExpedicion">Fecha expedición</label>
               <input
                 id="fechaExpedicion"
+                type="date"
                 name="fechaExpedicion"
                 placeholder='Escriba la fecha de expedición'
                 value={formData.fechaExpedicion}
@@ -175,6 +182,9 @@ const PreaprobadoForm = () => {
             </div>
           </div>
         </form>
+        <div className='opciones-disponibles'>
+          <PopupSlider />
+        </div>
       </div>
       <div className="continuar-credito">
         <button onClick={() => router.push('/forms/solicitud-credito')} className="button-continuar">Continuar con mi crédito</button>
@@ -188,7 +198,7 @@ const PreaprobadoForm = () => {
               type="text"
               name='otp'
               placeholder='Ingresar codigo' />
-            <button className="button">COPROBAR CÒDIGO</button>
+            <button className="button">COMPROBAR CÒDIGO</button>
           </div>
           <div className='popup-otp-preaprobado-closeBtn'>
             <button onClick={() => setPopUpOtm(false)} className="button">CERRAR</button>

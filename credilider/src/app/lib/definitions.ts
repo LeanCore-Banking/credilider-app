@@ -5,7 +5,7 @@ export type motos = {
   marcaTipo: string;
   color: string;
   precio: number;
-  imagen: string;
+  imagen: [];
 };
 
 

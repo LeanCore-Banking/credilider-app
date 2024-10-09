@@ -80,7 +80,7 @@
 }
 
 .full-image {
-  width: 100%;
+  width: 90%;
   height: auto;
 }
 
@@ -131,6 +131,7 @@
 }
 
 .name {
+  width: 70%;
   display: flex;
   flex-direction: column;
 }

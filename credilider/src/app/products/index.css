@@ -3,6 +3,7 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 3.5em;
   padding: 16px;
+  padding: 2em;
 }
 
 .credit-button-container {

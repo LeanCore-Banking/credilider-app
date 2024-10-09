@@ -9,7 +9,7 @@ const ProgressBar = ({ currentStep }: ProgressBarProps) => {
       <div className="progress-bar-container">
       <div className="step-container">
         <div className={`step-item ${currentStep === 1 ? 'active' : ''}`}>
-          1 Preaprobado
+          1 Consultar Pre-Aprobado
         </div>
         <div className={`step-item ${currentStep === 2 ? 'active' : ''}`}>
           2 Solicitud Crédito

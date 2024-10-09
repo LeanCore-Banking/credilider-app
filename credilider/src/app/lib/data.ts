@@ -60,7 +60,7 @@ export async function fetchMotos() {
   ): Promise<Quote[]> {
     try {
       // Artificial delay for demo purposes.
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
   
       console.log('Fetching quote data...');
       console.log(`Name: ${name}, Email: ${email}, Phone: ${phone}`);

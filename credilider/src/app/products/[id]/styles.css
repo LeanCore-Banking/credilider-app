@@ -3,6 +3,7 @@
   display: flex;
   justify-content: space-evenly;
   background-color: #f8f8f8;
+  padding: 2em;
 }
 
 .block-description-container {
@@ -261,21 +262,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: translateX(70%);
+  transform: translateX(20%);
+}
+
+main {
+  margin-left: 0;
 }
 
 /* Estilos base (Mobile-first) */
-body {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  padding: 10px;
-  /* Otros estilos base */
-}
 
 /* Teléfonos pequeños y tablets medianas(320px - 768px) */
 @media (min-width: 320px) and (max-width: 860px) {
   .detail-container {
     flex-direction: column;
+    padding: 0;
   }
 
   .vertical-line-section {

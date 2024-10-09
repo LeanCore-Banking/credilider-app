@@ -16,15 +16,19 @@ const HomePage: React.FC = () => {
       <main className="main-content">
         <div className={`${robotoCondensed.className} container`}>
           <div className="content">
-            <div className="text-content">
-              <h1 className="main-title">¿MOTO NUEVA?</h1>
-              <h1 className="main-title"> CREDILIDER TE LA FINANCIA </h1>
-              <h3 className="highlight-text" id="text-contet-sub-title">Te financiamos hasta el 100% de tu moto</h3>
-              <p className="disclaimer">*Sujeto a aprobación y estudio de crédito de la entidad que financia.
-                Entidad que financia Socolfi S.A.S
-              </p>
-              
+            <div className="text-container">
+
+              <div className="text-content">
+                <h1 className="main-title">¿MOTO NUEVA?</h1>
+                <h1 className="main-title"> CREDILIDER TE LA FINANCIA </h1>
+                <h3 className="highlight-text" id="text-contet-sub-title">Te financiamos hasta el 100% de tu moto</h3>
+                <p className="disclaimer">*Sujeto a aprobación y estudio de crédito de la entidad que financia.
+                  Entidad que financia Socolfi S.A.S
+                </p>
+              </div>
+
             </div>
+            
             <div className="image-content">
               <Image
                 src={Banner}

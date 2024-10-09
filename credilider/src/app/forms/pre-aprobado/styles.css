@@ -135,6 +135,18 @@ input{
   
 }
 
+/* popup opciones disponibles */
+
+.opciones-disponibles{
+  width: 76%;
+  display: flex;
+  justify-content: start;
+
+
+}
+
+
+
 /* popup-preaprobado-form */
 
 .popup-otp-preaprobado-form {

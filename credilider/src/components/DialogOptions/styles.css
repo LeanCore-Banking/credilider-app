@@ -1,0 +1,97 @@
+.DialogOverlay {
+    background-color: rgba(255, 255, 255, 0.8);
+    position: fixed;
+    inset: 0;
+  }
+  
+  .DialogContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+  }
+  
+  .slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .slider-button {
+    font-weight: bold;
+    color: white;
+    background-color: var(--gold);
+    border-radius: 50%;
+    border: 0;
+    font-size: 2rem;
+    cursor: pointer;
+  }
+  
+  .slider-content {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .slider-block {
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .slider-block:last-child {
+    border-right: none;
+  }
+
+  .slider-block .product-card{
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .slider-content img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  
+  .slider-content p {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  .openDialogOptions{
+    color: rgb(38, 38, 236);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 2em;
+  }
+
+
+
+
+  .skeleton {
+    background-color: #e0e0e0;
+    animation: pulse 1.5s infinite;
+}
+
+.skeleton-box {
+    width: 100%;
+    height: 150px; /* Ajusta según el tamaño de tu componente */
+    background-color: #ddd;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+    100% {
+        opacity: 1;
+    }
+}

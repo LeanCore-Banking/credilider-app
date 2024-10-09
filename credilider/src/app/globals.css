@@ -3,9 +3,6 @@
     scroll-behavior: smooth;
   }
 
-  html{
-    margin: 2em;
-  }
 
   :root {
 
@@ -72,10 +69,16 @@
     letter-spacing: var(--unnamed-character-spacing-0);
     color: var(--unnamed-color-0a0a0a);
     }
+
+
+    main{
+      margin-left: 1em;
+    }
     
     /* reset.css */
 
 /* Box sizing rules */
+
 *,
 *::before,
 *::after {
@@ -112,6 +115,7 @@ body {
   text-rendering: optimizeSpeed;
   line-height: 1.5;
   background: #f8f8f8;
+  margin: 0;
 }
 
 /* Remove list styles on ul, ol elements with a class attribute */
@@ -137,6 +141,13 @@ button,
 textarea,
 select {
   font: inherit;
+}
+
+
+input:focus {
+  border-color: var(--gold); /* Color del borde cuando está enfocado */
+  background-color: #f9f9f9; /* Color de fondo cuando está enfocado */
+  outline: none; /* Eliminar el borde de enfoque predeterminado del navegador */
 }
 
 /* Remove all animations and transitions for people that prefer not to see them */

@@ -11,9 +11,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Head />
             </header>
             <main>{children}</main>
-            <footer>
-                <p>&copy; 2024 Credilider. All rights reserved.</p>
-            </footer>
         </div>
     );
 };

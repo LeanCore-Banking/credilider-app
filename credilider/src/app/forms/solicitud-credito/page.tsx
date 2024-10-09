@@ -6,9 +6,19 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import './index.css';
 import { robotoCondensed } from '@/app/fonts/fonts';
+import { useEffect } from 'react';
 
 const SolicitudCreditoForm = () => {
   const { formData, setFormData } = useFormStore() as { formData: any, setFormData: (data: any) => void };
+
+  useEffect(() => {
+    const savedFormData = localStorage.getItem('formData');
+    if (savedFormData) {
+      setFormData(JSON.parse(savedFormData));
+    }
+  }, [setFormData]);
+
+
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -46,13 +56,25 @@ const SolicitudCreditoForm = () => {
           <div className="form-row-solicitud-credito">
             <div className="form-group-solicitud-credito">
               <label htmlFor="nombre">Nombre y apellido</label>
-              <input type="text" id="nombre" name="nombre" required onChange={handleChange} />
+              <input type="text"
+                id="nombre"
+                name="nombre" required onChange={handleChange}
+                value={formData.nombreApellido || ''}  
+              />
             </div>
             <div className="form-group-solicitud-credito">
               <label htmlFor="cedula">Número de cédula</label>
-              <input type="text" id="cedula" name="cedula" required onChange={handleChange} />
+              <input type="text"
+               id="cedula" 
+               name="cedula"
+                value={formData.cedula || ''}  
+              required onChange={handleChange} />
               <div className="checkbox-group-solicitud-credito">
-                <input type="checkbox" id="cc" name="tipo_documento" value="cc" onChange={handleChange} />
+                <input type="checkbox"
+                  id="cc"
+                  name="tipo_documento"
+                  value={formData.cedula || ''}  
+                  onChange={handleChange} />
                 <label htmlFor="cc">CC</label>
                 <input type="checkbox" id="pasaporte" name="tipo_documento" value="pasaporte" onChange={handleChange} />
                 <label htmlFor="pasaporte">Pasaporte</label>
@@ -60,21 +82,37 @@ const SolicitudCreditoForm = () => {
             </div>
             <div className="form-group-solicitud-credito">
               <label htmlFor="fecha_expedicion">Fecha de expedición</label>
-              <input type="date" id="fecha_expedicion" name="fecha_expedicion" required onChange={handleChange} />
+              <input type="date"
+                id="fecha_expedicion"
+                name="fecha_expedicion"
+                value={formData.fechaExpedicion || ''}  
+                required onChange={handleChange} />
             </div>
             <div className="form-group-solicitud-credito">
               <label htmlFor="ingresos">Ingresos</label>
-              <input type="number" id="ingresos" name="ingresos" required onChange={handleChange} />
+              <input type="number"
+                id="ingresos"
+                name="ingresos"
+                value={formData.ingresos || ''}  
+                required onChange={handleChange} />
             </div>
           </div>
           <div className="form-row-solicitud-credito">
             <div className="form-group-solicitud-credito">
               <label htmlFor="egresos">Egresos</label>
-              <input type="number" id="egresos" name="egresos" required onChange={handleChange} />
+              <input type="number"
+                id="egresos"
+                name="egresos"
+                value={formData.egresos || ''}
+                required onChange={handleChange} />
             </div>
             <div className="form-group-solicitud-credito">
               <label htmlFor="cuota_inicial">Cuota inicial</label>
-              <input type="number" id="cuota_inicial" name="cuota_inicial" required onChange={handleChange} />
+              <input type="number"
+                id="cuota_inicial"
+                name="cuota_inicial"
+                value={formData.cuotaInicial || ''}
+                required onChange={handleChange} />
             </div>
             <div className="form-group-solicitud-credito">
               <label htmlFor="correo">Correo electrónico</label>

@@ -7,35 +7,48 @@ import { ChevronLeft, ChevronRight, Maximize, Maximize2, X } from 'lucide-react'
 import './index.css'
 import { motos } from '@/app/lib/definitions'
 
-const images: string[] = [
-  '/placeholder.svg?height=400&width=600',
-  '/placeholder.svg?height=400&width=600',
-  '/placeholder.svg?height=400&width=600',
-  '/placeholder.svg?height=400&width=600',
-]
+
+
+
 
 type dataDescriptionProps = {
-  data: motos[];
+  data: motos;
 }
 
 const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
 
-  console.log('dataImg:', data);
   const [currentImage, setCurrentImage] = useState<number>(0)
+  const images = data?.imagen || ['/placeholder.svg?height=400&width=600'] // Usa el array de imágenes del objeto `data`
+
+  const firstImage = data.imagen && Array.isArray(data.imagen) ? data.imagen[0] : '';
+
+  const thumbnails = [
+    "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
+    "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
+    "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
+  ]
+
+  const mainImages = [
+    "/suzuki-dl650-vstrom-2021.jpg",
+    "/suzuki-dl1050-vstrom-xt-2020.jpg",
+    "/suzuki-katana-2022.jpg",
+    "/suzuki-sv650xa-2018.jpg"
+  ]
+
 
   const handleImageClick = (index: number) => {
     setCurrentImage(index)
   }
 
-    const handlePrevImage = () => {
+  const handlePrevImage = () => {
     setCurrentImage((prevImage) =>
-      prevImage === 0 ? images.length - 1 : prevImage - 1
+      prevImage === 0 ? mainImages.length - 1 : prevImage - 1
     )
   }
 
   const handleNextImage = () => {
     setCurrentImage((prevImage) =>
-      prevImage === images.length - 1 ? 0 : prevImage + 1
+      prevImage === mainImages.length - 1 ? 0 : prevImage + 1
     )
   }
 
@@ -43,8 +56,8 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
   return (
     <div className="moto-container">
       <div className="image-wrapper">
-        <Image
-          src={images[currentImage]}
+        <img
+          src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`}
           alt={`Moto imagen ${currentImage + 1}`}
           width={600}
           height={400}
@@ -53,23 +66,23 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
         <Dialog.Root>
           <Dialog.Trigger asChild>
             <div className="maximize-button">
-            <Maximize className="maximize-icon" />
+              <Maximize className="maximize-icon" />
             </div>
           </Dialog.Trigger>
           <Dialog.Portal>
             <Dialog.Overlay className="overlay" />
             <Dialog.Content className="dialog-content">
-         
-            <div className="image-navigation">
+
+              <div className="image-navigation">
                 <button className="nav-left-button" onClick={handlePrevImage}>
                   <ChevronLeft size={32} />
                 </button>
 
                 <Image
-                  src={images[currentImage]}
+                  src={mainImages[currentImage]}
                   alt={`Moto imagen ampliada ${currentImage + 1}`}
-                  width={800}
-                  height={600}
+                  width={600}
+                  height={400}
                   className="full-image"
                 />
 
@@ -82,21 +95,24 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
                 <div className="thumbnail-grid" id="thumbnail-popup">
 
                   <div className='thumbnail-popup-container'>
-                  {images.map((image, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleImageClick(index)}
-                      className={`thumbnail-button-popup ${currentImage === index ? 'active' : ''}`}
-                    >
-                      <Image
-                        src={image}
-                        alt={`Moto miniatura ${index + 1}`}
-                        width={100}
-                        height={100}
-                        className="thumbnail-image"
-                      />
-                    </div>
-                  ))}
+                    {thumbnails.map((image, index) => {
+                      console.log('image:', image);
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => handleImageClick(index)}
+                          className={`thumbnail-button-popup ${currentImage === index ? 'active' : ''}`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Moto miniatura ${index + 1}`}
+                            width={100}
+                            height={100}
+                            className="thumbnail-image"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
 
                 </div>
@@ -112,13 +128,13 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
       </div>
 
       <div className="thumbnail-grid">
-        {images.map((image, index) => (
+        {thumbnails.map((image, index) => (
           <div
             key={index}
             onClick={() => handleImageClick(index)}
             className={`thumbnail-button ${currentImage === index ? 'active' : ''}`}
           >
-            <Image
+            <img
               src={image}
               alt={`Moto miniatura ${index + 1}`}
               width={100}
