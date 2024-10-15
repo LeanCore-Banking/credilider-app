@@ -61,7 +61,6 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                     </div>
                 </section>
                 <div className="vertical-line-section"></div>
-                {/* convertir en componente cliente */}
                 <Suspense fallback={<div>Loading...#</div>}>
                     <QuoteColDetail quoteDefault={defaultQuotes} price={motoData.precio} />
                 </Suspense>

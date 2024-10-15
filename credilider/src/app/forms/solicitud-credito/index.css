@@ -48,6 +48,10 @@
   color: var(--dark);
 }
 
+.form-container-solicitud-credito{
+  font-size: 12px;
+}
+
 .form-row-solicitud-credito {
   display: flex;
   flex-wrap: wrap;
@@ -69,7 +73,7 @@
   font-weight: bold;
 }
 
-input[type="text"],
+.form-container-solicitud-credito input[type="text"],
 input[type="number"],
 input[type="email"],
 input[type="date"],

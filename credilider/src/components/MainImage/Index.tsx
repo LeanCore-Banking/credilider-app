@@ -21,6 +21,7 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
   const images = data?.imagen || ['/placeholder.svg?height=400&width=600'] // Usa el array de imágenes del objeto `data`
 
   const firstImage = data.imagen && Array.isArray(data.imagen) ? data.imagen[0] : '';
+  console.log('firstImage:', firstImage);
 
   const thumbnails = [
     "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
@@ -51,7 +52,6 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
       prevImage === mainImages.length - 1 ? 0 : prevImage + 1
     )
   }
-
 
   return (
     <div className="moto-container">

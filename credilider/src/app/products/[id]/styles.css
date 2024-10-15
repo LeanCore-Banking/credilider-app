@@ -66,7 +66,7 @@
   max-width: 15%;
 }
 #valor-financiar {
-  width: 35%;
+  width: 30%;
 }
 
 #valor-financiar div {
@@ -97,9 +97,9 @@
 .inputs-bottom-content {
   display: flex;
   flex-direction: row;
-  padding: 1em;
-  align-self: center;
-  justify-content: space-between;
+  gap: 1.5em;
+  padding: 1em 1em 1em 0;
+  justify-content: center;
 }
 
 .inputs-bottom-content div {
@@ -305,8 +305,7 @@ main {
 /* Portátiles y pequeñas pantallas de escritorio (1025px - 1200px) */
 @media (min-width: 769px) and (max-width: 1100px) {
   .inputs-bottom-content {
-    flex-direction: column;
-    padding-right: 1em;
+  gap: 1em;
   }
 
   .inputs-bottom-content div {

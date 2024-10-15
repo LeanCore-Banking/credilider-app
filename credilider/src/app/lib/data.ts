@@ -9,7 +9,6 @@ export async function fetchMotos() {
       // Don't do this in production :)
   
       console.log('Fetching revenue data...');
-      await new Promise((resolve) => setTimeout(resolve, 3000));
   
       const response = await axios.get(
         `https://script.google.com/macros/s/AKfycbwKqKdyD5GVNlOqYnFEAjUOlzCKODEOyyFosrPkZxeGyA7MF-GRofUmE7kN8r7lIaZuZA/exec?action=listMotos`
@@ -31,7 +30,7 @@ export async function fetchMotos() {
       // Don't do this in production :)
   
       console.log('Fetching revenue data...');
-     // await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
   
       const response = await axios.get(
         `https://script.google.com/macros/s/AKfycbwKqKdyD5GVNlOqYnFEAjUOlzCKODEOyyFosrPkZxeGyA7MF-GRofUmE7kN8r7lIaZuZA/exec?action=getMotoById&id=${id}`
@@ -60,7 +59,7 @@ export async function fetchMotos() {
   ): Promise<Quote[]> {
     try {
       // Artificial delay for demo purposes.
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
   
       console.log('Fetching quote data...');
       console.log(`Name: ${name}, Email: ${email}, Phone: ${phone}`);

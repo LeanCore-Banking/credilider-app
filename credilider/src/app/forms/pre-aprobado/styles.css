@@ -28,7 +28,7 @@
 }
 
 #pre-aprobado-col-2{
-  gap: .2em;
+  gap: .3em;
 }
 
 #pre-aprobado-btn{
@@ -38,19 +38,28 @@
 .continuar-credito{
   display: flex;
   justify-content: end;
-  margin-top: 2em;
+  margin: 0 2em;
 }
 
 label{
   font-size: 12px;
   font-weight: 400;
+  color: var(--dark);
 }
 
 input{
   font-size: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  height: 3.5em;
+  height: 3em;
+  padding-left: 5px;
+}
+
+.result-box{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: -.4em;
 }
 
 .checkbox-group {
@@ -76,6 +85,7 @@ input{
 }
 
 .button-preaprobado{
+  height: 2.5em;
   padding: 10px 15px;
   background-color: #00955C;
   color: white;
@@ -92,7 +102,7 @@ input{
 #pre-aprobado-resp{
   border: 1px solid #ccc;
   border-radius: 4px;
-  height: 42px;
+  height: 37px;
 }
 .pre-aprobado-title{
   position: absolute;

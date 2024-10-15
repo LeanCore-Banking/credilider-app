@@ -48,8 +48,10 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
 
     // Función para manejar el debounce
     const debounce = (func: (...args: any[]) => void, delay: number) => {
-        let timeout: NodeJS.Timeout;
+        let timeout: NodeJS.Timeout | undefined;
+           
         return (...args: any[]) => {
+            console.log('debounce:', timeout); 
             if (timeout) clearTimeout(timeout);
             timeout = setTimeout(() => {
                 func(...args);
@@ -57,7 +59,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
         };
     };
 
-    // Función para hacer la solicitud a fetchQuotes
+    // Función para hacer la solicitudes a fetchQuotes
     const handleFetchQuotes = debounce(async () => {
         if (motoValue && initialFee >= 0 && discount >= 0) {
             setLoading(true);
