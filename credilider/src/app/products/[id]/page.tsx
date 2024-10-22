@@ -4,13 +4,10 @@ import MainImage from "@/components/MainImage/Index";
 //import { useProduct } from "../../../hooks/useProductDetail";
 import './styles.css';
 import QuoteColDetail from "@/components/QuoteColDetail/Index";
-import { useQuery } from "@tanstack/react-query";
-import { Quote } from "@/app/lib/definitions";
 import { defaultQuotes } from "@/app/lib/default-data";
 import { fectchMotoById } from "@/app/lib/data";
 import { Suspense } from 'react';
-import { Head } from "@/components/Head/Index";
-
+import { CardQuoteSkeleton, ProductDetailSkeleton } from "@/components/skeletons";
 
 
 type ProductDetail = {
@@ -19,21 +16,18 @@ type ProductDetail = {
     }
 }
 const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
+
     const { id } = params;
-
-    console.log('id:', id);
-
-   const motoData = await fectchMotoById(id);
+    const motoData = await fectchMotoById(id);
     console.log('motodata:', motoData);
 
     return (
         <div>
             <div className="detail-container">
                 <section className="col-detail" id="col-detail-img">
-                    {/* Img detail Product Carrousel component */}
-                   
+
                     <MainImage data={motoData} />
-                    
+
                     <div className="block-description-container">
                         <header id="header">
                             <div className="name">
@@ -49,7 +43,7 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
 
                         <div id="detail-description">
                             <p>
-                               {motoData.descripcion}
+                                {motoData.descripcion}
                             </p>
                         </div>
                         <div id="price-container">
@@ -59,12 +53,18 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                         </div>
 
                     </div>
+
                 </section>
+
                 <div className="vertical-line-section"></div>
+
                 <Suspense fallback={<div>Loading...#</div>}>
-                    <QuoteColDetail quoteDefault={defaultQuotes} price={motoData.precio} />
+                    <QuoteColDetail quoteDefault={defaultQuotes} data={motoData} />
                 </Suspense>
+
             </div>
+
+            <ProductDetailSkeleton />
 
         </div>
     )

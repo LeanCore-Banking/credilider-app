@@ -1,9 +1,9 @@
-import { CardQuoteSkeleton } from "@/components/skeletons";
+import {ProductDetailSkeleton } from "@/components/skeletons";
 
 export default function Loading() {
     return (
     <div >
-      <CardQuoteSkeleton/>
+      <ProductDetailSkeleton/>
     </div>
     )
   }

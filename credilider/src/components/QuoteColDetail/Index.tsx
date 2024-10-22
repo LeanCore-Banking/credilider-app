@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
-import { Quote } from "@/app/lib/definitions";
+import { Moto, Quote } from "@/app/lib/definitions";
 import "./styles.css";
 import { fetchQuotes } from "@/app/lib/data";
 import Link from "next/link";
@@ -9,49 +9,46 @@ import { QuotesCardSkeleton } from "../skeletons";
 
 type QuoteColDetailProps = {
     quoteDefault: Quote[];
-    price: number;
+    data: Moto[];
 };
 
-const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) => {
+const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) => {
     const [quotes, setQuotes] = useState<Quote[]>(quoteDefault);
     const [loading, setLoading] = useState(false);
     const [popupVisible, setPopupVisible] = useState(false);
-    const [userData, setUserData] = useState({ name: "", email: "", phone: "" });
-    const [errors, setErrors] = useState({ name: "", email: "", phone: "" });
-
+    const [userData, setUserData] = useState({ name: "", nit: "", email: "", phone: "" });
+    const [errors, setErrors] = useState({ name: "", nit: "", email: "", phone: "" });
     const [motoValue, setMotoValue] = useState<number | null>(null);
     const [initialFee, setInitialFee] = useState<number>(0);
     const [discount, setDiscount] = useState<number>(0);
-    const [financeValue, setFinanceValue] = useState<number | null>(0); // Inicialmente vacío
+    const [financeValue, setFinanceValue] = useState<number | null>(0);
+    const [valueInput, setValueInput] = useState<string | null>(null);
 
 
-    // Dentro de tu componente QuoteColDetail
+    // Dentro de QuoteColDetail
     useEffect(() => {
         // Si los valores son válidos, se inicia un timeout para calcular el valor a financiar
         if (motoValue && initialFee >= 0 && discount >= 0) {
-           
-                const discountAmount = motoValue * (discount / 100);
-                const newFinanceValue = motoValue - discountAmount - initialFee;
-                setFinanceValue(newFinanceValue >= 0 ? newFinanceValue : 0); // No permitir valores negativos
-         
 
-            // Limpieza para cancelar el timeout si cambia alguna dependencia antes de completarse
-            
+            const discountAmount = motoValue * (discount / 100);
+            const newFinanceValue = motoValue - discountAmount - initialFee;
+            setFinanceValue(newFinanceValue >= 0 ? newFinanceValue : 0); // No permitir valores negativos   
         }
-    }, [motoValue, initialFee, discount]);
+    }, [motoValue, initialFee, discount]);  // Limpieza para cancelar el timeout si cambia alguna dependencia antes de completarse
+
 
     useEffect(() => {
         if (financeValue !== null && motoValue && initialFee >= 0 && discount >= 0) {
             handleFetchQuotes(); // Llamar a fetchQuotes cuando se actualice financeValue
         }
-    }, [financeValue]); 
+    }, [financeValue]);
 
-    // Función para manejar el debounce
+    // Función para manejar el debounce de las solicitudes
     const debounce = (func: (...args: any[]) => void, delay: number) => {
         let timeout: NodeJS.Timeout | undefined;
-           
+
         return (...args: any[]) => {
-            console.log('debounce:', timeout); 
+            console.log('debounce:', timeout);
             if (timeout) clearTimeout(timeout);
             timeout = setTimeout(() => {
                 func(...args);
@@ -60,11 +57,11 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
     };
 
     // Función para hacer la solicitudes a fetchQuotes
-    const handleFetchQuotes = debounce(async () => {
+    const handleFetchQuotes = async () => {
         if (motoValue && initialFee >= 0 && discount >= 0) {
             setLoading(true);
             try {
-                const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue || 0, userData.name, userData.email, userData.phone);
+                const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue || 0, userData.name, userData.nit, userData.email, userData.phone, data);
                 console.log('updatedQuotes:', updatedQuotes);
                 setQuotes(updatedQuotes);
             } catch (error) {
@@ -73,7 +70,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                 setLoading(false);
             }
         }
-    }, 1000); // 1000ms de retraso
+    };
 
     const validateField = (name: string, value: string) => {
         let errorMessage = "";
@@ -91,6 +88,13 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                     errorMessage = "El formato de correo no es válido.";
                 }
                 break;
+            case "nit":
+                if (!value) {
+                    errorMessage = "El NIT o Cedula es obligatorio.";
+                } else if (!/^\d+$/.test(value)) {
+                    errorMessage = "la cedula o Nit deben ser dígitos.";
+                }
+                break;
             case "phone":
                 if (!value) {
                     errorMessage = "El teléfono es obligatorio.";
@@ -106,27 +110,28 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
     };
 
     // Manejadores de cambio de input
-    const handleMotoValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleMotoValueChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
         setMotoValue(Number(e.target.value) || null);
         handleFetchQuotes();
-    };
+    }, 2000)// 2s de retraso para evitar llamadas innecesarias
 
-    const handleInitialFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInitialFeeChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialFee(Number(e.target.value) || 0);
         handleFetchQuotes();
-    };
+    }, 2000);
 
-    const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleDiscountChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
         setDiscount(Number(e.target.value) || 0);
         handleFetchQuotes();
-    };
+    }, 2000);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         // Validar antes de enviar
-        if (!userData.name || !userData.email || !userData.phone) {
+        if (!userData.name || !userData.email || !userData.phone || !userData.nit) {
             validateField("name", userData.name);
+            validateField("nit", userData.nit);
             validateField("email", userData.email);
             validateField("phone", userData.phone);
             return;
@@ -138,14 +143,15 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
         const initialFee = parseFloat(formData.get('initialFee') as string) || 0;
         const discount = parseFloat(formData.get('discount') as string) || 0;
         const name = formData.get('name') as string;
+        const nit = formData.get('nit') as string;
         const email = formData.get('email') as string;
         const phone = formData.get('phone') as string;
 
         try {
             // Enviar el valor de financiar actualizado a fetchQuotes
-            const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue ?? 0, name, email, phone);
+            const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue ?? 0, name, nit, email, phone, data);
             setQuotes(updatedQuotes);
-            setUserData({ name, email, phone });
+            setUserData({ name, nit, email, phone });
             setPopupVisible(true); // Mostrar popup
         } catch (error) {
             console.error("Error fetching quotes:", error);
@@ -171,12 +177,11 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                 <div className="inputs-row">
                     <span>Cotizar esta moto</span>
                     <div className="inputs-values">
-                        <div>
+                        <div id="input-valor-moto">
                             <label>Valor Moto</label>
                             <input type="text"
                                 name="value-moto"
                                 onChange={handleMotoValueChange} // Actualiza el valor de moto inicial y aplica debounce
-
                             />
                         </div>
                         <div id="input-cuota-inicial">
@@ -230,7 +235,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                                         <div className="value-to-pay">
                                             <span>Valor a pagar</span>
                                             <span>${(item.monthlyFee * item.monthlyRate).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))
@@ -238,6 +243,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                     </div>
                 </div>
                 <div className="inputs-bottom-content">
+
                     <div>
                         <label>Nombre y apellido</label>
                         <input
@@ -249,8 +255,21 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                             onBlur={() => validateField('name', userData.name)} // Validación cuando el campo pierde el foco
                         />
                         {errors.name && <span className="error-message-quotes">{errors.name}</span>}
-
                     </div>
+
+                    <div>
+                        <label>Escribir el NIT o CC</label>
+                        <input
+                            type="text"
+                            name="nit"
+                            placeholder="Escriba su NIT o CC"
+                            value={userData.nit}
+                            onChange={handleInputChange}
+                            onBlur={() => validateField('nit', userData.nit)} // Validación cuando el campo pierde el foco
+                        />
+                        {errors.nit && <span className="error-message-quotes">{errors.nit}</span>}
+                    </div>
+
                     <div>
                         <label>Escribir el correo</label>
                         <input
@@ -262,8 +281,8 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                             onBlur={() => validateField('email', userData.email)} // Validación cuando el campo pierde el foco
                         />
                         {errors.email && <span className="error-message-quotes">{errors.email}</span>}
-
                     </div>
+
                     <div>
                         <label>Escribir el teléfono</label>
                         <input
@@ -275,8 +294,8 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                             onBlur={() => validateField('phone', userData.phone)} // Validación cuando el campo pierde el foco
                         />
                         {errors.phone && <span className="error-message-quotes">{errors.phone}</span>}
-
                     </div>
+
                 </div>
                 <div id="p-detail-btn-send">
                     <button type="submit">Enviar cotización</button>
@@ -288,7 +307,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                 <div className="popup-overlay-quotesColDetail">
                     <div className="popup-quotesColDetail">
                         <div className="popup-quotesColDetail-icon" >
-                            <CheckCircle size={80} color="#B4924E" /> {/* Icono de OK */}
+                            <CheckCircle size={80} color="#B4924E" />
                         </div>
                         <div className="popup-quotesColDetail-text">
                             <p>LA COTIZACIÒN</p>
@@ -296,9 +315,9 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, price }) 
                             <p>EXITOSAMENTE A:</p>
                         </div>
                         <div className="popup-info-quotesColDetail">
-                            <p><User size={15} /> {userData.name}</p> {/* Icono de usuario */}
-                            <p><Mail size={15} /> {userData.email}</p> {/* Icono de email */}
-                            <p><Phone size={15} /> {userData.phone}</p> {/* Icono de teléfono */}
+                            <p><User size={15} /> {userData.name}</p>
+                            <p><Mail size={15} /> {userData.email}</p>
+                            <p><Phone size={15} /> {userData.phone}</p>
                         </div>
                     </div>
                     <div className="popup-buttons-quotesColDetail">

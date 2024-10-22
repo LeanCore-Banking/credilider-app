@@ -1,16 +1,12 @@
 'use client'
 import { useQuery } from '@tanstack/react-query';
 import ProductCard from "@/components/ProductCard/Index";
-import axios from 'axios';
 import './index.css';
-import { SearchIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import ProductCardSkeleton from '@/components/ProductCard/Skeleton';
 import { FilterRow } from '@/components/FilterRow/Index';
-import { Head } from '@/components/Head/Index';
-import { roboto, robotoCondensed } from '../fonts/fonts';
-
-
+import { robotoCondensed } from '../fonts/fonts';
+import { fetchMotos } from '../lib/data';
 
 interface Moto {
   id: number;
@@ -21,14 +17,6 @@ interface Moto {
   precio: number;
   imagen: string;
 }
-
-
-const fetchMotos = async (): Promise<Moto[]> => {
-  const response = await axios.get(
-    `https://script.google.com/macros/s/AKfycbwKqKdyD5GVNlOqYnFEAjUOlzCKODEOyyFosrPkZxeGyA7MF-GRofUmE7kN8r7lIaZuZA/exec?action=listMotos`
-  );
-  return response.data;
-};
 
 const Products: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<string>('');
@@ -51,7 +39,7 @@ const Products: React.FC = () => {
 
       // Filtrar por búsqueda
       if (searchTerm) {
-        filteredMotos = filteredMotos.filter((moto) =>
+        filteredMotos = filteredMotos.filter((moto:any) =>
           moto.modelo.toLowerCase().includes(searchTerm.toLowerCase()) ||
           moto.marcaTipo.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -64,7 +52,6 @@ const Products: React.FC = () => {
       } else if (sortOrder === 'price-desc') {
         sortedData = sortedData.sort((a, b) => b.precio - a.precio);
       }
-
       setSortedMotos(sortedData);
     }
   }, [motos, sortOrder, searchTerm]);

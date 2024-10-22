@@ -20,34 +20,34 @@ const ProductCard = ({ product }: { product: Product }) => {
     const firstImage = product.imagen && Array.isArray(product.imagen) ? product.imagen[0] : '';
 
     const arrayColores = product.color.split(",").map(color => color.trim());
-    console.log('arrayColores:', arrayColores);
+    //console.log('arrayColores:', arrayColores);
 
     function formatNumber(number: number): string {
         return number.toLocaleString('en-US');
-      }
+    }
 
-      const priceFormated = formatNumber(product.precio);
+    const priceFormated = formatNumber(product.precio);
 
     return (
         <div className="product-card">
             <div className="product-card_image">
-            <img src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`} alt={product.modelo} />
+                <img src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`} alt={product.modelo} />
             </div>
-        
-        
+
+
             <div className="product-card__info">
                 <div>
-                <div className="color-list">
-                    <span style={{ backgroundColor: 'rgb(54, 55, 56)', borderRadius: '50%', display: 'inline-block', width: '15px', height: '15px' }}></span>
-                    <span style={{ backgroundColor: 'rgb(63, 82, 193)', borderRadius: '50%', display: 'inline-block', width: '15px', height: '15px' }}></span>
-                    <span style={{ backgroundColor: 'rgb(199, 133, 41)', borderRadius: '50%', display: 'inline-block', width: '15px', height: '15px' }}></span>
+                    <div className="color-list">
+                        <span style={{ backgroundColor: 'rgb(54, 55, 56)', borderRadius: '50%', display: 'inline-block', width: '15px', height: '15px' }}></span>
+                        <span style={{ backgroundColor: 'rgb(63, 82, 193)', borderRadius: '50%', display: 'inline-block', width: '15px', height: '15px' }}></span>
+                        <span style={{ backgroundColor: 'rgb(199, 133, 41)', borderRadius: '50%', display: 'inline-block', width: '15px', height: '15px' }}></span>
+                    </div>
+                    <div className="info-card">
+                        <span id="info-card-model">{product.modelo}</span>
+                        <span id="info-card-marcaTipo">{product.marcaTipo}</span>
+                    </div>
                 </div>
-                <div className="info-card">
-                    <span id="info-card-model">{product.modelo}</span>
-                    <span id="info-card-marcaTipo">{product.marcaTipo}</span>
-                </div>
-                </div>
-              
+
                 <div className="info-price">
                     <h3>{`$${priceFormated}`}</h3>
                     <span>Con papeles</span>

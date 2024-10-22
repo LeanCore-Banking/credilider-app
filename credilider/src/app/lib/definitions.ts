@@ -1,4 +1,4 @@
-export type motos = {
+export type Moto = {
   id: number;
   timestamp: string;
   modelo: string;
@@ -6,6 +6,7 @@ export type motos = {
   color: string;
   precio: number;
   imagen: [];
+  descripcion: string;
 };
 
 
@@ -18,6 +19,13 @@ export type Quote = {
     monthlyCupDue: number;
     monthlyRate: number;
     monthLifeInsurance: number;
+  };
+
+  export type Lead = {
+    name: string;
+    nit: string;
+    email: string;
+    phone: string;
   };
 
   

@@ -5,14 +5,14 @@ import Image from 'next/image'
 import * as Dialog from '@radix-ui/react-dialog'
 import { ChevronLeft, ChevronRight, Maximize, Maximize2, X } from 'lucide-react'
 import './index.css'
-import { motos } from '@/app/lib/definitions'
+import { Moto } from '@/app/lib/definitions'
 
 
 
 
 
 type dataDescriptionProps = {
-  data: motos;
+  data: Moto;
 }
 
 const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
@@ -20,8 +20,11 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
   const [currentImage, setCurrentImage] = useState<number>(0)
   const images = data?.imagen || ['/placeholder.svg?height=400&width=600'] // Usa el array de imágenes del objeto `data`
 
-  const firstImage = data.imagen && Array.isArray(data.imagen) ? data.imagen[0] : '';
-  console.log('firstImage:', firstImage);
+  const imgsFormated = data.imagen.map((img: string) => {
+    return `https://lh3.googleusercontent.com/d/${img.split('id=')[1]}=s200`
+  })
+
+  console.log('imgsFormated:', imgsFormated);
 
   const thumbnails = [
     "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
@@ -57,7 +60,7 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
     <div className="moto-container">
       <div className="image-wrapper">
         <img
-          src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`}
+          src={imgsFormated[currentImage]}
           alt={`Moto imagen ${currentImage + 1}`}
           width={600}
           height={400}

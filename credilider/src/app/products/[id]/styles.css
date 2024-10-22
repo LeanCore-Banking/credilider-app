@@ -44,7 +44,12 @@
   margin: 2em 1em 2em 0;
   margin-top: 2em;
   gap: 1em;
+  justify-content: space-between;
   flex-wrap: wrap;
+}
+
+#input-valor-moto {
+  min-width: 40%;
 }
 
 .inputs-values label {
@@ -59,14 +64,20 @@
 }
 
 #input-cuota-inicial {
-  width: 35%;
+  width: 40%;
 }
 
 #input-descuento {
   max-width: 15%;
 }
 #valor-financiar {
-  width: 30%;
+  width: 40%;
+}
+
+.colors-list {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
 }
 
 #valor-financiar div {
@@ -221,6 +232,10 @@
   width: 100%;
 }
 
+.data-container:last-child {
+  margin: 0;
+}
+
 /* popup detalle del producto */
 
 .image-navigation {
@@ -305,7 +320,7 @@ main {
 /* Portátiles y pequeñas pantallas de escritorio (1025px - 1200px) */
 @media (min-width: 769px) and (max-width: 1100px) {
   .inputs-bottom-content {
-  gap: 1em;
+    gap: 1em;
   }
 
   .inputs-bottom-content div {
@@ -314,14 +329,6 @@ main {
 
   .quotes-content {
     margin: 0 1em 1em 0;
-  }
-
-  .inputs-values {
-    justify-content: space-between;
-  }
-
-  #input-cuota-inicial {
-    width: 40%;
   }
 }
 
@@ -347,34 +354,34 @@ main {
     border-right: none !important;
     border-bottom: 1px solid #2f2e2e;
     padding-top: 1em;
+    padding-bottom: 1em;
   }
 
   #input-descuento {
     max-width: 20%;
-}
+  }
 }
 
 @media (min-width: 320px) and (max-width: 520px) {
-  .inputs-bottom-content{
+  .inputs-bottom-content {
     flex-direction: column;
   }
-  .inputs-bottom-content div{
+  .inputs-bottom-content div {
     width: 100%;
   }
 
-  .inputs-values{
+  .inputs-values {
     justify-content: unset;
   }
 
-  #input-descuento{
+  #input-descuento {
     max-width: 30%;
   }
 
-  #input-cuota-inicial{
+  #input-cuota-inicial {
     width: 59%;
   }
-  #valor-financiar{
+  #valor-financiar {
     width: 100%;
   }
- 
 }

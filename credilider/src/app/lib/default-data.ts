@@ -1,5 +1,3 @@
-
-
 export const defaultQuotes = [ 
     {
         initialFee: 0,
