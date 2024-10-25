@@ -124,9 +124,7 @@ export async function fetchQuotes(
   }
 }
 
-export async function createLead(
-  dataIn: Lead
-): Promise<any> {
+export async function createLead(dataIn: Lead): Promise<any> {
   console.log("variables from createLead:", process.env.DEV_URL);
   try {
     // Fetch the auth token using Basic Auth
@@ -212,9 +210,6 @@ export async function sendEmail(dataIn: Email): Promise<boolean> {
 
 export async function getLeadByNit(id: string): Promise<any> {
   try {
-
- 
-
     const token = await getAuthToken();
     if (!token) {
       throw new Error("Failed to retrieve auth token.");
@@ -222,9 +217,11 @@ export async function getLeadByNit(id: string): Promise<any> {
 
     const user = await axios.get(`${process.env.DEV_URL}/lead?nit=${id}`, {
       headers: {
-      Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log("user:", user.data);
 
     return user.data;
   } catch (error) {
@@ -235,38 +232,53 @@ export async function getLeadByNit(id: string): Promise<any> {
 
 export async function generateOtp(dataIn: PreAprobadoData): Promise<any> {
   try {
-    const { nombreApellido, ingresos, telefono, email, cedula, tipoDocumento, egresos, fechaExpedicion, cuotaInicial } = dataIn;
+    const {
+      nombreApellido,
+      ingresos,
+      telefono,
+      email,
+      cedula,
+      tipoDocumento,
+      egresos,
+      fechaExpedicion,
+      cuotaInicial,
+    } = dataIn;
 
     const resp = {
       userId: "",
       respSendOtp: "",
     };
 
-    const user = await getLeadByNit(cedula)
-    resp.userId = user.data.id
+    console.log("cedula", cedula);
 
-    if(user.data.error === 'Not Found'){
-      createLeadPayload.name = nombreApellido;
-      createLeadPayload.email= email
-      createLeadPayload.phone=telefono
+    if (!cedula) {
+      console.log("cedula is required", cedula);
+    } else {
+      const user = await getLeadByNit(cedula);
+      console.log("userFromOtp:", user);
+      resp.userId = user.id;
 
-      const lead = await createLead(createLeadPayload)
+      if (user.error === "Not Found") {
+        createLeadPayload.name = nombreApellido;
+        createLeadPayload.email = email;
+        createLeadPayload.phone = telefono;
+        createLeadPayload.created_at = new Date().toISOString();
 
-      resp.userId= lead.data.id
+        const newLead = await createLead(createLeadPayload);
 
-      console.log('LeadFromOtp:' ,lead)
+        resp.userId = newLead.id;
+
+        console.log("newLeadFromOtp:", newLead);
+      }
+
+      const response = await axios.post(`${process.env.DEV_URL}/send-otp`, {
+        channel: "EMAIL",
+        fintechId: "41b6f635-077f-4bba-93ce-faa1f469a987",
+        userId: `${resp.userId}`,
+      });
+
+      resp.respSendOtp = response.data;
     }
-
-  
-   
-
-    const response = await axios.post(`${process.env.DEV_URL}/send-otp`, {
-      channel: "EMAIL",
-      fintechId: "41b6f635-077f-4bba-93ce-faa1f469a987",
-      userId: `${resp.userId}`,
-    });
-
-    resp.respSendOtp = response.data;
 
     return resp;
   } catch (error) {
@@ -275,13 +287,15 @@ export async function generateOtp(dataIn: PreAprobadoData): Promise<any> {
   }
 }
 
-export async function verifyOtp(otp: string, userId: string): Promise<any> {
+export async function verifyAndCheckOtp(
+  otp: string,
+  userId: string
+): Promise<any> {
   try {
     const resp = {
       respVerifyOtp: "",
       chekOptStatus: "",
-    }
-
+    };
 
     const response = await axios.post(`${process.env.DEV_URL}/verify-otp`, {
       fintechId: "41b6f635-077f-4bba-93ce-faa1f469a987",
@@ -293,8 +307,12 @@ export async function verifyOtp(otp: string, userId: string): Promise<any> {
       notify: false,
     });
 
+    resp.respVerifyOtp = response.data;
+
     if (response.data.status === "sent") {
-      const responseCheck = await axios.get(`${process.env.DEV_URL}/check-otp/${userId}`,);
+      const responseCheck = await axios.get(
+        `${process.env.DEV_URL}/check-otp/${userId}`
+      );
       resp.chekOptStatus = responseCheck.data.status;
     }
 

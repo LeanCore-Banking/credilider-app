@@ -6,9 +6,10 @@ import '../solicitud-credito/index.css';
 import { useState } from 'react';
 import ProgressBar from '@/components/ProgressBar/Index';
 import { robotoCondensed } from '@/app/fonts/fonts';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import PopupSlider from '@/components/DialogOptions/Index';
+import { generateOtp, verifyAndCheckOtp } from '@/app/lib/actions';
 
 interface FormData {
   nombre: string;
@@ -16,8 +17,8 @@ interface FormData {
   [key: string]: string;
 }
 const PreaprobadoForm = () => {
-  const [popUpOtmOpen, setPopUpOtm] = useState(false);
-  const [responseOtm, setOtmResponse] = useState('');
+  const [popUpOtpOpen, setPopUpOtp] = useState(false);
+  const [responseOtp, setOtpResponse] = useState<{ userId: string, respSendOtp: string } | null>(null);
   const [response, setResponse] = useState('');
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -30,24 +31,39 @@ const PreaprobadoForm = () => {
     egresos: '',
     fechaExpedicion: '',
     cuotaInicial: '',
+    otp: ''
   });
 
-  const consultarPreAprobado = async () => {
-    
+  const preAprobadoBtnHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     localStorage.setItem('formData', JSON.stringify(formData));
 
     // Simulación de una llamada a un endpoint
-   /*  const response = await new Promise(resolve =>
-      setTimeout(() => resolve(`$${Math.floor(Math.random() * 100000)}`), 1000)
-    ) */
-    //const response = await fetchPreapprovedData(formData);
-    setPopUpOtm(true);
-    setOtmResponse(response as string);
-    setResponse(response as string);
+    /*  const response = await new Promise(resolve =>
+       setTimeout(() => resolve(`$${Math.floor(Math.random() * 100000)}`), 1000)
+     ) */
+    const otpResp = await generateOtp(formData);
+    console.log('otpResp:', otpResp)  
+    setPopUpOtp(true);
+    setOtpResponse({ userId: otpResp.userId, respSendOtp: otpResp.respSendOtp });
+    //setResponse(response as string);
   };
 
+  const otpSubmitHandler = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const otp = formData.otp
+    console.log('otpFromOtpSubmit:', responseOtp)
+
+    if (responseOtp) {
+      const response = await verifyAndCheckOtp(otp, responseOtp.userId);
+      console.log('responseVeriFyAndCheckOpt:', response)
+      setResponse(response.chekOptStatus)
+    }
+
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('e.target:', e.target);
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -55,6 +71,11 @@ const PreaprobadoForm = () => {
   const handleCheckboxChange = (value: string) => {
     setFormData(prev => ({ ...prev, tipoDocumento: value }));
   };
+
+  const handleCloseBtn = () => {
+    setPopUpOtp(false);
+    setResponse('');
+  }
 
   return (
     <div className={`${robotoCondensed.className}`}>
@@ -68,7 +89,7 @@ const PreaprobadoForm = () => {
           <h2>Estudio de crèdito</h2>
         </div>
         <ProgressBar currentStep={1} />
-        <form className="form-grid">
+        <form className="form-grid" onSubmit={preAprobadoBtnHandler}>
           {/* Primera columna */}
           <div className="column">
             <div className="form-group">
@@ -76,7 +97,7 @@ const PreaprobadoForm = () => {
               <input
                 id="nombreApellido"
                 name="nombreApellido"
-                placeholder='Escriba su nombre y apellido'
+                placeholder="Escriba su nombre y apellido"
                 value={formData.nombreApellido}
                 onChange={handleInputChange}
               />
@@ -86,7 +107,7 @@ const PreaprobadoForm = () => {
               <input
                 id="ingresos"
                 name="ingresos"
-                placeholder='$'
+                placeholder="$"
                 value={formData.ingresos}
                 onChange={handleInputChange}
               />
@@ -96,7 +117,7 @@ const PreaprobadoForm = () => {
               <input
                 id="telefono"
                 name="telefono"
-                placeholder='Escriba su número de teléfono'
+                placeholder="Escriba su número de teléfono"
                 value={formData.telefono}
                 onChange={handleInputChange}
               />
@@ -104,13 +125,13 @@ const PreaprobadoForm = () => {
           </div>
 
           {/* Segunda columna */}
-          <div className="column" id='pre-aprobado-col-2'>
+          <div className="column" id="pre-aprobado-col-2">
             <div className="form-group">
               <label htmlFor="cedula">Número de cédula</label>
               <input
                 id="cedula"
                 name="cedula"
-                placeholder='Escriba su número de cédula'
+                placeholder="Escriba su número de cédula"
                 value={formData.cedula}
                 onChange={handleInputChange}
               />
@@ -140,17 +161,17 @@ const PreaprobadoForm = () => {
               <input
                 id="egresos"
                 name="egresos"
-                placeholder='$'
+                placeholder="$"
                 value={formData.egresos}
                 onChange={handleInputChange}
               />
             </div>
-            <div className="form-group" id='email-input'>
-            <label htmlFor="egresos">Correo</label>
+            <div className="form-group" id="email-input">
+              <label htmlFor="email">Correo</label>
               <input
                 id="email"
                 name="email"
-                placeholder='Escriba su correo electrónico'
+                placeholder="Escriba su correo electrónico"
                 value={formData.email}
                 onChange={handleInputChange}
               />
@@ -165,7 +186,6 @@ const PreaprobadoForm = () => {
                 id="fechaExpedicion"
                 type="date"
                 name="fechaExpedicion"
-                placeholder='Escriba la fecha de expedición'
                 value={formData.fechaExpedicion}
                 onChange={handleInputChange}
               />
@@ -175,23 +195,25 @@ const PreaprobadoForm = () => {
               <input
                 id="cuotaInicial"
                 name="cuotaInicial"
-                placeholder='$'
+                placeholder="$"
                 value={formData.cuotaInicial}
                 onChange={handleInputChange}
               />
             </div>
             <div className="result-box">
               <div className="result-title">Pre-aprobado por:</div>
-              <div id='pre-aprobado-resp'>{response}</div>
+              <div id="pre-aprobado-resp">{response}</div>
             </div>
-            
           </div>
-          <div className="form-group" id='pre-aprobado-btn'>
-              <button onClick={consultarPreAprobado} type="button" className="button-preaprobado">
-                Consultar pre-aprobado
-              </button>
-            </div>
+
+          {/* Botón de submit */}
+          <div className="form-group" id="pre-aprobado-btn">
+            <button type="submit" id="button-preaprobado">
+              Consultar pre-aprobado
+            </button>
+          </div>
         </form>
+
         <div className='opciones-disponibles'>
           <PopupSlider />
         </div>
@@ -199,22 +221,36 @@ const PreaprobadoForm = () => {
       <div className="continuar-credito">
         <button onClick={() => router.push('/forms/solicitud-credito')} className="button-continuar">Continuar con mi crédito</button>
       </div>
-      {popUpOtmOpen && (
+      {popUpOtpOpen && (
         <div className="popup-otp-preaprobado-form">
-          <div className="popup-otp-preaprobado-content">
-            <h3>INGRESAR OTP</h3>
-            <input
-              id='input-otp'
-              type="text"
-              name='otp'
-              placeholder='Ingresar codigo' />
-            <button className="button">COMPROBAR CÒDIGO</button>
-          </div>
-          <div className='popup-otp-preaprobado-closeBtn'>
-            <button onClick={() => setPopUpOtm(false)} className="button">CERRAR</button>
+          {response ? (
+            <div className="otp-response">
+              <span>{response.toLowerCase()} </span>
+              <CheckCircle size={80} color="#B4924E" />
+            </div>
+          ) : (
+            <form className="popup-otp-preaprobado-content" onSubmit={otpSubmitHandler}>
+              <h3>INGRESAR OTP</h3>
+              <input
+                id="otp"
+                type="text"
+                name="otp"
+                onChange={handleInputChange}
+                placeholder="Ingresar código"
+              />
+              <button className="button" type="submit">
+                COMPROBAR CÓDIGO
+              </button>
+            </form>
+          )}
+          <div className="popup-otp-preaprobado-closeBtn">
+            <button onClick={handleCloseBtn} className="button">
+              CERRAR
+            </button>
           </div>
         </div>
       )}
+
     </div>
   );
 };

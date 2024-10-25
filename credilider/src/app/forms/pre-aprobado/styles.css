@@ -89,7 +89,7 @@ input{
   transition: background-color 0.3s;
 }
 
-.button-preaprobado{
+#button-preaprobado{
   height: 2.5em;
   background-color: #00955C;
   color: white;
@@ -161,15 +161,12 @@ input{
 .opciones-disponibles{
   width: 76%;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
 
 
 }
 
-
-
 /* popup-preaprobado-form */
-
 .popup-otp-preaprobado-form {
   position: fixed;
   top: 0;
@@ -225,4 +222,15 @@ input{
   font-size: 12px;
   color: #f6f5f5;
   font-weight: bold;
+}
+
+.otp-response{
+  color: green;
+  border-radius: 10px;
+  font-size: 46px;
+  display: flex;
+  background: white;
+  justify-content: center;
+  width: 350px;
+  padding: 1em;
 }
