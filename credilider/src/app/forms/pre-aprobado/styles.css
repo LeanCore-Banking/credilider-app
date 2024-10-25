@@ -31,8 +31,13 @@
   gap: .3em;
 }
 
-#pre-aprobado-btn{
-  margin-top: 4.3em;
+#pre-aprobado-btn {
+  grid-column: 2 / 3; /* Posicionar el elemento en la columna del medio */
+}
+
+#email-input{
+  padding: 5px;
+  margin-top: 3em;
 }
 
 .continuar-credito{
@@ -86,7 +91,6 @@ input{
 
 .button-preaprobado{
   height: 2.5em;
-  padding: 10px 15px;
   background-color: #00955C;
   color: white;
   border: none;
@@ -126,6 +130,11 @@ input{
     margin-top: 3em;
     grid-template-columns: 1fr;
   }
+
+  #pre-aprobado-btn {
+    grid-column: auto; /* Desactiva la asignación de columna específica */
+    justify-self: stretch; /* Alinea el botón como desees (puedes usar start, end, center, stretch) */
+  }
 }
 
 @media (min-width: 320px) and (max-width: 768px) {
@@ -133,14 +142,16 @@ input{
    gap: 1em;
   }
 
-  #pre-aprobado-btn{
-    margin-top: 2em;
-  }
 
   .pre-aprobado-title{
     position: relative;
     top: 0;
     left: 0;
+  }
+
+  #pre-aprobado-btn {
+    grid-column: auto; /* Desactiva la asignación de columna específica */
+    justify-self: stretch; /* Alinea el botón como desees (puedes usar start, end, center, stretch) */
   }
   
 }

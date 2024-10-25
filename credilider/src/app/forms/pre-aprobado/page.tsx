@@ -24,6 +24,7 @@ const PreaprobadoForm = () => {
     nombreApellido: '',
     ingresos: '',
     telefono: '',
+    email: '',
     cedula: '',
     tipoDocumento: 'CC',
     egresos: '',
@@ -32,19 +33,21 @@ const PreaprobadoForm = () => {
   });
 
   const consultarPreAprobado = async () => {
-    setPopUpOtm(true);
-
+    
     localStorage.setItem('formData', JSON.stringify(formData));
 
     // Simulación de una llamada a un endpoint
-    const response = await new Promise(resolve =>
+   /*  const response = await new Promise(resolve =>
       setTimeout(() => resolve(`$${Math.floor(Math.random() * 100000)}`), 1000)
-    )
+    ) */
+    //const response = await fetchPreapprovedData(formData);
+    setPopUpOtm(true);
     setOtmResponse(response as string);
     setResponse(response as string);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('e.target:', e.target);
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -52,8 +55,6 @@ const PreaprobadoForm = () => {
   const handleCheckboxChange = (value: string) => {
     setFormData(prev => ({ ...prev, tipoDocumento: value }));
   };
-
-
 
   return (
     <div className={`${robotoCondensed.className}`}>
@@ -144,10 +145,15 @@ const PreaprobadoForm = () => {
                 onChange={handleInputChange}
               />
             </div>
-            <div className="form-group" id='pre-aprobado-btn'>
-              <button onClick={consultarPreAprobado} type="button" className="button-preaprobado">
-                Consultar pre-aprobado
-              </button>
+            <div className="form-group" id='email-input'>
+            <label htmlFor="egresos">Correo</label>
+              <input
+                id="email"
+                name="email"
+                placeholder='Escriba su correo electrónico'
+                value={formData.email}
+                onChange={handleInputChange}
+              />
             </div>
           </div>
 
@@ -175,12 +181,16 @@ const PreaprobadoForm = () => {
               />
             </div>
             <div className="result-box">
-              <div className="result-title">Pre-aprobado por:
-
-              </div>
+              <div className="result-title">Pre-aprobado por:</div>
               <div id='pre-aprobado-resp'>{response}</div>
             </div>
+            
           </div>
+          <div className="form-group" id='pre-aprobado-btn'>
+              <button onClick={consultarPreAprobado} type="button" className="button-preaprobado">
+                Consultar pre-aprobado
+              </button>
+            </div>
         </form>
         <div className='opciones-disponibles'>
           <PopupSlider />

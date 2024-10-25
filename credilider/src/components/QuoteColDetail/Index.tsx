@@ -2,14 +2,15 @@
 import { useState, useEffect } from "react";
 import { Moto, Quote } from "@/app/lib/definitions";
 import "./styles.css";
-import { fetchQuotes } from "@/app/lib/data";
+import { fetchQuotes } from "@/app/lib/actions";
 import Link from "next/link";
 import { CheckCircle, User, Mail, Phone } from "lucide-react";
 import { QuotesCardSkeleton } from "../skeletons";
+import { cotizacionHTML } from "@/app/lib/templates";
 
 type QuoteColDetailProps = {
     quoteDefault: Quote[];
-    data: Moto[];
+    data: Moto;
 };
 
 const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) => {
@@ -22,8 +23,6 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
     const [initialFee, setInitialFee] = useState<number>(0);
     const [discount, setDiscount] = useState<number>(0);
     const [financeValue, setFinanceValue] = useState<number | null>(0);
-    const [valueInput, setValueInput] = useState<string | null>(null);
-
 
     // Dentro de QuoteColDetail
     useEffect(() => {
@@ -300,8 +299,11 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                 <div id="p-detail-btn-send">
                     <button type="submit">Enviar cotización</button>
                 </div>
+                
             </form>
 
+{/*             <div dangerouslySetInnerHTML={{ __html: cotizacionHTML(quotes, data) }} />
+ */}
             {/* Popup */}
             {popupVisible && (
                 <div className="popup-overlay-quotesColDetail">

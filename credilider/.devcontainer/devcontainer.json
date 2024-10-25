@@ -1,0 +1,14 @@
+{
+  "name": "Credilider",
+  "image": "microsoft/vscode-remote-try-node",
+  "remoteEnv": {
+    "API_KEY": "${{ secrets.API_KEY }}",
+    "AUTH_URL": "${{ secrets.AUTH_URL }}",
+    "LC_API_KEY_USER": "${{ secrets.LC_API_KEY_USER }}",
+    "LC_API_KEY": "${{ secrets.LC_API_KEY }}",
+    "DEV_URL": "${{ secrets.DEV_URL }}",
+    "PDF_URL": "${{ secrets.PDF_URL }}",
+    "FINTEC_ID": "${{ secrets.FINTEC_ID }}",
+    "USER_ID": "${{ secrets.USER_ID }}"
+  }
+}

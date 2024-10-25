@@ -18,8 +18,10 @@ type ProductDetail = {
 const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
 
     const { id } = params;
+    console.log('id##:', id);
+    
     const motoData = await fectchMotoById(id);
-    console.log('motodata:', motoData);
+    //console.log('motodataFromProductDetail:', motoData);
 
     return (
         <div>
@@ -48,7 +50,7 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                         </div>
                         <div id="price-container">
                             <span >Precio desde:  </span>
-                            <span className="value-field"> ${motoData.precio.toLocaleString('es-ES')}</span>
+                            <span className="value-field"> ${motoData?.precio.toLocaleString('es-ES')}</span>
                             <span id="price-container-disclaimer">Valor con papeles</span>
                         </div>
 
@@ -63,8 +65,6 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                 </Suspense>
 
             </div>
-
-            <ProductDetailSkeleton />
 
         </div>
     )

@@ -46,6 +46,7 @@
 .maximize-icon {
   width: 30px;
   height: 30px;
+  background:  rgba(134, 134, 134, 0.668);;
 }
 
 .overlay {

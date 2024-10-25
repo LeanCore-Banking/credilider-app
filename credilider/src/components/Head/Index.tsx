@@ -13,6 +13,7 @@ export const Head = () => {
                         alt="logo-credilider"
                         width={120}
                         height={80}
+                        priority
                     />
                 </div>
                 </Link>

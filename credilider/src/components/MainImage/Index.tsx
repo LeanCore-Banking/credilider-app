@@ -18,26 +18,13 @@ type dataDescriptionProps = {
 const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
 
   const [currentImage, setCurrentImage] = useState<number>(0)
-  const images = data?.imagen || ['/placeholder.svg?height=400&width=600'] // Usa el array de imágenes del objeto `data`
 
   const imgsFormated = data.imagen.map((img: string) => {
-    return `https://lh3.googleusercontent.com/d/${img.split('id=')[1]}=s200`
+    return `https://lh3.googleusercontent.com/d/${img.split('id=')[1]}=s600`
   })
 
   console.log('imgsFormated:', imgsFormated);
 
-  const thumbnails = [
-    "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
-    "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
-    "/iloveimg-resized/suzuki-dl650-vstrom-2021.jpg",
-  ]
-
-  const mainImages = [
-    "/suzuki-dl650-vstrom-2021.jpg",
-    "/suzuki-dl1050-vstrom-xt-2020.jpg",
-    "/suzuki-katana-2022.jpg",
-    "/suzuki-sv650xa-2018.jpg"
-  ]
 
 
   const handleImageClick = (index: number) => {
@@ -46,20 +33,20 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
 
   const handlePrevImage = () => {
     setCurrentImage((prevImage) =>
-      prevImage === 0 ? mainImages.length - 1 : prevImage - 1
+      prevImage === 0 ? imgsFormated.length - 1 : prevImage - 1
     )
   }
 
   const handleNextImage = () => {
     setCurrentImage((prevImage) =>
-      prevImage === mainImages.length - 1 ? 0 : prevImage + 1
+      prevImage === imgsFormated.length - 1 ? 0 : prevImage + 1
     )
   }
 
   return (
     <div className="moto-container">
       <div className="image-wrapper">
-        <img
+        <Image
           src={imgsFormated[currentImage]}
           alt={`Moto imagen ${currentImage + 1}`}
           width={600}
@@ -75,6 +62,11 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
           <Dialog.Portal>
             <Dialog.Overlay className="overlay" />
             <Dialog.Content className="dialog-content">
+              {/* Título oculto visualmente para accesibilidad */}
+              <div className="visually-hidden">
+                <Dialog.Title></Dialog.Title>
+                <Dialog.Description></Dialog.Description>
+              </div>
 
               <div className="image-navigation">
                 <button className="nav-left-button" onClick={handlePrevImage}>
@@ -82,7 +74,7 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
                 </button>
 
                 <Image
-                  src={mainImages[currentImage]}
+                  src={imgsFormated[currentImage]}
                   alt={`Moto imagen ampliada ${currentImage + 1}`}
                   width={600}
                   height={400}
@@ -94,32 +86,28 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
                 </button>
               </div>
 
-              <div>
-                <div className="thumbnail-grid" id="thumbnail-popup">
-
-                  <div className='thumbnail-popup-container'>
-                    {thumbnails.map((image, index) => {
-                      console.log('image:', image);
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => handleImageClick(index)}
-                          className={`thumbnail-button-popup ${currentImage === index ? 'active' : ''}`}
-                        >
-                          <img
-                            src={image}
-                            alt={`Moto miniatura ${index + 1}`}
-                            width={100}
-                            height={100}
-                            className="thumbnail-image"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-
+              <div className="thumbnail-grid" id="thumbnail-popup">
+                <div className="thumbnail-popup-container">
+                  {imgsFormated.map((image, index) => {
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => handleImageClick(index)}
+                        className={`thumbnail-button-popup ${currentImage === index ? 'active' : ''}`}
+                      >
+                        <Image
+                          src={image.replace("s600", "s200")}
+                          alt={`Moto miniatura ${index + 1}`}
+                          width={100}
+                          height={100}
+                          className="thumbnail-image"
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
+
               <Dialog.Close asChild>
                 <div className="close-button">
                   <X className="icon" />
@@ -131,7 +119,7 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
       </div>
 
       <div className="thumbnail-grid">
-        {thumbnails.map((image, index) => (
+        {imgsFormated.map((image, index) => (
           <div
             key={index}
             onClick={() => handleImageClick(index)}
