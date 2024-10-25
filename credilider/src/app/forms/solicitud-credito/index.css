@@ -96,7 +96,7 @@ select {
 }
 
 .submit-container-solicitud-credito {
-  text-align: end;
+  text-align: flex-end;
 }
 
 button[type="submit"] {

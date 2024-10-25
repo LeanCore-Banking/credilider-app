@@ -49,6 +49,7 @@ export function cotizacionHTML(quotes: any[], data: any): string {
       }
 
       .-pdf-logo-header {
+        border-radius: 10px 0 0 0;
         height: fit-content;
         padding-top: 1em;
         width: 15%;
@@ -90,6 +91,7 @@ export function cotizacionHTML(quotes: any[], data: any): string {
       .pdf-conten-head-text {
         padding-top: 2em;
         color: #EBEBEB;
+        text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
       }
 
       .pdf-quote_data-head h3 {

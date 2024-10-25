@@ -19,7 +19,7 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
 
     const { id } = params;
     console.log('id##:', id);
-    
+
     const motoData = await fectchMotoById(id);
     //console.log('motodataFromProductDetail:', motoData);
 
@@ -57,13 +57,8 @@ const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
                     </div>
 
                 </section>
-
                 <div className="vertical-line-section"></div>
-
-                <Suspense fallback={<div>Loading...#</div>}>
-                    <QuoteColDetail quoteDefault={defaultQuotes} data={motoData} />
-                </Suspense>
-
+                <QuoteColDetail quoteDefault={defaultQuotes} data={motoData} />
             </div>
 
         </div>

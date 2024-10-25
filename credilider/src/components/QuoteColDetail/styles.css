@@ -37,7 +37,7 @@
   padding: 20px;
   border-radius: 20px;
   text-align: center;
-  max-width: 300px;
+  max-width: 350px;
   width: 27%;
   padding: 1em 2em 2em 2em;
 }
@@ -72,7 +72,7 @@
 
 .popup-quotesColDetail-icon{
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   margin-bottom: .5em;
 }
 

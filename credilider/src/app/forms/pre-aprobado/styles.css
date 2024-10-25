@@ -42,7 +42,7 @@
 
 .continuar-credito{
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   margin: 0 2em;
 }
 
@@ -133,7 +133,7 @@ input{
 
   #pre-aprobado-btn {
     grid-column: auto; /* Desactiva la asignación de columna específica */
-    justify-self: stretch; /* Alinea el botón como desees (puedes usar start, end, center, stretch) */
+    justify-self: stretch;
   }
 }
 
@@ -151,7 +151,7 @@ input{
 
   #pre-aprobado-btn {
     grid-column: auto; /* Desactiva la asignación de columna específica */
-    justify-self: stretch; /* Alinea el botón como desees (puedes usar start, end, center, stretch) */
+    justify-self: stretch;
   }
   
 }
