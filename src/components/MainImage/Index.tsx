@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import * as Dialog from '@radix-ui/react-dialog'
-import { ChevronLeft, ChevronRight, Maximize, Maximize2, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Maximize, X } from 'lucide-react'
 import './index.css'
 import { Moto } from '@/app/lib/definitions'
 

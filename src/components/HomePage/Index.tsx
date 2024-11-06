@@ -1,7 +1,6 @@
 'use server'
 
 import Image from "next/image"
-import Link from "next/link"
 import "./styles.css"
 import Header from "../Header/Index"
 import Banner from "../../../public/banner-home.png"

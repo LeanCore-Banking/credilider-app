@@ -6,7 +6,6 @@ import { fetchQuotes } from "@/app/lib/actions";
 import Link from "next/link";
 import { CheckCircle, User, Mail, Phone } from "lucide-react";
 import { QuotesCardSkeleton } from "../skeletons";
-import { cotizacionHTML } from "@/app/lib/templates";
 
 type QuoteColDetailProps = {
     quoteDefault: Quote[];
@@ -301,8 +300,6 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                 
             </form>
 
-{/*             <div dangerouslySetInnerHTML={{ __html: cotizacionHTML(quotes, data) }} />
- */}
             {/* Popup */}
             {popupVisible && (
                 <div className="popup-overlay-quotesColDetail">

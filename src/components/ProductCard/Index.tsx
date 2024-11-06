@@ -1,6 +1,7 @@
 import Link from "next/link";
 import "./index.css";
 import { MoveRight } from "lucide-react";
+import Image from 'next/image';
 
 
 interface Product {
@@ -19,9 +20,6 @@ const ProductCard = ({ product }: { product: Product }) => {
     //console.log(`https://lh3.googleusercontent.com/d/${product.imagen.split('id=')[1]}=s100`);
     const firstImage = product.imagen && Array.isArray(product.imagen) ? product.imagen[0] : '';
 
-    const arrayColores = product.color.split(",").map(color => color.trim());
-    //console.log('arrayColores:', arrayColores);
-
     function formatNumber(number: number): string {
         return number.toLocaleString('en-US');
     }
@@ -31,7 +29,12 @@ const ProductCard = ({ product }: { product: Product }) => {
     return (
         <div className="product-card">
             <div className="product-card_image">
-                <img src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`} alt={product.modelo} />
+                <Image 
+                    src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`} 
+                    alt={product.modelo} 
+                    width={200} 
+                    height={200} 
+                />
             </div>
 
 
