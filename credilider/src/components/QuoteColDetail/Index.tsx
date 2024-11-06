@@ -54,7 +54,6 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
             }, delay);
         };
     };
-
     // Función para hacer la solicitudes a fetchQuotes
     const handleFetchQuotes = async () => {
         if (motoValue && initialFee >= 0 && discount >= 0) {

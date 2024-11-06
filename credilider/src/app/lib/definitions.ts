@@ -45,6 +45,14 @@ export type Quote = {
     phone: string;
   };
 
+  export type UpdateLead = {
+    id: string;
+    name: string;
+    nit: string;
+    email: string;
+    phone: string;
+  };
+
   export type PreAprobadoData = {
     nombreApellido: string;
     ingresos: string;

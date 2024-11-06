@@ -16,6 +16,7 @@ interface FormData {
   apellido: string;
   [key: string]: string;
 }
+
 const PreaprobadoForm = () => {
   const [popUpOtpOpen, setPopUpOtp] = useState(false);
   const [responseOtp, setOtpResponse] = useState<{ userId: string, respSendOtp: string } | null>(null);

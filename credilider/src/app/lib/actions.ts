@@ -1,6 +1,6 @@
 "use server";
 import { getAuthToken } from "./auth";
-import { Lead, Moto, Quote, Email, PreAprobadoData } from "./definitions";
+import { Lead, Moto, Quote, Email, PreAprobadoData, UpdateLead} from "./definitions";
 import { createLeadPayload } from "./payloads";
 import axios from "axios";
 import { cotizacionHTML } from "./templates";
@@ -90,12 +90,24 @@ export async function fetchQuotes(
       createLeadPayload.email = email;
       createLeadPayload.created_at = new Date().toISOString();
 
-      /*   const leadSaved = await createLead(createLeadPayload);
-      if (leadSaved) {
-        console.log("Lead Saved");
-      } else {
-        console.log("Lead Not Saved");
-      } */
+      const user = await getLeadByNit(nit);
+
+      if (user.error === "Not Found") {
+        console.log("Lead not found");
+        const leadSaved = await createLead(createLeadPayload)
+        console.log("leadSaved:", leadSaved);
+      }else{
+        console.log("User found");
+        const updateLeadPayload = {
+          id: user.id,
+          name,
+          nit,
+          email,
+          phone,
+        };
+        const leadUpdated = await updateLead(updateLeadPayload);
+        console.log("leadUpdated:", leadUpdated);
+      }
 
       console.log("htlm:", cotizacionHTML(quotes, motoData));
 
@@ -150,6 +162,33 @@ export async function createLead(dataIn: Lead): Promise<any> {
     return response.data;
   } catch (error) {
     console.error("Error creating lead:", error);
+    return false;
+  }
+}
+
+export async function updateLead(dataIn: UpdateLead): Promise<any> {
+  try {
+    // Fetch the auth token using Basic Auth
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error("Failed to retreive auth token.");
+    }
+
+    const response = await axios.post(
+      `${process.env.DEV_URL}/update-lead`,
+      {
+        ...dataIn,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating lead:", error);
     return false;
   }
 }

@@ -125,8 +125,8 @@ const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
             onClick={() => handleImageClick(index)}
             className={`thumbnail-button ${currentImage === index ? 'active' : ''}`}
           >
-            <img
-              src={image}
+            <Image
+              src={image.replace("s600", "s200")}
               alt={`Moto miniatura ${index + 1}`}
               width={100}
               height={100}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "@/components/Providers/Index";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,13 +28,28 @@ export default function RootLayout({
   return (
     <html >
       <body >
+        <AuthProvider>
         <Providers>
           {children}
         </Providers>
+        </AuthProvider>
       </body>
-    {/*   <footer style={{ display: 'flex', justifyContent: 'center', padding:'1em' }}>
-        <p>&copy; 2024 Credilider. All rights reserved.</p>
-      </footer> */}
+  
     </html>
   );
 }
+
+
+/* import { AuthProvider } from '@/context/AuthContext'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
+    </html>
+  )
+} */

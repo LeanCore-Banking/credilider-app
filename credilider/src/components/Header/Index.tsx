@@ -34,7 +34,7 @@ export default function ResponsiveHeader() {
           <div className={styles.headerContent}>
             <div className={styles.logo}>
               <Image
-                src="/logo-credilider-head.png"
+                src="/logo-head-credilider.png"
                 alt="credilider-logo"
                 width={150}
                 height={100}
