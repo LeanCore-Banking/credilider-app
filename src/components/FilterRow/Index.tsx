@@ -11,6 +11,9 @@ interface FilterRowProps {
     toggleDropdown: () => void;
   }
 
+  
+
+
 export const FilterRow: React.FC<FilterRowProps> = ({ 
         searchTerm, 
         onSearchChange, 

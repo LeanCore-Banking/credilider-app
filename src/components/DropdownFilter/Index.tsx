@@ -38,7 +38,7 @@ const DropdownComponent: React.FC = () => {
       filteredData = filteredData.filter((person) => !person.rightHanded);
     }
 
-    // Aplicar orden
+    // Aplicar orden hjghjghj
     if (sortType === 'Name A - Z') {
       filteredData.sort((a, b) => (a.name > b.name ? 1 : -1));
     } else if (sortType === 'Name Z - A') {
