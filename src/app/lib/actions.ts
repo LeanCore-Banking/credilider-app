@@ -141,7 +141,6 @@ export async function createLead(dataIn: Lead): Promise<any> {
   try {
     // Fetch the auth token using Basic Auth
     const token = await getAuthToken();
-    console.log("token:", dataIn);
 
     if (!token) {
       throw new Error("Failed to retreive auth token.");
@@ -211,7 +210,7 @@ export async function createPdf(
       }
     );
 
-    console.log("responsePDF", response.data);
+    //console.log("responsePDF", response.data);
 
     return response.data;
   } catch (error) {
