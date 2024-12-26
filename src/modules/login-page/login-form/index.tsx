@@ -103,7 +103,7 @@ function LoginForm() {
           </div>
 
           <Button
-            className="submit-button"
+            className="login-submit-button"
             variant="contained"
             color="primary"
             type="submit"

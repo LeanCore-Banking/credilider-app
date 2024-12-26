@@ -6,6 +6,12 @@ import axios from "axios";
 import { cotizacionHTML } from "./templates";
 import dotenv from "dotenv";
 import { send } from "process";
+import useAuth from "@/auth/hooks";
+import { ICreateLead } from "./mapper/user";
+
+interface IUser {
+  id: string;
+}
 
 dotenv.config();
 
@@ -92,10 +98,12 @@ export async function fetchQuotes(
 
       const user = await getLeadByNit(nit);
 
+      //console.log("user:", user);
+
       if (user.error === "Not Found") {
         console.log("Lead not found");
-        const leadSaved = await createLead(createLeadPayload)
-        console.log("leadSaved:", leadSaved);
+        //const leadSaved = await createLead(createLeadPayload)
+        //console.log("leadSaved:", leadSaved);
       }else{
         console.log("User found");
         const updateLeadPayload = {
@@ -109,7 +117,7 @@ export async function fetchQuotes(
         console.log("leadUpdated:", leadUpdated);
       }
 
-      console.log("htlm:", cotizacionHTML(quotes, motoData));
+      //console.log("htlm:", cotizacionHTML(quotes, motoData));
 
       // Create PDF
       const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
@@ -136,14 +144,15 @@ export async function fetchQuotes(
   }
 }
 
-export async function createLead(dataIn: Lead): Promise<any> {
+export async function createLead(dataIn: any): Promise<any> {
   console.log("variables from createLead:", process.env.DEV_URL);
+  console.log("dataIn:", dataIn);
   try {
     // Fetch the auth token using Basic Auth
     const token = await getAuthToken();
 
     if (!token) {
-      throw new Error("Failed to retreive auth token.");
+      throw new Error("Failed to retreive auth token#####.");
     }
 
     const response = await axios.post(
@@ -165,7 +174,8 @@ export async function createLead(dataIn: Lead): Promise<any> {
   }
 }
 
-export async function updateLead(dataIn: UpdateLead): Promise<any> {
+export async function updateLead(req: any): Promise<any> {
+  const { userId, dataIn } = req;
   try {
     // Fetch the auth token using Basic Auth
     const token = await getAuthToken();
@@ -176,6 +186,7 @@ export async function updateLead(dataIn: UpdateLead): Promise<any> {
     const response = await axios.post(
       `${process.env.DEV_URL}/update-lead`,
       {
+        id: userId,
         ...dataIn,
       },
       {
@@ -259,28 +270,19 @@ export async function getLeadByNit(id: string): Promise<any> {
       },
     });
 
-    console.log("user:", user.data);
+    //console.log("user:", user);
 
     return user.data;
   } catch (error) {
-    console.error("Error generating opt:", error);
+    console.error("Error getting lead by nit:", formatAxiosError(error));
     return false;
   }
 }
 
-export async function generateOtp(dataIn: PreAprobadoData): Promise<any> {
+export async function generateOtp(dataIn: PreAprobadoData, userId: string): Promise<any> {
+
   try {
-    const {
-      nombreApellido,
-      ingresos,
-      telefono,
-      email,
-      cedula,
-      tipoDocumento,
-      egresos,
-      fechaExpedicion,
-      cuotaInicial,
-    } = dataIn;
+    const {cedula} = dataIn;
 
     const resp = {
       userId: "",
@@ -289,34 +291,21 @@ export async function generateOtp(dataIn: PreAprobadoData): Promise<any> {
 
     console.log("cedula", cedula);
 
+    
+
     if (!cedula) {
       console.log("cedula is required", cedula);
-    } else {
-      const user = await getLeadByNit(cedula);
-      console.log("userFromOtp:", user);
-      resp.userId = user.id;
-
-      if (user.error === "Not Found") {
-        createLeadPayload.name = nombreApellido;
-        createLeadPayload.email = email;
-        createLeadPayload.phone = telefono;
-        createLeadPayload.created_at = new Date().toISOString();
-
-        const newLead = await createLead(createLeadPayload);
-
-        resp.userId = newLead.id;
-
-        console.log("newLeadFromOtp:", newLead);
-      }
-
+    } 
+     
       const response = await axios.post(`${process.env.DEV_URL}/send-otp`, {
         channel: "EMAIL",
         fintechId: "41b6f635-077f-4bba-93ce-faa1f469a987",
-        userId: `${resp.userId}`,
+        userId: `${userId}`,
       });
 
       resp.respSendOtp = response.data;
-    }
+      console.log("respSendOtp:", response.data);
+    
 
     return resp;
   } catch (error) {
@@ -345,13 +334,16 @@ export async function verifyAndCheckOtp(
       notify: false,
     });
 
+    console.log("responseVerifyOtp:", response.data);
+
     resp.respVerifyOtp = response.data;
 
     if (response.data.status === "sent") {
       const responseCheck = await axios.get(
         `${process.env.DEV_URL}/check-otp/${userId}`
       );
-      resp.chekOptStatus = responseCheck.data.status;
+      console.log("responseCheck:", responseCheck.data);
+      resp.chekOptStatus = responseCheck.data;
     }
 
     return resp;
@@ -360,3 +352,82 @@ export async function verifyAndCheckOtp(
     return false;
   }
 }
+
+export async function checkOtp(userId: string, token: string): Promise<any> {
+  try {
+    const response = await axios.get(`${process.env.DEV_URL}/check-otp/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error checking opt:", error);
+    return false;
+  }
+}
+
+
+export const queryLead = async (userId: string): Promise<any> => {
+  const token = await getAuthToken();
+  const result = await axios.get("/lead", {
+      params: {
+          id: userId,
+      },
+      headers: {
+          Authorization: `Bearer ${token}`,
+      },
+  });
+  return result.data;
+};
+
+// Agregar esta función auxiliar
+const formatAxiosError = (error: any) => {
+  if (error.response) {
+    return {
+      status: error.response.status,
+      statusText: error.response.statusText,
+      url: error.config?.url,
+      method: error.config?.method,
+      message: error.message
+    };
+  }
+  return {
+    message: error.message,
+    code: error.code
+  };
+};
+
+export const queryUser = async (req: any): Promise<IUser | null> => {
+  const { userId, token } = req;
+  try {
+    console.log("userIdFromQueryUser:", userId);
+    const result = await axios.get(`${process.env.DEV_URL}/user`, {
+      params: {
+        id: userId,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("resultFromQueryUser:", result.data);
+    return result.data;
+  } catch (error) {
+    console.error("Error al consultar usuario:", formatAxiosError(error));
+    return null;
+  }
+};
+
+
+export const checkLeadStatus = async (userId: string) => {
+    try {
+        const leadData = await queryLead(userId);
+        if (!leadData) {
+            return "not_found";
+        }
+        return leadData.lead_status;
+    } catch (error) {
+        return "not_found";
+    }
+};

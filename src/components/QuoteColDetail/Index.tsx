@@ -6,6 +6,7 @@ import { fetchQuotes } from "@/app/lib/actions";
 import Link from "next/link";
 import { CheckCircle, User, Mail, Phone } from "lucide-react";
 import { QuotesCardSkeleton } from "../skeletons";
+import { formatNumber } from "@/utils/format";
 
 type QuoteColDetailProps = {
     quoteDefault: Quote[];
@@ -13,15 +14,40 @@ type QuoteColDetailProps = {
 };
 
 const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) => {
+    console.log('dataFromQuoteColDetail:', data);
     const [quotes, setQuotes] = useState<Quote[]>(quoteDefault);
     const [loading, setLoading] = useState(false);
     const [popupVisible, setPopupVisible] = useState(false);
-    const [userData, setUserData] = useState({ name: "", nit: "", email: "", phone: "" });
-    const [errors, setErrors] = useState({ name: "", nit: "", email: "", phone: "" });
+    const [userData, setUserData] = useState({ 
+        name: "", 
+        nit: "", 
+        email: "", 
+        phone: ""
+    });
+    const [errors, setErrors] = useState({ 
+        name: "", 
+        nit: "", 
+        email: "", 
+        phone: "",
+    });
     const [motoValue, setMotoValue] = useState<number | null>(null);
     const [initialFee, setInitialFee] = useState<number>(0);
     const [discount, setDiscount] = useState<number>(0);
     const [financeValue, setFinanceValue] = useState<number | null>(0);
+
+    // Crear el objeto formData con los datos del usuario
+    const formData = {
+        name: userData.name,
+        nit: userData.nit,
+        email: userData.email,
+        phone: userData.phone,
+        motoValue: motoValue,
+        initialFee: initialFee,
+        discount: discount,
+        financeValue: financeValue
+    };
+
+    localStorage.setItem('formData', JSON.stringify(formData));
 
     // Dentro de QuoteColDetail
     useEffect(() => {
@@ -108,17 +134,21 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
 
     // Manejadores de cambio de input
     const handleMotoValueChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-        setMotoValue(Number(e.target.value) || null);
+        const numericValue = e.target.value.replace(/[^0-9]/g, ''); // Eliminar todo excepto números
+        setMotoValue(Number(numericValue) || null);
         handleFetchQuotes();
-    }, 2000)// 2s de retraso para evitar llamadas innecesarias
+    }, 2000);
 
     const handleInitialFeeChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialFee(Number(e.target.value) || 0);
+        e.target.value = formatNumber(e.target.value);
         handleFetchQuotes();
     }, 2000);
 
     const handleDiscountChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-        setDiscount(Number(e.target.value) || 0);
+        const numericValue = e.target.value.replace(/[^0-9]/g, ''); // Eliminar todo excepto números
+        setDiscount(Number(numericValue) || 0);
+        e.target.value = formatNumber(e.target.value);
         handleFetchQuotes();
     }, 2000);
 
@@ -148,7 +178,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
             // Enviar el valor de financiar actualizado a fetchQuotes
             const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue ?? 0, name, nit, email, phone, data);
             setQuotes(updatedQuotes);
-            setUserData({ name, nit, email, phone });
+            setUserData({ name, nit, email, phone});
             setPopupVisible(true); // Mostrar popup
         } catch (error) {
             console.error("Error fetching quotes:", error);
@@ -178,7 +208,11 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                             <label>Valor Moto</label>
                             <input type="text"
                                 name="value-moto"
-                                onChange={handleMotoValueChange} // Actualiza el valor de moto inicial y aplica debounce
+                                onChange={(e) => {
+                                    const formattedValue = formatNumber(e.target.value);
+                                    e.target.value = formattedValue;
+                                    handleMotoValueChange(e);
+                                }}
                             />
                         </div>
                         <div id="input-cuota-inicial">
@@ -186,7 +220,11 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                             <input
                                 type="text"
                                 name="initialFee"
-                                onChange={handleInitialFeeChange} // Actualiza el valor de cuota inicial y aplica debounce
+                                onChange={(e) => {
+                                    const formattedValue = formatNumber(e.target.value);
+                                    e.target.value = formattedValue;
+                                    handleInitialFeeChange(e);
+                                }}
                             />
                         </div>
                         <div id="input-descuento">
@@ -231,7 +269,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                                         </div>
                                         <div className="value-to-pay">
                                             <span>Valor a pagar</span>
-                                            <span>${(item.monthlyFee * item.monthlyRate).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>${((item?.monthlyFee ?? 0) * (item?.monthlyRate ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                         </div>
                                     </div>
                                 </div>

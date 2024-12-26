@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "@/Providers";
 import { getAwsConfig } from '@/auth/AuthProvider/aws-exports';
+import { Metadata } from 'next'
 
 async function configureAmplify() {
   const config = await getAwsConfig();
@@ -30,17 +31,21 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html >
-      <body >    
+    <html lang="es">
+      <head>
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+      </head>
+      <body>
         <Providers>
           {children}
-        </Providers>     
+        </Providers>
       </body>
-  
     </html>
   );
 }

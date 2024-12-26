@@ -5,6 +5,8 @@ export const createLeadPayload = {
     "phone":"",
     "email":"",
     "address": "-",
+    "incomes": 0,
+    "expenses": 0,
     "lead_status": "not_assigned",
     "business_entity": "natural",
     "ecosystem": "89949613-2a1d-4b46-9961-4379d05b2fc6",

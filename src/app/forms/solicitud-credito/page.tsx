@@ -7,6 +7,7 @@ import Link from 'next/link';
 import './index.css';
 import { robotoCondensed } from '@/app/fonts/fonts';
 import { useEffect } from 'react';
+import { formatNumber } from '@/utils/format';
 
 const SolicitudCreditoForm = () => {
   const { formData, setFormData } = useFormStore() as { formData: any, setFormData: (data: any) => void };
@@ -34,7 +35,28 @@ const SolicitudCreditoForm = () => {
   };
 
   const handleChange = (e: any) => {
-    setFormData({ [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Lista de campos que necesitan formato numérico
+    const numericFields = ['incomes', 'expenses', 'cuota_inicial'];
+    
+    if (numericFields.includes(name)) {
+      // Guarda el valor sin formato en el estado
+      const rawValue = value.replace(/\D/g, '');
+      setFormData({
+        ...formData,
+        [name]: rawValue
+      });
+      
+      // Actualiza el valor mostrado en el input con formato
+      e.target.value = formatNumber(value);
+    } else {
+      // Para campos no numéricos, mantén el comportamiento original
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
   return (
@@ -89,30 +111,36 @@ const SolicitudCreditoForm = () => {
                 required onChange={handleChange} />
             </div>
             <div className="form-group-solicitud-credito">
-              <label htmlFor="ingresos">Ingresos</label>
-              <input type="number"
-                id="ingresos"
-                name="ingresos"
-                value={formData.ingresos || ''}  
-                required onChange={handleChange} />
+              <label htmlFor="incomes">Ingresos</label>
+              <input type="text"
+                id="incomes"
+                name="incomes"
+                value={formData.incomes ? formatNumber(formData.incomes) : ''}
+                required 
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="form-row-solicitud-credito">
             <div className="form-group-solicitud-credito">
-              <label htmlFor="egresos">Egresos</label>
-              <input type="number"
-                id="egresos"
-                name="egresos"
-                value={formData.egresos || ''}
-                required onChange={handleChange} />
+              <label htmlFor="expenses">Egresos</label>
+              <input type="text"
+                id="expenses"
+                name="expenses"
+                value={formData.expenses ? formatNumber(formData.expenses) : ''}
+                required 
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group-solicitud-credito">
               <label htmlFor="cuota_inicial">Cuota inicial</label>
-              <input type="number"
+              <input type="text"
                 id="cuota_inicial"
                 name="cuota_inicial"
-                value={formData.cuotaInicial || ''}
-                required onChange={handleChange} />
+                value={formData.cuota_inicial ? formatNumber(formData.cuota_inicial) : ''}
+                required 
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group-solicitud-credito">
               <label htmlFor="correo">Correo electrónico</label>

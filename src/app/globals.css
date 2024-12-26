@@ -133,12 +133,12 @@ img {
 }
 
 /* Inherit fonts for inputs and buttons */
-input,
+/* input,
 button,
 textarea,
 select {
   font: inherit;
-}
+} */
 
 input:focus {
   border-color: var(--gold); /* Color del borde cuando está enfocado */

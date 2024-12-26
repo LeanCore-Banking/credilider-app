@@ -9,6 +9,7 @@ export type Moto = {
   precio: number;
   imagen: [];
   descripcion: string;
+  garantia: number;
 };
 
 export type Email = {
@@ -55,12 +56,12 @@ export type Quote = {
 
   export type PreAprobadoData = {
     nombreApellido: string;
-    ingresos: string;
+    incomes: string;
     telefono: string;
     email: string;
     cedula: string;
     tipoDocumento: string;
-    egresos: string;
+    expenses: string;
     fechaExpedicion: string;
     cuotaInicial: string;
   };

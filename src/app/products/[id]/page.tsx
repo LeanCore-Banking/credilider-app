@@ -1,13 +1,11 @@
 'use server'
 
 import MainImage from "@/components/MainImage/Index";
-//import { useProduct } from "../../../hooks/useProductDetail";
 import './styles.css';
 import QuoteColDetail from "@/components/QuoteColDetail/Index";
 import { defaultQuotes } from "@/app/lib/default-data";
 import { fectchMotoById } from "@/app/lib/data";
-import { Suspense } from 'react';
-import { CardQuoteSkeleton, ProductDetailSkeleton } from "@/components/skeletons";
+
 
 
 type ProductDetail = {
