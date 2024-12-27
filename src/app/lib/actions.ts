@@ -284,8 +284,9 @@ export async function generateOtp(dataIn: PreAprobadoData, userId: string): Prom
   try {
     const {cedula} = dataIn;
 
+
     const resp = {
-      userId: "",
+      userId: userId,
       respSendOtp: "",
     };
 
@@ -323,6 +324,8 @@ export async function verifyAndCheckOtp(
       respVerifyOtp: "",
       chekOptStatus: "",
     };
+
+    console.log("userIdOtp:", userId);
 
     const response = await axios.post(`${process.env.DEV_URL}/verify-otp`, {
       fintechId: "41b6f635-077f-4bba-93ce-faa1f469a987",
@@ -370,6 +373,8 @@ export async function checkOtp(userId: string, token: string): Promise<any> {
 
 export const queryLead = async (userId: string): Promise<any> => {
   const token = await getAuthToken();
+  const auth = useAuth();
+  console.log("auth:", auth);
   const result = await axios.get("/lead", {
       params: {
           id: userId,

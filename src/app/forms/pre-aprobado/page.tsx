@@ -30,6 +30,10 @@ interface UserForm extends IFormData {
   deudasActuales: string;
 }
 
+interface User {
+  available_quota?: number;
+}
+
 const PreaprobadoForm = () => {
   const [popUpOtpOpen, setPopUpOtp] = useState(false);
   const [responseOtp, setOtpResponse] = useState<{ userId: string, respSendOtp: string } | null>(null);
@@ -54,7 +58,7 @@ const PreaprobadoForm = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [preApprovalMessage, setPreApprovalMessage] = useState('');
 
@@ -82,10 +86,12 @@ const PreaprobadoForm = () => {
         userId: existingLead?.id || null,
       });
 
+      console.log("userId:", userId);
+
       const result = await checkProcessWithRetry(
         userId,
         token,
-        4,
+        10,
         2000,
         setIsLoading,
         setIsError,
@@ -110,7 +116,7 @@ const PreaprobadoForm = () => {
       const otpResp = await generateOtp(formData, userId);
       console.log('otpResp:', otpResp);
       setPopUpOtp(true);
-      //setOtpResponse({ userId: otpResp.userId, respSendOtp: otpResp.respSendOtp });
+      setOtpResponse({ userId: otpResp.userId, respSendOtp: otpResp.respSendOtp });
 
     } catch (error) {
       console.error("Error en el proceso:", error);
@@ -124,14 +130,33 @@ const PreaprobadoForm = () => {
   const otpSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault()
     const otp = formData.otp
+    console.log("otp:", otp);
     console.log('otpFromOtpSubmit:', responseOtp)
 
     if (responseOtp) {
-      const response = await verifyAndCheckOtp(otp, responseOtp.userId);
-      console.log('responseVeriFyAndCheckOpt:', response)
-      setResponse(response.chekOptStatus)
-    }
+      try {
+        const response = await verifyAndCheckOtp(otp, responseOtp.userId);
+        console.log('responseVeriFyAndCheckOpt:', response)
+        setOtpResponse(response.chekOptStatus)
 
+        // Verificar si el OTP fue verificado correctamente
+        if (response.chekOptStatus.status === 'verified') {
+          // Mostrar el mensaje de preaprobación
+          if (user && (user.available_quota !== undefined || user.available_quota === 0)) {
+            const formattedQuota = new Intl.NumberFormat('es-CO', {
+              style: 'currency',
+              currency: 'COP'
+            }).format(user.available_quota);
+            setPreApprovalMessage(formattedQuota);
+          } else {
+            setPreApprovalMessage('Error en el proceso');
+          }
+        }
+      } catch (error) {
+        console.error('Error al verificar OTP:', error);
+        setPreApprovalMessage('Error en el proceso');
+      }
+    }
   }
 
   // Modifica el handleInputChange para campos numéricos
@@ -211,6 +236,7 @@ const PreaprobadoForm = () => {
 };
 
 const checkProcess = async (userId: string, token: string) => {
+  console.log("userIdFromCheckProcess:", userId);
     const leadStatus = await checkLeadStatus(userId);
 
     console.log("leadStatus#####:", leadStatus);
@@ -242,13 +268,14 @@ const checkProcessWithRetry = async (
     setUser?: (value: any) => void,
     setIsSuccessful?: (value: boolean) => void
 ): Promise<any> => {
+    console.log("userIdFromCheckProcessWithRetry:", userId);
     try {
         setLoading?.(true);
         const result = await checkProcess(userId, token);
-        console.log(`Intento ${4-attempts}/4 - resultCheckProcess:`, result);
+        console.log(`Intento ${10-attempts}/10 - resultCheckProcess:`, result);
 
         // Si el resultado es undefined (no hay respuesta aún), continuamos con los reintentos
-          if (result === undefined || result === null && attempts > 1) {
+        if (result === undefined || result === null && attempts > 1) {
             // Esperamos antes del siguiente intento
             await new Promise(resolve => setTimeout(resolve, delay));
             
@@ -285,7 +312,7 @@ const checkProcessWithRetry = async (
         return undefined;
         
     } catch (error) {
-        console.error(`[checkProcessWithRetry] error en intento ${5-attempts}/4:`, error);
+        console.error(`[checkProcessWithRetry] error en intento ${10-attempts}/10:`, error);
         if (attempts <= 1) {
             setIsError?.(true);
             setLoading?.(false);
@@ -515,11 +542,19 @@ const checkProcessWithRetry = async (
           ) : preApprovalMessage ? (
             <div className="otp-response">
               <span>
-              ¡Felicidades! Cupo preaprobado por:
-              <strong>{preApprovalMessage}</strong>
+                {preApprovalMessage === 'Cupo denegado' || preApprovalMessage === 'Error en el proceso' ? (
+                  <>{preApprovalMessage}</>
+                ) : (
+                  <>
+                    ¡Felicidades! Cupo preaprobado por:
+                    <strong>{preApprovalMessage}</strong>
+                  </>
+                )}
               </span>
               
-              <CheckCircle size={80} color="#B4924E" />
+              {preApprovalMessage !== 'Cupo denegado' && preApprovalMessage !== 'Error en el proceso' && (
+                <CheckCircle size={80} color="#B4924E" />
+              )}
             </div>
           ) : (
             <form className="popup-otp-preaprobado-content" onSubmit={otpSubmitHandler}>

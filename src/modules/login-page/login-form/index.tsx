@@ -21,6 +21,7 @@ function LoginForm() {
   const [waitingOTP, setWaitingOTP] = useState(false);
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const methods = useForm<FormValues>({
         defaultValues: {
@@ -33,14 +34,14 @@ function LoginForm() {
     const onSubmit = async (data: FormValues) => {
         try {
             setLoading(true);
-            //cerrar cualquier sesión existente
+            setErrorMessage("");
+            
             try {
                 await signOut();
             } catch (error) {
-                // Ignora errores al cerrar sesión
                 console.log("[onSubmit] signOut error", error);
             }
-            // intentar iniciar sesión
+            
             await signIn(data.username, data.password);
             setLoading(false);
             setWaitingOTP(true);
@@ -48,6 +49,7 @@ function LoginForm() {
             setLoading(false);
             setWaitingOTP(false);
             console.log("[onSubmit] error", error);
+            setErrorMessage("Error al iniciar sesión. Por favor, verifica tus credenciales.");
         }
     };
 
@@ -101,6 +103,12 @@ function LoginForm() {
               placeholder="Ingrese contraseña"
             />
           </div>
+
+          {errorMessage && (
+            <div className="error-message">
+              {errorMessage}
+            </div>
+          )}
 
           <Button
             className="login-submit-button"
