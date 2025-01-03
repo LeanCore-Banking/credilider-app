@@ -399,10 +399,10 @@ const checkProcessWithRetry = async (
                 required
               >
                 <option value="">Seleccione una opción</option>
-                <option value="indefinido">Contrato indefinido</option>
-                <option value="fijo">Contrato término fijo / obra o labor</option>
-                <option value="independiente">Independiente con RUT</option>
-                <option value="informal">Informal</option>
+                <option value="Contrato indefinido">Contrato indefinido</option>
+                <option value="Contrato término fijo / obra o labor">Contrato término fijo / obra o labor</option>
+                <option value="Independiente con RUT">Independiente con RUT</option>
+                <option value="Informal">Informal</option>
               </select>
             </div>
             <div className="pre-aprobado-form-group">
@@ -415,10 +415,10 @@ const checkProcessWithRetry = async (
                 required
               >
                 <option value="">Seleccione una opción</option>
-                <option value="mas_24">Más de 24 meses</option>
-                <option value="12_24">Entre 12 y 24 meses</option>
-                <option value="6_12">Entre 6 y 12 meses</option>
-                <option value="menos_6">Menos de 6 meses</option>
+                <option value="Más de 24 meses">Más de 24 meses</option>
+                <option value="Entre 12 y 24 meses">Entre 12 y 24 meses</option>
+                <option value="Entre 6 y 12 meses">Entre 6 y 12 meses</option>
+                <option value="Menos de 6 meses">Menos de 6 meses</option>
                 <option value="sin_antiguedad">Sin antigüedad</option>
               </select>
             </div>
