@@ -528,7 +528,7 @@ const checkProcessWithRetry = async (
               <input
                 id="deudas_transito"
                 name="deudas_transito"
-                type="number"
+                type="text"
                 placeholder="$"
                 value={formData.deudas_transito ? formatNumber(formData.deudas_transito) : ''}
                 onChange={handleInputChange}
@@ -540,7 +540,7 @@ const checkProcessWithRetry = async (
               <input
                 id="deudas_actuales"
                 name="deudas_actuales"
-                type="number"
+                type="text"
                 placeholder="$"
                 value={formData.deudas_actuales ? formatNumber(formData.deudas_actuales) : ''}
                 onChange={handleInputChange}
