@@ -116,14 +116,14 @@ const PreaprobadoForm = () => {
             currency: 'COP'
           }).format(result.available_quota);
           setPreApprovalMessage(`${formattedQuota}`);
+
+          // Solo generar OTP si hay cupo disponible
+          const otpResp = await generateOtp(formData, userId);
+          console.log('otpResp:', otpResp);
+          setPopUpOtp(true);
+          setOtpResponse({ userId: otpResp.userId, respSendOtp: otpResp.respSendOtp });
         }
       }
-
-      // Luego generamos el OTP
-      const otpResp = await generateOtp(formData, userId);
-      console.log('otpResp:', otpResp);
-      setPopUpOtp(true);
-      setOtpResponse({ userId: otpResp.userId, respSendOtp: otpResp.respSendOtp });
 
     } catch (error) {
       console.error("Error en el proceso:", error);
