@@ -24,10 +24,12 @@ interface UserForm extends IFormData {
   otp: string;
   incomes: string;
   expenses: string;
-  tipoContrato: string;
-  numeroDependientes: string;
-  comparendosPendientes: string;
-  deudasActuales: string;
+  contrato_laboral: string;
+  'number-dependants': string;
+  deudas_transito: string;
+  deudas_actuales: string;
+  antigüedad_empresa: string;
+  cuota_inicial: string;
 }
 
 interface User {
@@ -48,13 +50,13 @@ const PreaprobadoForm = () => {
     tipoDocumento: 'CC',
     expenses: '',
     fechaExpedicion: '',
-    cuotaInicial: '',
+    cuota_inicial: '',
     otp: '',
-    tipoContrato: '',
-    antiguedadEmpresa: '',
-    numeroDependientes: '',
-    comparendosPendientes: '',
-    deudasActuales: '',
+    contrato_laboral: '',
+    antigüedad_empresa: '',
+    'number-dependants': '',
+    deudas_transito: '',
+    deudas_actuales: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -104,12 +106,17 @@ const PreaprobadoForm = () => {
         setPreApprovalMessage('Cupo denegado');
       } else if (result === null) {
         setPreApprovalMessage('Error en el proceso');
-      } else if (result?.available_quota) {
-        const formattedQuota = new Intl.NumberFormat('es-CO', {
-          style: 'currency',
-          currency: 'COP'
-        }).format(result.available_quota);
-        setPreApprovalMessage(`${formattedQuota}`);
+      } else if (result?.available_quota !== undefined) {
+        // Si el cupo disponible es 0, mostrar "Cupo denegado"
+        if (result.available_quota === 0) {
+          setPreApprovalMessage('Cupo denegado');
+        } else {
+          const formattedQuota = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP'
+          }).format(result.available_quota);
+          setPreApprovalMessage(`${formattedQuota}`);
+        }
       }
 
       // Luego generamos el OTP
@@ -164,7 +171,7 @@ const PreaprobadoForm = () => {
     const { name, value } = e.target;
     
     // Lista de campos que necesitan formato numérico
-    const numericFields = ['incomes', 'expenses', 'cuotaInicial', 'deudasActuales'];
+    const numericFields = ['incomes', 'expenses', 'cuota_inicial', 'deudas_actuales'];
     
     if (numericFields.includes(name)) {
       // Guarda el valor sin formato en el estado
@@ -357,16 +364,18 @@ const checkProcessWithRetry = async (
                 placeholder="Escriba su nombre y apellido"
                 value={formData.nombreApellido}
                 onChange={handleInputChange}
+                required
               />
             </div>
             <div className="pre-aprobado-form-group">
-              <label htmlFor="ingresos">Ingresos</label>
+              <label htmlFor="incomes">Ingresos</label>
               <input
                 id="incomes"
                 name="incomes"
                 placeholder="$"
                 value={formData.incomes ? formatNumber(formData.incomes) : ''}
                 onChange={handleInputChange}
+                required
               />
             </div>
             <div className="pre-aprobado-form-group">
@@ -377,15 +386,17 @@ const checkProcessWithRetry = async (
                 placeholder="Escriba su número de teléfono"
                 value={formData.telefono}
                 onChange={handleInputChange}
+                required
               />
             </div>
             <div className="pre-aprobado-form-group">
-              <label htmlFor="tipoContrato">Tipo de Contrato Laboral</label>
+              <label htmlFor="contrato_laboral">Tipo de Contrato Laboral</label>
               <select
-                id="tipoContrato"
-                name="tipoContrato"
-                value={formData.tipoContrato}
+                id="contrato_laboral"
+                name="contrato_laboral"
+                value={formData.contrato_laboral}
                 onChange={handleSelectChange}
+                required
               >
                 <option value="">Seleccione una opción</option>
                 <option value="indefinido">Contrato indefinido</option>
@@ -394,15 +405,22 @@ const checkProcessWithRetry = async (
                 <option value="informal">Informal</option>
               </select>
             </div>
-            <div className="pre-aprobado-form-group" id="email-input">
-              <label htmlFor="email">Correo</label>
-              <input
-                id="email"
-                name="email"
-                placeholder="Escriba su correo electrónico"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
+            <div className="pre-aprobado-form-group">
+              <label htmlFor="antigüedad_empresa">Antigüedad en la Empresa</label>
+              <select
+                id="antigüedad_empresa"
+                name="antigüedad_empresa"
+                value={formData.antigüedad_empresa}
+                onChange={handleSelectChange}
+                required
+              >
+                <option value="">Seleccione una opción</option>
+                <option value="mas_24">Más de 24 meses</option>
+                <option value="12_24">Entre 12 y 24 meses</option>
+                <option value="6_12">Entre 6 y 12 meses</option>
+                <option value="menos_6">Menos de 6 meses</option>
+                <option value="sin_antiguedad">Sin antigüedad</option>
+              </select>
             </div>
           </div>
 
@@ -416,6 +434,7 @@ const checkProcessWithRetry = async (
                 placeholder="Escriba su número de cédula"
                 value={formData.cedula}
                 onChange={handleInputChange}
+                required
               />
               <div className="checkbox-group">
                 <div className="checkbox-item">
@@ -439,35 +458,46 @@ const checkProcessWithRetry = async (
               </div>
             </div>
             <div className="pre-aprobado-form-group" id="pre-aprobado-col-2-expenses">
-              <label htmlFor="egresos">Egresos</label>
+              <label htmlFor="expenses">Egresos</label>
               <input
                 id="expenses"
                 name="expenses"
                 placeholder="$"
                 value={formData.expenses ? formatNumber(formData.expenses) : ''}
                 onChange={handleInputChange}
+                required
               />
             </div>
             
-            <div className="pre-aprobado-form-group">
-              <label htmlFor="numeroDependientes">Número de Dependientes</label>
+            <div className="pre-aprobado-form-group" id="number-dependants">
+              <label htmlFor="number-dependants">Número de Dependientes</label>
               <input
-                id="numeroDependientes"
-                name="numeroDependientes"
+                id="number-dependants"
+                name="number-dependants"
                 type="text"
                 placeholder="Ingrese el número de dependientes"
-                value={formData.numeroDependientes}
+                value={formData['number-dependants']}
                 onChange={handleInputChange}
+                required
               />
             </div>
-
+            <div className="pre-aprobado-form-group" id="email-input">
+              <label htmlFor="email">Correo</label>
+              <input
+                id="email"
+                name="email"
+                placeholder="Escriba su correo electrónico"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
             {/* Botón de submit */}
-          <div className="pre-aprobado-form-group" id="pre-aprobado-btn">
-            <button type="submit" id="button-preaprobado">
-              Consultar pre-aprobado
-            </button>
-          </div>
-           
+            <div className="pre-aprobado-form-group" id="pre-aprobado-btn">
+              <button type="submit" id="button-preaprobado">
+                Consultar pre-aprobado
+              </button>
+            </div>
           </div>
 
           {/* Tercera columna */}
@@ -480,40 +510,41 @@ const checkProcessWithRetry = async (
                 name="fechaExpedicion"
                 value={formData.fechaExpedicion}
                 onChange={handleInputChange}
+                required
               />
             </div>
             <div className="pre-aprobado-form-group">
-              <label htmlFor="cuotaInicial">Cuota inicial</label>
+              <label htmlFor="cuota_inicial">Cuota inicial</label>
               <input
-                id="cuotaInicial"
-                name="cuotaInicial"
+                id="cuota_inicial"
+                name="cuota_inicial"
                 placeholder="$"
-                value={formData.cuotaInicial}
+                value={formData.cuota_inicial}
                 onChange={handleInputChange}
               />
             </div>
             <div className="pre-aprobado-form-group">
-              <label htmlFor="comparendosPendientes">Comparendos de tránsito pendientes</label>
-              <select
-                id="comparendosPendientes"
-                name="comparendosPendientes"
-                value={formData.comparendosPendientes}
-                onChange={handleSelectChange}
-              >
-                <option value="">Seleccione una opción</option>
-                <option value="si">Sí</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-            <div className="pre-aprobado-form-group">
-              <label htmlFor="deudasActuales">Deudas actuales totales</label>
+              <label htmlFor="deudas_transito">Comparendos de tránsito pendientes</label>
               <input
-                id="deudasActuales"
-                name="deudasActuales"
-                type="text"
+                id="deudas_transito"
+                name="deudas_transito"
+                type="number"
                 placeholder="$"
-                value={formData.deudasActuales}
+                value={formData.deudas_transito ? formatNumber(formData.deudas_transito) : ''}
                 onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="pre-aprobado-form-group" id="deudas-actuales">
+              <label htmlFor="deudas_actuales">Deudas actuales totales</label>
+              <input
+                id="deudas_actuales"
+                name="deudas_actuales"
+                type="number"
+                placeholder="$"
+                value={formData.deudas_actuales ? formatNumber(formData.deudas_actuales) : ''}
+                onChange={handleInputChange}
+                required
               />
             </div>
             <div className="result-box">

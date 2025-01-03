@@ -31,11 +31,12 @@ export interface ICreateLead {
     fechaExpedicion: string;
     incomes: string;
     expenses: string;
-    cuotaInicial: string;
-    numeroDependientes: string;
-    antiguedadEmpresa: string;
-    comparendosPendientes: string;
-    deudasActuales: string;
+    cuota_inicial: string;
+    'number-dependants': string;
+    antigüedad_empresa: string;
+    deudas_transito: string;
+    deudas_actuales: string;
+    contrato_laboral: string;
   }
   
   export const userFormToData = (data: IFormData): Omit<ICreateLead, 'additional_data'> => {
@@ -52,12 +53,11 @@ export interface ICreateLead {
       lead_status: "not_assigned",
       created_at: new Date().toISOString(),
       business_entity: "natural",
-      ecosystem: "89949613-2a1d-4b46-9961-4379d05b2fc6"
+      ecosystem: "873ddfa1-9d6c-4afc-803e-1e8b7e05835d"
     };
   };
   
   export const userFormToVariables = (data: IFormData): IVariablesData[] => {
-   
     return [
       {
         key: "tipoDocumento",
@@ -74,45 +74,50 @@ export interface ICreateLead {
       {
         key: "incomes",
         value: data.incomes,
-        type: "string",
-        label: "Ingresos mensuales"
+        type: "number",
+        label: "Ingresos"
       },
       {
         key: "expenses",
         value: data.expenses,
-        type: "string",
-        label: "Egresos mensuales"
+        type: "number",
+        label: "Egresos"
       },
       {
-        key: "cuotaInicial",
-        value: data.cuotaInicial,
-        type: "string",
+        key: "cuota_inicial",
+        value: data.cuota_inicial,
+        type: "number",
         label: "Cuota inicial"
       },
       {
-        key: "numeroDependientes",
-        value: data.numeroDependientes,
-        type: "string",
-        label: "Número de dependientes"
+        key: "number-dependants",
+        value: data['number-dependants'],
+        type: "number",
+        label: "Número de personas a cargo"
       },
       {
-        key: "antiguedadEmpresa",
-        value: data.antiguedadEmpresa,
-        type: "string",
-        label: "Antigüedad en la empresa"
+        key: "antigüedad_empresa",
+        value: data.antigüedad_empresa,
+        type: "array",
+        label: "Antigüedad Empresa"
       },
       {
-        key: "comparendosPendientes",
-        value: data.comparendosPendientes,
-        type: "string",
-        label: "Comparendos de tránsito pendientes"
+        key: "deudas_transito",
+        value: data.deudas_transito,
+        type: "number",
+        label: "Deudas Transito"
       },
       {
-        key: "deudasActuales",
-        value: data.deudasActuales,
-        type: "string",
-        label: "Deudas actuales totales"
+        key: "deudas_actuales",
+        value: data.deudas_actuales,
+        type: "number",
+        label: "Deudas Actuales"
+      },
+      {
+        key: "contrato_laboral",
+        value: data.contrato_laboral,
+        type: "array",
+        label: "Contrato laboral"
       }
-
     ];
   };

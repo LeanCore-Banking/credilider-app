@@ -9,7 +9,7 @@ export const createLeadPayload = {
     "expenses": 0,
     "lead_status": "not_assigned",
     "business_entity": "natural",
-    "ecosystem": "89949613-2a1d-4b46-9961-4379d05b2fc6",
+    "ecosystem": "873ddfa1-9d6c-4afc-803e-1e8b7e05835d",
     "created_at": "2024-10-18T15:56:40.971Z"
 }
 
@@ -23,6 +23,6 @@ export const updateLeadPayload = {
     "address": "-",
     "lead_status": "not_assigned",
     "business_entity": "natural",
-    "ecosystem": "89949613-2a1d-4b46-9961-4379d05b2fc6",
+    "ecosystem": "873ddfa1-9d6c-4afc-803e-1e8b7e05835d",
     "created_at": "2024-10-18T15:56:40.971Z"
 }

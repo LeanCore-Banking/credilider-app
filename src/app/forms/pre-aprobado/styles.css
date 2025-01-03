@@ -27,7 +27,13 @@
   flex-direction: column;
 }
 
+#deudas-actuales{
+  margin-bottom: -5px;
+}
 
+#number-dependants{
+  margin-bottom: -1px;
+}
 
 #pre-aprobado-col-2-expenses{
   margin-top: 1.8em;
@@ -35,10 +41,6 @@
 
 #pre-aprobado-btn {
   grid-column: 2 / 3; /* Posicionar el elemento en la columna del medio */
-}
-
-#email-input{
-  padding: 5px;
 }
 
 .continuar-credito{
@@ -89,7 +91,6 @@ input{
 }
 
 #button-preaprobado{
-  margin-top: 1.2em;
   height: 2.5em;
   background-color: #00955C;
   color: white;
@@ -106,7 +107,7 @@ input{
 #pre-aprobado-resp{
   border: 1px solid #ccc;
   border-radius: 4px;
-  height: 37px;
+  height: 34px;
 }
 .pre-aprobado-title{
   position: absolute;
@@ -165,6 +166,10 @@ input{
 
 
 }
+
+.result-title{
+  font-size: 16px;
+ }
 
 /* popup-preaprobado-form */
 .popup-otp-preaprobado-form {

@@ -63,7 +63,7 @@ export type Quote = {
     tipoDocumento: string;
     expenses: string;
     fechaExpedicion: string;
-    cuotaInicial: string;
+    cuota_inicial: string;
   };
 
   
