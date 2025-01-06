@@ -128,7 +128,8 @@ const PreaprobadoForm = () => {
     } catch (error) {
       console.error("Error en el proceso:", error);
       setIsError(true);
-      setPreApprovalMessage('Error en el proceso');
+          // Capturar el mensaje de error traducido
+      setPreApprovalMessage(error instanceof Error ? error.message : 'Ha ocurrido un error en el proceso');
     } finally {
       setIsLoading(false);
     }
@@ -228,12 +229,12 @@ const PreaprobadoForm = () => {
                 data: payload,
                 token,
             });
-            console.log("[requestCreateLead] update lead", lead);
+            //console.log("[requestCreateLead] update lead", lead);
             return lead.id;
         } else {
             // const token = await accessToken();
             const lead = await createLead(payload);
-            console.log("[requestCreateLead] create lead", lead);
+            //console.log("[requestCreateLead] create lead", lead);
             return lead.id;
         }
     } catch (error) {
@@ -243,20 +244,20 @@ const PreaprobadoForm = () => {
 };
 
 const checkProcess = async (userId: string, token: string) => {
-  console.log("userIdFromCheckProcess:", userId);
+  //console.log("userIdFromCheckProcess:", userId);
     const leadStatus = await checkLeadStatus(userId);
 
-    console.log("leadStatus#####:", leadStatus);
+    //console.log("leadStatus#####:", leadStatus);
     // Si el lead fue descartado
     if (leadStatus === "discarded") {
         return 'discarded';
     }
     // Si el lead no existe, se consulta el usuario
     if (leadStatus === "not_found") {
-      console.log("leadNoFound:", leadStatus);
+      //console.log("leadNoFound:", leadStatus);
         try {
             const userData = await queryUser({ token, userId });
-            console.log("userData#####:", userData);
+            //console.log("userData#####:", userData);
             return userData;
         } catch (error) {
             return null;
@@ -275,11 +276,11 @@ const checkProcessWithRetry = async (
     setUser?: (value: any) => void,
     setIsSuccessful?: (value: boolean) => void
 ): Promise<any> => {
-    console.log("userIdFromCheckProcessWithRetry:", userId);
+    //console.log("userIdFromCheckProcessWithRetry:", userId);
     try {
         setLoading?.(true);
         const result = await checkProcess(userId, token);
-        console.log(`Intento ${10-attempts}/10 - resultCheckProcess:`, result);
+        //console.log(`Intento ${10-attempts}/10 - resultCheckProcess:`, result);
 
         // Si el resultado es undefined (no hay respuesta aún), continuamos con los reintentos
         if (result === undefined || result === null && attempts > 1) {

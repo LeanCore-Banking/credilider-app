@@ -7,6 +7,8 @@ dotenv.config();
 
 let token: string | null = null;
 let tokenExpirationTime: number | null = null;
+console.log("token----:", token);
+console.log("tokenExpirationTime----:", tokenExpirationTime);
 
 // Función para obtener el token de autenticación
 export async function getAuthToken(): Promise<string | null> {

@@ -170,8 +170,24 @@ export async function createLead(dataIn: any): Promise<any> {
     return response.data;
   } catch (error) {
     console.error("Error creating lead:", error);
+
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error details:", error.response?.data);
+      const errorMessage = error.response?.data.message;
+      throw new Error(traslateError(errorMessage))
+    } 
+     
     return false;
   }
+}
+
+function traslateError(message: string) {
+  const traducciones: {[key: string]: string} = {
+    'User already exists': 'El usuario ya existe',
+    'Invalid Data': 'Datos inválidos',
+    'Not Found': 'No se encontró el usuario',
+  }
+  return traducciones[message] || 'Ha ocurrido un error inesperado';
 }
 
 export async function updateLead(req: any): Promise<any> {
