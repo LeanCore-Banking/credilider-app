@@ -1,11 +1,37 @@
 export function cotizacionHTML(quotes: any[], data: any): string {
-  
-  const imgsFormated = data.imagen.map((img: string) => {
-    return `https://lh3.googleusercontent.com/d/${img.split('id=')[1]}=s600`;
-  });
+  // Función auxiliar para procesar URLs de imágenes de forma segura
+  const processImageUrl = (img: string | undefined): string => {
+    if (!img) return ''; // URL por defecto o string vacío
+    
+    try {
+      // Verificar si es una URL de Google Drive
+      if (img.includes('google') && img.includes('id=')) {
+        const idPart = img.split('id=')[1];
+        return idPart ? `https://lh3.googleusercontent.com/d/${idPart}=s600` : '';
+      }
+      
+      // Verificar si es una URL válida
+      const isValidUrl = /^(http|https):\/\/[^ "]+$/.test(img);
+      if (isValidUrl) {
+        return img;
+      }
+      
+      return '';
+    } catch (error) {
+      console.error('Error processing image URL:', error);
+      return '';
+    }
+  };
 
-  const crediliderLogo = "https://lh3.googleusercontent.com/d/1rY3dYlDD0wsIAPHAn_69wf7wUqy-zXOW=s200";
-  const formatedImage = imgsFormated[0];
+  // Procesar imágenes de forma segura
+  const imgsFormated = data?.imagen 
+    ? Array.isArray(data.imagen)
+      ? data.imagen.map(processImageUrl)
+      : [processImageUrl(data.imagen)]
+    : [];
+
+  const crediliderLogo = "https://lh3.googleusercontent.com/d/1rY3dYlDD0wsIAPHAn_69wf7wUqy-zXOW=s600";
+  const formatedImage = imgsFormated[0] || crediliderLogo; // Usar logo como fallback si no hay imagen
   
   return `
   <!DOCTYPE html>
@@ -65,7 +91,6 @@ export function cotizacionHTML(quotes: any[], data: any): string {
       .pdf-main-img img {
         width: 100%;
         height: auto;
-        background: #ffc401;
       }
 
       .pdf-quote-data-row {
@@ -155,7 +180,7 @@ export function cotizacionHTML(quotes: any[], data: any): string {
           </div>
           <div class="pdf-conten-head-text">
             <span>Cotizacion</span>
-            <h1>${data.modelo}</h1>
+            <h1>${data?.modelo || 'Modelo no especificado'}</h1>
           </div>
         </div>
 
@@ -176,7 +201,7 @@ export function cotizacionHTML(quotes: any[], data: any): string {
                     </div>
                     <div>
                       <h3>Cuota mensual</h3>
-                      <span id="pdf-quote-value">$${item.monthlyFee.toLocaleString(
+                      <span id="pdf-quote-value">$${(item.monthlyFee).toLocaleString(
                         undefined,
                         { minimumFractionDigits: 0, maximumFractionDigits: 0 }
                       )}</span>
@@ -185,22 +210,28 @@ export function cotizacionHTML(quotes: any[], data: any): string {
                   </div>
                   <div class="pdf-quote-body">
                     <div>
-                      <span>Tasa efectiva anual</span>
-                      <span>${item.annualEffectiveRate}%</span>
-                    </div>
-                    <div>
                       <span>Tasa mensual vencida</span>
                       <span>${item.monthlyCupDue}%</span>
                     </div>
                     <div>
                       <span>Seguro vida (mes)</span>
-                      <span>$${item.monthLifeInsurance.toLocaleString()}</span>
+                      <span>$${Math.round(item.monthLifeInsurance).toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span>Garantía</span>
+                      <span>$${Math.round(data.garantia || 0).toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span>Documentos</span>
+                      <span>$${Math.round(data.documentos || 0).toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span>Cuota inicial</span>
+                      <span>$${Math.round(data.initialFee || 0).toLocaleString()}</span>
                     </div>
                     <div class="pdf-value-to-pay">
-                      <span>Valor a pagar</span>
-                      <span>$${(
-                        item.monthlyFee * item.monthlyRate
-                      ).toLocaleString(undefined, {
+                      <span>Valor a Financiar</span>
+                      <span>$${Math.round(item.financeValue || 0).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })}</span>

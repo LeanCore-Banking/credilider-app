@@ -74,10 +74,11 @@
 }
 
 .form-container-solicitud-credito input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="date"],
-select {
+.form-container-solicitud-credito input[type="number"],
+.form-container-solicitud-credito input[type="email"],
+.form-container-solicitud-credito input[type="date"],
+.form-container-solicitud-credito input[type="tel"],
+.form-container-solicitud-credito select {
   width: 100%;
   padding: 8px;
   border-radius: 6px;
@@ -96,7 +97,7 @@ select {
 }
 
 .submit-container-solicitud-credito {
-  text-align: flex-end;
+  text-align: end;
 }
 
 button[type="submit"] {

@@ -1,5 +1,5 @@
 'use client'
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ProductCard from "@/components/ProductCard/Index";
 import './index.css';
 import { useState, useEffect } from 'react';
@@ -23,15 +23,27 @@ const Products: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortedMotos, setSortedMotos] = useState<Moto[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const dropFilterHandler = () => {
     setIsDropdownOpen(!isDropdownOpen); // Cambia el estado del dropdown
   };
 
-  const { data: motos, isLoading, error } = useQuery({
+  const { data: motos, isLoading, error, isFetching } = useQuery({
     queryKey: ['motos'],
     queryFn: fetchMotos,
+    staleTime: 30 * 24 * 60 * 60 * 1000, // 30 días
+    gcTime: 31 * 24 * 60 * 60 * 1000, // 31 días
+    refetchOnWindowFocus: false,
+    refetchInterval: 5 * 60 * 1000, // Refresca cada 5 minutos
   });
+
+  useEffect(() => {
+    if (motos) {
+      console.log('Datos obtenidos:', motos);
+      console.log('Usando caché:', !isFetching && !isLoading);
+    }
+  }, [motos, isFetching]);
 
   useEffect(() => {
     if (motos) {
@@ -56,7 +68,10 @@ const Products: React.FC = () => {
     }
   }, [motos, sortOrder, searchTerm]);
 
-  if (error instanceof Error) return <div>Error: {error.message}</div>;
+  if (error instanceof Error) {
+    console.error('Error en la consulta:', error);
+    return <div>Error: {error.message}</div>;
+  }
 
   // Manejar cambio en el criterio de orden
   const handleSortChange = (order: string) => {

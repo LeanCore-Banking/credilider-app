@@ -13,21 +13,49 @@ const SolicitudCreditoForm = () => {
   const { formData, setFormData } = useFormStore() as { formData: any, setFormData: (data: any) => void };
 
   useEffect(() => {
+    // Recuperar datos del localStorage
     const savedFormData = localStorage.getItem('formData');
     if (savedFormData) {
-      setFormData(JSON.parse(savedFormData));
+      try {
+        const parsedData = JSON.parse(savedFormData);
+        // Asegurarse de que todos los campos numéricos se formateen correctamente
+        const formattedData = {
+          ...parsedData,
+          incomes: parsedData.incomes || '',
+          expenses: parsedData.expenses || '',
+          cuota_inicial: parsedData.cuota_inicial || '',
+          deudas_actuales: parsedData.deudas_actuales || '',
+          deudas_transito: parsedData.deudas_transito || '',
+          valor_financiar: parsedData.valor_financiar || '',
+        };
+        setFormData(formattedData);
+        console.log('Datos recuperados del localStorage:', formattedData);
+      } catch (error) {
+        console.error('Error al parsear datos del localStorage:', error);
+      }
     }
   }, [setFormData]);
 
+  // Función para simular delay
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  // Función para simular validación
+  const validarDatos = (data: any) => {
+    if (!data.nombreApellido || !data.cedula) {
+      throw new Error('Datos incompletos');
+    }
+    return Math.random() > 0.3; // 70% de probabilidad de éxito
+  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/solicitud-credito', formData, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // Simulamos tiempo de respuesta del servidor (1.5 segundos)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log('Datos enviados:', formData);
       alert('Solicitud enviada correctamente');
+      
     } catch (error) {
       console.error('Error al enviar la solicitud:', error);
       alert('Hubo un error al enviar la solicitud. Por favor, inténtalo de nuevo.');
@@ -38,20 +66,17 @@ const SolicitudCreditoForm = () => {
     const { name, value } = e.target;
     
     // Lista de campos que necesitan formato numérico
-    const numericFields = ['incomes', 'expenses', 'cuota_inicial'];
+    const numericFields = ['incomes', 'expenses', 'cuota_inicial', 'deudas_actuales', 'deudas_transito', 'valor_financiar'];
     
     if (numericFields.includes(name)) {
-      // Guarda el valor sin formato en el estado
       const rawValue = value.replace(/\D/g, '');
       setFormData({
         ...formData,
         [name]: rawValue
       });
       
-      // Actualiza el valor mostrado en el input con formato
       e.target.value = formatNumber(value);
     } else {
-      // Para campos no numéricos, mantén el comportamiento original
       setFormData({
         ...formData,
         [name]: value
@@ -77,128 +102,212 @@ const SolicitudCreditoForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-row-solicitud-credito">
             <div className="form-group-solicitud-credito">
-              <label htmlFor="nombre">Nombre y apellido</label>
-              <input type="text"
-                id="nombre"
-                name="nombre" required onChange={handleChange}
-                value={formData.nombreApellido || ''}  
+              <label htmlFor="nombreApellido">Nombre y apellido</label>
+              <input
+                id="nombreApellido"
+                type="text"
+                name="nombreApellido"
+                value={formData.nombreApellido || ''}
+                onChange={handleChange}
+                required
               />
             </div>
             <div className="form-group-solicitud-credito">
-              <label htmlFor="cedula">Número de cédula</label>
-              <input type="text"
-               id="cedula" 
-               name="cedula"
-                value={formData.cedula || ''}  
-              required onChange={handleChange} />
-              <div className="checkbox-group-solicitud-credito">
-                <input type="checkbox"
-                  id="cc"
-                  name="tipo_documento"
-                  value={formData.cedula || ''}  
-                  onChange={handleChange} />
-                <label htmlFor="cc">CC</label>
-                <input type="checkbox" id="pasaporte" name="tipo_documento" value="pasaporte" onChange={handleChange} />
-                <label htmlFor="pasaporte">Pasaporte</label>
-              </div>
-            </div>
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="fecha_expedicion">Fecha de expedición</label>
-              <input type="date"
-                id="fecha_expedicion"
-                name="fecha_expedicion"
-                value={formData.fechaExpedicion || ''}  
-                required onChange={handleChange} />
-            </div>
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="incomes">Ingresos</label>
-              <input type="text"
-                id="incomes"
-                name="incomes"
-                value={formData.incomes ? formatNumber(formData.incomes) : ''}
-                required 
+              <label htmlFor="tipoDocumento">Tipo de documento</label>
+              <select
+                id="tipoDocumento"
+                name="tipoDocumento"
+                value={formData.tipoDocumento || 'CC'}
                 onChange={handleChange}
+                required
+              >
+                <option value="CC">Cédula de Ciudadanía</option>
+                <option value="Pasaporte">Pasaporte</option>
+              </select>
+            </div>
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="cedula">Número de documento</label>
+              <input
+                id="cedula"
+                type="text"
+                name="cedula"
+                value={formData.cedula || ''}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="fechaExpedicion">Fecha expedición documento</label>
+              <input
+                id="fechaExpedicion"
+                type="date"
+                name="fechaExpedicion"
+                value={formData.fechaExpedicion || ''}
+                onChange={handleChange}
+                required
               />
             </div>
           </div>
-          <div className="form-row-solicitud-credito">
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="expenses">Egresos</label>
-              <input type="text"
-                id="expenses"
-                name="expenses"
-                value={formData.expenses ? formatNumber(formData.expenses) : ''}
-                required 
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="cuota_inicial">Cuota inicial</label>
-              <input type="text"
-                id="cuota_inicial"
-                name="cuota_inicial"
-                value={formData.cuota_inicial ? formatNumber(formData.cuota_inicial) : ''}
-                required 
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="correo">Correo electrónico</label>
-              <input type="email" id="correo" name="correo" required onChange={handleChange} />
-            </div>
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="direccion">Dirección de residencia</label>
-              <input type="text" id="direccion" name="direccion" required onChange={handleChange} />
-            </div>
-          </div>
+
           <div className="form-row-solicitud-credito">
             <div className="form-group-solicitud-credito">
               <label htmlFor="fecha_nacimiento">Fecha de nacimiento</label>
-              <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required onChange={handleChange} />
+              <input
+                id="fecha_nacimiento"
+                type="date"
+                name="fecha_nacimiento"
+                value={formData.fecha_nacimiento || ''}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="form-group-solicitud-credito">
-              <label htmlFor="nivel_academico">Nivel académico</label>
-              <select id="nivel_academico" name="nivel_academico" required onChange={handleChange}>
+              <label htmlFor="telefono">Número de teléfono</label>
+              <input
+                id="telefono"
+                type="tel"
+                name="telefono"
+                value={formData.telefono || ''}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="email">Correo electrónico</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                value={formData.email || ''}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="contrato_laboral">Tipo de Contrato Laboral</label>
+              <select
+                id="contrato_laboral"
+                name="contrato_laboral"
+                value={formData.contrato_laboral || ''}
+                onChange={handleChange}
+                required
+              >
                 <option value="">Seleccione una opción</option>
-                <option value="primaria">Primaria</option>
-                <option value="secundaria">Secundaria</option>
-                <option value="tecnico">Técnico</option>
-                <option value="universitario">Universitario</option>
-                <option value="postgrado">Postgrado</option>
+                <option value="Contrato indefinido">Contrato indefinido</option>
+                <option value="Contrato término fijo / obra o labor">Contrato término fijo / obra o labor</option>
+                <option value="Independiente con RUT">Independiente con RUT</option>
+                <option value="Informal">Informal</option>
               </select>
             </div>
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="personas_cargo">Número de personas a cargo</label>
-              <input type="number" id="personas_cargo" name="personas_cargo" required onChange={handleChange} />
-            </div>
-            <div className="form-group-solicitud-credito">
-              <label htmlFor="num_hijos">Número de hijos</label>
-              <input type="number" id="num_hijos" name="num_hijos" required onChange={handleChange} />
-            </div>
           </div>
+
           <div className="form-row-solicitud-credito">
             <div className="form-group-solicitud-credito">
-              <label htmlFor="tipo_contrato">Tipo de contrato</label>
-              <select id="tipo_contrato" name="tipo_contrato" required onChange={handleChange}>
+              <label htmlFor="antigüedad_empresa">Antigüedad en la Empresa</label>
+              <select
+                id="antigüedad_empresa"
+                name="antigüedad_empresa"
+                value={formData.antigüedad_empresa || ''}
+                onChange={handleChange}
+                required
+              >
                 <option value="">Seleccione una opción</option>
-                <option value="indefinido">Indefinido</option>
-                <option value="fijo">Fijo</option>
-                <option value="prestacion_servicios">Prestación de servicios</option>
-                <option value="obra_labor">Obra o labor</option>
+                <option value="Más de 24 meses">Más de 24 meses</option>
+                <option value="Entre 12 y 24 meses">Entre 12 y 24 meses</option>
+                <option value="Entre 6 y 12 meses">Entre 6 y 12 meses</option>
+                <option value="Menos de 6 meses">Menos de 6 meses</option>
+                <option value="sin_antiguedad">Sin antigüedad</option>
               </select>
             </div>
             <div className="form-group-solicitud-credito">
-              <label htmlFor="empresa_actual">Empresa actual</label>
-              <input type="text" id="empresa_actual" name="empresa_actual" required onChange={handleChange} />
+              <label htmlFor="number-dependants">Número de Dependientes</label>
+              <input
+                id="number-dependants"
+                type="number"
+                name="number-dependants"
+                value={formData['number-dependants'] || ''}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="form-group-solicitud-credito">
-              <label htmlFor="fecha_vinculacion">Fecha de vinculación</label>
-              <input type="date" id="fecha_vinculacion" name="fecha_vinculacion" required onChange={handleChange} />
+              <label htmlFor="incomes">Ingresos mensuales</label>
+              <input
+                id="incomes"
+                type="text"
+                name="incomes"
+                placeholder="$"
+                value={formData.incomes ? formatNumber(formData.incomes) : ''}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="form-group-solicitud-credito">
-              {/* Empty column to maintain 4 columns */}
+              <label htmlFor="expenses">Gastos mensuales</label>
+              <input
+                id="expenses"
+                type="text"
+                name="expenses"
+                placeholder="$"
+                value={formData.expenses ? formatNumber(formData.expenses) : ''}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
+
+          <div className="form-row-solicitud-credito">
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="deudas_actuales">Deudas mensuales</label>
+              <input
+                id="deudas_actuales"
+                type="text"
+                name="deudas_actuales"
+                placeholder="$"
+                value={formData.deudas_actuales ? formatNumber(formData.deudas_actuales) : ''}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="deudas_transito">Comparendos de tránsito pendientes</label>
+              <input
+                id="deudas_transito"
+                type="text"
+                name="deudas_transito"
+                placeholder="$"
+                value={formData.deudas_transito ? formatNumber(formData.deudas_transito) : ''}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="cuotas">Número de cuotas</label>
+              <input
+                id="cuotas"
+                name="cuotas"
+                type="number"
+                min="1"
+                max="84"
+                value={formData.cuotas || ''}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group-solicitud-credito">
+              <label htmlFor="valor_financiar">Valor a financiar</label>
+              <input
+                id="valor_financiar"
+                type="text"
+                name="valor_financiar"
+                placeholder="$"
+                value={formData.valor_financiar ? formatNumber(formData.valor_financiar) : ''}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
           <div className="submit-container-solicitud-credito">
             <button type="submit">Finalizar solicitud</button>
           </div>

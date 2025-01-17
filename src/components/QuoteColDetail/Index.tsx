@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CheckCircle, User, Mail, Phone } from "lucide-react";
 import { QuotesCardSkeleton } from "../skeletons";
 import { formatNumber } from "@/utils/format";
+//import useAuth from '@/auth/hooks';
 
 type QuoteColDetailProps = {
     quoteDefault: Quote[];
@@ -14,26 +15,34 @@ type QuoteColDetailProps = {
 };
 
 const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) => {
-    console.log('dataFromQuoteColDetail:', data);
+    console.log("dataParam:", data);
+    //const auth = useAuth();
+    const financialEntityId = '89949613-2a1d-4b46-9961-4379d05b2fc6'; //auth.getCurrentFintech();
+    console.log("financialEntityId:", financialEntityId);
     const [quotes, setQuotes] = useState<Quote[]>(quoteDefault);
     const [loading, setLoading] = useState(false);
     const [popupVisible, setPopupVisible] = useState(false);
-    const [userData, setUserData] = useState({ 
-        name: "", 
-        nit: "", 
-        email: "", 
+    const [userData, setUserData] = useState({
+        name: "",
+        nit: "",
+        email: "",
         phone: ""
     });
-    const [errors, setErrors] = useState({ 
-        name: "", 
-        nit: "", 
-        email: "", 
+    const [errors, setErrors] = useState({
+        name: "",
+        nit: "",
+        email: "",
         phone: "",
     });
-    const [motoValue, setMotoValue] = useState<number | null>(null);
+    const [motoValue, setMotoValue] = useState<number | null>(data?.precio || null);
     const [initialFee, setInitialFee] = useState<number>(0);
     const [discount, setDiscount] = useState<number>(0);
-    const [financeValue, setFinanceValue] = useState<number | null>(0);
+    const [financeValue, setFinanceValue] = useState<number | null>(data?.precio || null);
+    const [garantia, setGarantia] = useState<number>(
+        data?.garantia ? Number(data.garantia) : 0
+    );
+    const [documentos, setDocumentos] = useState<number>(0);
+
 
     // Crear el objeto formData con los datos del usuario
     const formData = {
@@ -44,22 +53,29 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
         motoValue: motoValue,
         initialFee: initialFee,
         discount: discount,
-        financeValue: financeValue
+        financeValue: financeValue,
+        garantia: garantia,
+        documentos: documentos
     };
 
     localStorage.setItem('formData', JSON.stringify(formData));
 
     // Dentro de QuoteColDetail
     useEffect(() => {
-        // Si los valores son válidos, se inicia un timeout para calcular el valor a financiar
+        // Si los valores son válidos, calcula el valor a financiar
         if (motoValue && initialFee >= 0 && discount >= 0) {
-
             const discountAmount = motoValue * (discount / 100);
-            const newFinanceValue = motoValue - discountAmount - initialFee;
-            setFinanceValue(newFinanceValue >= 0 ? newFinanceValue : 0); // No permitir valores negativos   
-        }
-    }, [motoValue, initialFee, discount]);  // Limpieza para cancelar el timeout si cambia alguna dependencia antes de completarse
+            const valueAfterDiscount = motoValue - discountAmount;
 
+            // Sumar documentos y garantía
+            const additionalCosts = garantia + documentos;
+
+            // Calcular valor final a financiar
+            const totalValue = valueAfterDiscount + additionalCosts - initialFee;
+
+            setFinanceValue(totalValue >= 0 ? totalValue : 0);
+        }
+    }, [motoValue, initialFee, discount, garantia, documentos]);
 
     useEffect(() => {
         if (financeValue !== null && motoValue && initialFee >= 0 && discount >= 0) {
@@ -80,12 +96,22 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
         };
     };
     // Función para hacer la solicitudes a fetchQuotes
-    const handleFetchQuotes = async () => {
+    const handleFetchQuotes = async (customTerms?: number[]) => {
         if (motoValue && initialFee >= 0 && discount >= 0) {
             setLoading(true);
             try {
-                const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue || 0, userData.name, userData.nit, userData.email, userData.phone, data);
-                console.log('updatedQuotes:', updatedQuotes);
+                const updatedQuotes = await fetchQuotes(
+                    initialFee,
+                    discount,
+                    documentos,
+                    (financeValue || 0) * 100, // Convertir a centavos
+                    userData.name,
+                    userData.nit,
+                    userData.email,
+                    userData.phone,
+                    data,
+                    financialEntityId
+                );
                 setQuotes(updatedQuotes);
             } catch (error) {
                 console.error("Error fetching quotes:", error);
@@ -140,7 +166,8 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
     }, 2000);
 
     const handleInitialFeeChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-        setInitialFee(Number(e.target.value) || 0);
+        const numericValue = e.target.value.replace(/[^0-9]/g, ''); // Eliminar todo excepto números
+        setInitialFee(Number(numericValue) || 0);
         e.target.value = formatNumber(e.target.value);
         handleFetchQuotes();
     }, 2000);
@@ -149,6 +176,18 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
         const numericValue = e.target.value.replace(/[^0-9]/g, ''); // Eliminar todo excepto números
         setDiscount(Number(numericValue) || 0);
         e.target.value = formatNumber(e.target.value);
+        handleFetchQuotes();
+    }, 2000);
+
+    const handleGarantiaChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+        const numericValue = e.target.value.replace(/[^0-9]/g, '');
+        setGarantia(Number(numericValue) || 0);
+        handleFetchQuotes();
+    }, 2000);
+
+    const handleDocumentosChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+        const numericValue = e.target.value.replace(/[^0-9]/g, '');
+        setDocumentos(Number(numericValue) || 0);
         handleFetchQuotes();
     }, 2000);
 
@@ -176,9 +215,9 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
 
         try {
             // Enviar el valor de financiar actualizado a fetchQuotes
-            const updatedQuotes = await fetchQuotes(initialFee, discount, financeValue ?? 0, name, nit, email, phone, data);
+            const updatedQuotes = await fetchQuotes(initialFee, discount, documentos, financeValue ?? 0, name, nit, email, phone, data, financialEntityId);
             setQuotes(updatedQuotes);
-            setUserData({ name, nit, email, phone});
+            setUserData({ name, nit, email, phone });
             setPopupVisible(true); // Mostrar popup
         } catch (error) {
             console.error("Error fetching quotes:", error);
@@ -197,6 +236,15 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
         setPopupVisible(false);
     };
 
+    // Asegurarnos que se actualice el financeValue cuando cambie data.precio
+    useEffect(() => {
+        if (data?.precio) {
+            setMotoValue(data.precio);
+            // Calcular el valor a financiar inicial incluyendo la garantía
+            const totalValue = data.precio + (data?.garantia ? Number(data.garantia) : 0) + documentos;
+            setFinanceValue(totalValue);
+        }
+    }, [data?.precio, data?.garantia]);
 
     return (
         <div className="col-detail">
@@ -208,10 +256,36 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                             <label>Valor Moto</label>
                             <input type="text"
                                 name="value-moto"
+                                defaultValue={data?.precio ? formatNumber(data.precio.toString()) : '0'}
                                 onChange={(e) => {
                                     const formattedValue = formatNumber(e.target.value);
                                     e.target.value = formattedValue;
                                     handleMotoValueChange(e);
+                                }}
+                            />
+                        </div>
+                        <div id="input-garantia">
+                            <label>Garantía</label>
+                            <input
+                                type="text"
+                                name="garantia"
+                                defaultValue={data?.garantia ? formatNumber(data.garantia.toString()) : '0'}
+                                onChange={(e) => {
+                                    const formattedValue = formatNumber(e.target.value);
+                                    e.target.value = formattedValue;
+                                    handleGarantiaChange(e);
+                                }}
+                            />
+                        </div>
+                        <div id="input-documentos">
+                            <label>Documentos</label>
+                            <input
+                                type="text"
+                                name="documentos"
+                                onChange={(e) => {
+                                    const formattedValue = formatNumber(e.target.value);
+                                    e.target.value = formattedValue;
+                                    handleDocumentosChange(e);
                                 }}
                             />
                         </div>
@@ -235,9 +309,17 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                                 onChange={handleDiscountChange} // Actualiza el valor del descuento y aplica debounce
                             />
                         </div>
+
                         <div id="valor-financiar">
                             <label>Valor a financiar</label>
-                            <div>{financeValue !== null ? `$${financeValue.toLocaleString()}` : ""}</div>
+                            <input
+                                type="text"
+                                disabled
+                                value={financeValue !== null 
+                                    ? `$${financeValue.toLocaleString()}`
+                                    : "$0"
+                                }
+                            />
                         </div>
                     </div>
                 </div>
@@ -251,25 +333,40 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                                 <div key={index} className="quote-data-row">
                                     <div className="quote_data-head">
                                         <h3>Cuota mensual</h3>
-                                        <span id="quote-value">${item.monthlyFee.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                        <span id="quote-month">{item.monthlyRate} Meses</span>
+                                        <span id="quote-value">
+                                            ${Math.round((item?.monthlyFee || 0) / 100).toLocaleString()}
+                                        </span>
+                                        <span id="quote-month">{item?.monthlyRate || 0} Meses</span>
                                     </div>
                                     <div className="quote-body">
                                         <div>
-                                            <span>Tasa efectiva anual</span>
-                                            <span>{item.annualEffectiveRate}%</span>
-                                        </div>
-                                        <div>
                                             <span>Tasa mensual vencida</span>
-                                            <span>{item.monthlyCupDue}%</span>
+                                            <span>{item?.monthlyCupDue || 0}%</span>
                                         </div>
                                         <div>
                                             <span>Seguro vida (mes)</span>
-                                            <span>${item.monthLifeInsurance.toLocaleString()}</span>
+                                            <span>${(item?.monthLifeInsurance || 0).toLocaleString()}</span>
+                                        </div>
+                                        <div>
+                                            <span>Garantía</span>
+                                            <span>${(garantia || 0).toLocaleString()}</span>
+                                        </div>
+                                        <div>
+                                            <span>Documentos</span>
+                                            <span>${(documentos || 0).toLocaleString()}</span>
+                                        </div>
+                                        <div>
+                                            <span>Cuota inicial</span>
+                                            <span>${(initialFee || 0).toLocaleString()}</span>
                                         </div>
                                         <div className="value-to-pay">
-                                            <span>Valor a pagar</span>
-                                            <span>${((item?.monthlyFee ?? 0) * (item?.monthlyRate ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>Valor a Financiar</span>
+                                            <span>
+                                                ${(financeValue || 0).toLocaleString(undefined, {
+                                                    minimumFractionDigits: 0,
+                                                    maximumFractionDigits: 0
+                                                })}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -335,7 +432,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                 <div id="p-detail-btn-send">
                     <button type="submit">Enviar cotización</button>
                 </div>
-                
+
             </form>
 
             {/* Popup */}
@@ -355,14 +452,12 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                             <p><Mail size={15} /> {userData.email}</p>
                             <p><Phone size={15} /> {userData.phone}</p>
                         </div>
-                    </div>
-                    <div className="popup-buttons-quotesColDetail">
-                        <div className="popup-quotesColDetail-closeBtn">
-                            <button onClick={closePopup}>CERRAR</button>
-                        </div>
                         <Link href="/forms/pre-aprobado">
                             <button className="green-button-quotesColDetail">PEDIR CRÈDITO YA</button>
                         </Link>
+                        <div className="popup-quotesColDetail-closeBtn">
+                            <button onClick={closePopup}>CERRAR</button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -16,9 +16,29 @@ interface Product {
 
 
 const ProductCard = ({ product }: { product: Product }) => {
+    
 
-    //console.log(`https://lh3.googleusercontent.com/d/${product.imagen.split('id=')[1]}=s100`);
-    const firstImage = product.imagen && Array.isArray(product.imagen) ? product.imagen[0] : '';
+    // Función para obtener la URL de la imagen deforma segura
+    const getImageUrl = (imageString: string | string[] | undefined): string => {
+        if (!imageString) return '/placeholder-image.jpg';
+        
+        const image = Array.isArray(imageString) ? imageString[0] : imageString;
+       
+        
+        try {
+            // Verifica si es una URL de Google Drive
+            if (image?.includes('google') && image?.includes('id=')) {
+                const idPart = image.split('id=')[1];
+                return idPart ? `https://lh3.googleusercontent.com/d/${idPart}=s200` : '/placeholder-image.jpg';
+            }
+            
+            // Si es una URL regular, la devuelve directamente
+            return image;
+        } catch (error) {
+            console.error('Error processing image URL:', error);
+            return '/placeholder-image.jpg';
+        }
+    };
 
     function formatNumber(number: number): string {
         return number.toLocaleString('en-US');
@@ -28,9 +48,10 @@ const ProductCard = ({ product }: { product: Product }) => {
 
     return (
         <div className="product-card">
+            <Link href={`/products/${product.id}`}>
             <div className="product-card_image">
                 <Image 
-                    src={`https://lh3.googleusercontent.com/d/${firstImage.split('id=')[1]}=s200`} 
+                    src={getImageUrl(product.imagen)}
                     alt={product.modelo} 
                     width={200} 
                     height={200} 
@@ -57,11 +78,12 @@ const ProductCard = ({ product }: { product: Product }) => {
                 </div>
             </div>
             <div className="btn-r-arrow">
-                <Link href={`/products/${product.id}`}>
+             
                     <span>Ver más</span>
                     <MoveRight />
-                </Link>
+             
             </div>
+            </Link>
         </div>
     );
 }

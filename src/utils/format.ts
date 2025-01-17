@@ -9,6 +9,6 @@ export const formatNumber = (value: string): string => {
     const number = parseInt(numericValue, 10);
     if (isNaN(number)) return '';
     
-    // Convertir a string y agregar comas manualmente
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    // Convertir a string y agregar comas y símbolo $
+    return `$${number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 }; 

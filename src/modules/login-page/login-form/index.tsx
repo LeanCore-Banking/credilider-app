@@ -1,115 +1,88 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import useAuth from '@/auth/hooks';
 import { Button, Input } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { PiUserCircle } from "react-icons/pi";
-import { IoLockClosedOutline } from "react-icons/io5";
-import { MuiOtpInput } from "mui-one-time-password-input";
 import './styles.css';
 
 type FormValues = {
-    username: string;
-    password: string;
+  username: string;
 };
 
 function LoginForm() {
-  const router = useRouter();
-  const { signIn, confirmSignIn, signOut } = useAuth();
-  const [waitingOTP, setWaitingOTP] = useState(false);
-    const [otp, setOtp] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string>("");
+  
+  const { getMagicLink, signInML } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-    const methods = useForm<FormValues>({
-        defaultValues: {
-            username: "",
-            password: "",
-        },
-    });
+  const methods = useForm<FormValues>({
+    defaultValues: {
+      username: "",
+    },
+  });
 
+  // Manejar el login con magic link
+  const onSubmit = async (data: FormValues) => {
+    try {
+      setLoading(true);
+      setErrorMessage("");
 
-    const onSubmit = async (data: FormValues) => {
-        try {
-            setLoading(true);
-            setErrorMessage("");
-            
-            try {
-                await signOut();
-            } catch (error) {
-                console.log("[onSubmit] signOut error", error);
-            }
-            
-            await signIn(data.username, data.password);
-            setLoading(false);
-            setWaitingOTP(true);
-        } catch (error) {
-            setLoading(false);
-            setWaitingOTP(false);
-            console.log("[onSubmit] error", error);
-            setErrorMessage("Error al iniciar sesión. Por favor, verifica tus credenciales.");
+      const fintechId = "993ecefe-6aa1-4804-9865-d5623f018196";
+
+      // Solicitar magic link
+      const res = await getMagicLink(data.username, fintechId);
+      console.log('res:', res);
+
+      if (res?.link) {
+        // Extraer user y token del link
+        const params = new URLSearchParams(res.link);
+        const user = params.get('user');
+        const token = params.get('token');
+
+        if (user && token) {
+          setErrorMessage("Iniciando sesión...");
+          const ml = await signInML(user, token);
+          console.log('ML:', ml)
+        } else {
+          setErrorMessage("Error al procesar el magic link.");
         }
-    };
-
-    const handleChange = (newValue: string) => {
-        setOtp(newValue);
-    };
-
-
-    const handleConfirm = async () => {
-        try {
-            setLoading(true);
-            await confirmSignIn(otp, async (token, attributes) => {
-                // console.log("[handleConfirm] token", token);
-                // console.log("[handleConfirm] attributes", attributes);
-                router.push("/");
-            });
-            setLoading(false);
-        } catch (error) {
-            setLoading(false);
-            console.log("[handleConfirm] error", error);
-        }
-    };
-
-    const onReturn = () => {
-        setWaitingOTP(false);
-    };
-
+      } else {
+        setErrorMessage("Error al iniciar sesión. Por favor, intente nuevamente.");
+      }
+    } catch (error) {
+      console.error("[onSubmit] error", error);
+      setErrorMessage("Error al iniciar sesión. Por favor, verifique sus credenciales.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-container">
       <div className="header">
         <h2>Bienvenido a Credilider</h2>
       </div>
-      {!waitingOTP && (
-        <form onSubmit={methods.handleSubmit(onSubmit)}>
-          <p>Usuario</p>
-          <div className="input-container">
-            <PiUserCircle size={19} />
-            <Input
-              placeholder="Ingrese usuario"
-              {...methods.register("username")}
-            />
-          </div>
-          
-          <p>Contraseña</p>
-          <div className="input-container">
-            <IoLockClosedOutline size={19} />
-            <Input
-              type="password"
-              {...methods.register("password")}
-              placeholder="Ingrese contraseña"
-            />
-          </div>
 
-          {errorMessage && (
-            <div className="error-message">
-              {errorMessage}
-            </div>
-          )}
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <p>Correo electrónico</p>
+        <div className="input-container">
+          <PiUserCircle size={19} />
+          <Input
+            placeholder="Ingrese su correo"
+            type="email"
+            {...methods.register("username")}
+          />
+        </div>
 
+        {errorMessage && (
+          <div className={errorMessage.includes("Iniciando") ? "info-message" : "error-message"}>
+            {errorMessage}
+          </div>
+        )}
+
+        <div className="login-submit-button-container">
           <Button
             className="login-submit-button"
             variant="contained"
@@ -117,36 +90,11 @@ function LoginForm() {
             type="submit"
             disabled={loading}
           >
-            {!loading ? "Ingresar" : "Cargando..."}
+            {!loading ? "Iniciar sesión" : "Iniciando..."}
           </Button>
-        </form>
-      )}
-      
-      {waitingOTP && (
-        <div className="otp-container">
-          <MuiOtpInput value={otp} onChange={handleChange} length={6} />
-          <div className="buttons-container">
-            <Button
-              variant="contained"
-              color="primary"
-              type="button"
-              onClick={handleConfirm}
-              disabled={otp.length !== 6 || loading}
-            >
-              {!loading ? "Confirmar" : "Cargando..."}
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              type="button"
-              onClick={onReturn}
-              disabled={loading}
-            >
-              Regresar
-            </Button>
-          </div>
         </div>
-      )}
+
+      </form>
     </div>
   );
 }

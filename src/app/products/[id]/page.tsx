@@ -1,25 +1,33 @@
-'use server'
+'use client'
 
 import MainImage from "@/components/MainImage/Index";
 import './styles.css';
 import QuoteColDetail from "@/components/QuoteColDetail/Index";
 import { defaultQuotes } from "@/app/lib/default-data";
 import { fectchMotoById } from "@/app/lib/data";
-
-
+import { useQuery } from "@tanstack/react-query";
+import { ProductDetailSkeleton } from "@/components/skeletons";
 
 type ProductDetail = {
     params: {
         id: string;
     }
 }
-const ProductDetails: React.FC<ProductDetail> = async ({ params }) => {
 
+const ProductDetails: React.FC<ProductDetail> = ({ params }) => {
     const { id } = params;
-    console.log('id##:', id);
 
-    const motoData = await fectchMotoById(id);
-    //console.log('motodataFromProductDetail:', motoData);
+    const { data: motoData, isLoading, error } = useQuery({
+        queryKey: ['moto', id],
+        queryFn: () => fectchMotoById(id),
+        staleTime: 30 * 24 * 60 * 60 * 1000, // 30 días
+        gcTime: 31 * 24 * 60 * 60 * 1000, // 31 días
+        refetchOnWindowFocus: false,
+    });
+
+    if (isLoading) return <div><ProductDetailSkeleton/></div>;
+    if (error) return <div>Error al cargar los datos</div>;
+    if (!motoData) return <div>No se encontró la moto</div>;
 
     return (
         <div>

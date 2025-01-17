@@ -21,9 +21,8 @@ export default function ResponsiveHeader() {
 
   const navItems = [
     { text: "Inicio", ref: "/" },
-    { text: "Solicita tu crédito", ref: "/solicita-tu-credito" },
-    { text: "Viabilidad de crédito online", ref: "/viabilidad-credito-online" },
-    { text: "Medios de pago", ref: "/medios-de-pago" },
+    { text: "Cotizar", ref: "/" },
+    { text: "Solicitar credito", ref: "/forms/pre-aprobado" }
   ]
 
   return (
@@ -33,12 +32,14 @@ export default function ResponsiveHeader() {
         <header className={styles.header}>
           <div className={styles.headerContent}>
             <div className={styles.logo}>
-              <Image
-                src="/logo-head-credilider.png"
-                alt="credilider-logo"
-                width={150}
-                height={100}
-              />
+              <Link href="/">
+                <Image
+                  src="/logo-head-credilider.png"
+                  alt="credilider-logo"
+                  width={150}
+                  height={100}
+                />
+              </Link>
             </div>
             <div className={styles.headerOptions}>
               {headerOptions.map((option, index) => (
@@ -87,9 +88,11 @@ export default function ResponsiveHeader() {
           <div className={styles.navContent}>
             <div className={styles.navItems}>
               {navItems.map((item, index) => (
-                <button key={index} className={styles.navItem}>
-                  {item.text}
-                </button>
+                <Link key={index} href={item.ref}>
+                  <div className={styles.navItem}>
+                    {item.text}
+                  </div>
+                </Link>
               ))}
             </div>
             <div className={styles.contactInfo}>

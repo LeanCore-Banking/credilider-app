@@ -17,11 +17,19 @@ type dataDescriptionProps = {
 
 const MainImage: React.FC<dataDescriptionProps> = ({ data }) => {
 
+  console.log('dataImagen:', data.imagen);
   const [currentImage, setCurrentImage] = useState<number>(0)
 
-  const imgsFormated = data.imagen.map((img: string) => {
-    return `https://lh3.googleusercontent.com/d/${img.split('id=')[1]}=s600`
-  })
+  const formatImageUrl = (img: string): string => {
+    // Verifica si la URL es de Google Drive
+    if (img.includes('google') || img.includes('googleusercontent')) {
+      return `https://lh3.googleusercontent.com/d/${img.split('id=')[1]}=s600`
+    }
+    // Si no es de Google Drive, retorna la URL original
+    return img
+  }
+
+  const imgsFormated = data.imagen.map((img: string) => formatImageUrl(img))
 
   console.log('imgsFormated:', imgsFormated);
 

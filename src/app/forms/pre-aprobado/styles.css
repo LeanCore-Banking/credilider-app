@@ -40,13 +40,14 @@
 }
 
 #pre-aprobado-btn {
-  grid-column: 2 / 3; /* Posicionar el elemento en la columna del medio */
+  grid-column: 3 / 3; /* Posicionar el elemento en la columna del medio */
+  margin-top: 1em;
 }
 
 .continuar-credito{
   display: flex;
   justify-content: flex-end;
-  margin: 0 2em;
+  margin: 0 8em 2em 2em;
 }
 
 label{
@@ -56,6 +57,14 @@ label{
 }
 
 input{
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  height: 3em;
+  padding-left: 5px;
+}
+
+select{
   font-size: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -133,6 +142,7 @@ input{
   }
 
   #pre-aprobado-btn {
+    margin-top: 1em;
     grid-column: auto; /* Desactiva la asignación de columna específica */
     justify-self: stretch;
   }
@@ -151,6 +161,7 @@ input{
   }
 
   #pre-aprobado-btn {
+    margin-top: 1em;
     grid-column: auto; /* Desactiva la asignación de columna específica */
     justify-self: stretch;
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 
 import {
@@ -10,9 +10,11 @@ import {
     fetchAuthSession,
     fetchUserAttributes,
     type FetchUserAttributesOutput,
+    getCurrentUser,
 } from "aws-amplify/auth"
 import { useRouter } from "next/navigation";
 import { defaultUserAttributes, UserAttributes } from "@/types/auth";
+import { getAuthToken } from "@/app/lib/auth";
 
 type AuthContextType = {
     loading: boolean;
@@ -20,23 +22,51 @@ type AuthContextType = {
     getAccessToken: () => Promise<string>;
     getCurrentFintech: () => string;
     signIn: (username: string, password: string) => Promise<void>;
+    signInML: (user: string, token: string) => Promise<void>;
     confirmSignIn: (
         code: string,
         fn: (token: string, attributes: UserAttributes) => Promise<void>
     ) => Promise<void>;
     signOut: () => Promise<void>;
     isLogged: () => boolean;
+    getMagicLink: (username: string, fintechId: string) => Promise<any>;
 };
 
 export const AuthContext = createContext<AuthContextType>(null!);
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
     const [attributes, setAttributes] = useState<UserAttributes>(defaultUserAttributes);
     const [authNextStep, setAuthNextStep] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [JWT, setJWT] = useState<string>("");
 
+    // Verificar sesión al cargar
+    useEffect(() => {
+        checkAuth();
+    }, []);
+
+    const checkAuth = async () => {
+        console.log("checkAuth");
+        try {
+            // Verifica si hay un usuario actual
+            const currentUser = await getCurrentUser();
+            console.log("currentUser", currentUser);
+            // Verifica si la sesión es válida
+            const session = await fetchAuthSession();
+            
+            if (currentUser && session.tokens) {
+                setIsAuthenticated(true);
+                // Si hay sesión válida, redirigir a products
+                router.replace('/products');
+            }
+        } catch (error) {
+            console.log('No authenticated user');
+            setIsAuthenticated(false);
+            router.replace('/login');
+        }
+    };
 
     useEffect(() => {
         // Get the user's attributes and set them in state
@@ -134,6 +164,81 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return attributes.email !== "" && JWT !== "";
     };
 
+    const _getMagicLink = async (username: string, fintechId: string) => {
+        const token = await getAuthToken();
+        console.log("username:", username);
+        console.log("fintechId:", fintechId); 
+        try {
+            const response = await fetch('https://api.dev-middleware.leancore.co/magic-link', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    username,
+                    fintechId,
+                }),
+            });
+
+            console.log("getMagicLink:", response);
+
+            if (!response.ok) {
+                throw new Error('Error al obtener magic link');
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('[getMagicLink] error:', error);
+            throw error;
+        }
+    };
+
+    const setup = useCallback(async () => {
+        try {
+            // Obtener atributos del usuario
+            const attributes = await fetchUserAttributes();
+            console.log("attributes--", attributes);
+            const attrs = fromUserAttributesOutput(attributes);
+            setAttributes(attrs);
+
+            // Obtener sesión y JWT
+            const currentSession = await fetchAuthSession();
+            const jwt = currentSession.tokens?.accessToken.toString();
+            setJWT(jwt ?? "");
+
+            router.replace("/products");
+        } catch (error) {
+            console.log("[setup] error:", error);
+            setAttributes(defaultUserAttributes);
+            setJWT("");
+            router.replace("/login");
+        }
+    }, [router]);
+
+    const _signInML = useCallback(
+        async (user: string, token: string) => {
+            console.log("user_signInML:", user);
+            try {
+                const username = atob(user);
+                const { nextStep } = await signIn({
+                    username,
+                    options: {
+                        authFlowType: "CUSTOM_WITHOUT_SRP",
+                    },
+                });
+                if (nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE") {
+                    await confirmSignIn({ challengeResponse: token });
+                    await setup();
+                }
+            } catch (error) {
+                console.log("[magicLinkSignIn] error signing in", error);
+            }
+        },
+        [setup]
+    );
+
     /*  if (isLoading) {
          return <Image src={backgroundImage} alt="Background" className={styles.backgroundImage} />;
      } */
@@ -146,15 +251,17 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 getAccessToken: _getAccessToken,
                 getCurrentFintech: _getCurrentFintech,
                 signIn: _signIn,
+                signInML: _signInML,
                 confirmSignIn: _confirmSignIn,
                 signOut: _signOut,
                 isLogged: _isLogged,
+                getMagicLink: _getMagicLink,
             }}
         >
             {children}
         </AuthContext.Provider>
     );
-};
+}
 
 const fromUserAttributesOutput = (attributes: FetchUserAttributesOutput) => {
     const newAttributes: UserAttributes = {

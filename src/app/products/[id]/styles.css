@@ -44,12 +44,15 @@
   margin: 2em 1em 2em 0;
   margin-top: 2em;
   gap: 1em;
-  justify-content: space-between;
   flex-wrap: wrap;
 }
 
+#input-garantia {
+  width: 30%;
+}
+
 #input-valor-moto {
-  min-width: 40%;
+  min-width: 30%;
 }
 
 .inputs-values label {
@@ -64,14 +67,18 @@
 }
 
 #input-cuota-inicial {
-  width: 40%;
+  width: 30%;
 }
 
 #input-descuento {
-  max-width: 15%;
+  width: 30%;
 }
 #valor-financiar {
-  width: 40%;
+  width: 35%;
+}
+
+#input-documentos {
+  width: 35%;
 }
 
 .colors-list {

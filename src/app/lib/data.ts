@@ -9,10 +9,10 @@ export async function fetchMotos() {
         await new Promise((resolve) => setTimeout(resolve, 3000)); */
 
         
-      console.log("Fetching revenue data...");
+      console.log("Fetching revenue motos data...");
   
       const response = await axios.get(
-        `https://script.google.com/macros/s/AKfycbwKqKdyD5GVNlOqYnFEAjUOlzCKODEOyyFosrPkZxeGyA7MF-GRofUmE7kN8r7lIaZuZA/exec?action=listMotos`
+        `https://script.google.com/macros/s/AKfycbyws0UuN9ucX-RZBctKVgda8Ah5T_7Lidcd1m6AXzW_8wIHScfmkJiVCIkfgLJ7BOkMwA/exec?action=listMotos`
       );
       return response.data;
       // console.log('Data fetch completed after 3 seconds.');
@@ -29,10 +29,11 @@ export async function fetchMotos() {
   
       /* console.log('Fetching revenue data...');
         await new Promise((resolve) => setTimeout(resolve, 3000)); */
-        
+
+        console.log("Fetching revenue moto data...");
   
       const response = await axios.get(
-        `https://script.google.com/macros/s/AKfycbzeeeIGY1GEUQR_3zRKbd_75E5lE4XvY3Y-7Ht7_vuMF0cyLBgNGWbTI_pd72OJ4hWf5g/exec?action=getMotoById&id=${id}`
+        `https://script.google.com/macros/s/AKfycbyws0UuN9ucX-RZBctKVgda8Ah5T_7Lidcd1m6AXzW_8wIHScfmkJiVCIkfgLJ7BOkMwA/exec?action=getMotoById&id=${id}`
       );
       const data = response.data;
       //const moto = data.find((moto: { id: string }) => moto.id === id);

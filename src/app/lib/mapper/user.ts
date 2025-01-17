@@ -32,11 +32,13 @@ export interface ICreateLead {
     incomes: string;
     expenses: string;
     cuota_inicial: string;
+    valor_financiar: string;
     'number-dependants': string;
     antigüedad_empresa: string;
     deudas_transito: string;
     deudas_actuales: string;
     contrato_laboral: string;
+    icp: string;
   }
   
   export const userFormToData = (data: IFormData): Omit<ICreateLead, 'additional_data'> => {
@@ -118,6 +120,18 @@ export interface ICreateLead {
         value: data.contrato_laboral,
         type: "array",
         label: "Contrato laboral"
+      },
+      {
+        key: "valor_financiar",
+        value: data.valor_financiar,
+        type: "number",
+        label: "Valor a financiar"
+      },
+      {
+        key: "icp",
+        value: data.icp,
+        type: "number",
+        label: "ICP"
       }
     ];
   };

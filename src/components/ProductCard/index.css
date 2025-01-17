@@ -8,6 +8,20 @@
   padding: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 10, 0.3);
 }
+
+.btn-r-arrow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.product-card a {
+  text-decoration: none;
+  color: #403f3f;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
 .product-card_image {
   background-size: cover;
   background-position: center;

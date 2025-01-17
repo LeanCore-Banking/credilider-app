@@ -71,8 +71,16 @@
   transition: background-color 0.3s ease;
 }
 
+.login-submit-button-container button{
+  background-color:  #b4924e  !important;
+}
+
 .login-submit-button:hover {
   background-color: #d4af6f  !important;
+}
+
+.login-submit-button-container{
+  margin-top: 1.5rem;
 }
 
 .otp-container {

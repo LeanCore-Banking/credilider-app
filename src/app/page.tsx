@@ -1,8 +1,18 @@
+"use client";
 
-import HomePage from "@/components/HomePage/Index";
+import { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import useAuth from '@/auth/hooks';
+import ResponsiveHeader from '@/components/Header/Index';
+import Products from './products/page';
+
 
 export default function Home() {
-  return (  
-   <HomePage/>
-  );
+    return (
+        <>
+            <ResponsiveHeader/>  
+            <Products/>
+        </>
+    );
 }
+

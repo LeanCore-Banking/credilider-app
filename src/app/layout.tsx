@@ -50,7 +50,6 @@ export default function RootLayout({
   );
 }
 
-
 /* import { AuthProvider } from '@/context/AuthContext'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -64,3 +63,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 } */
+
