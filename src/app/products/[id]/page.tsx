@@ -25,17 +25,16 @@ const ProductDetails: React.FC<ProductDetail> = ({ params }) => {
         refetchOnWindowFocus: false,
     });
 
-    if (isLoading) return <div><ProductDetailSkeleton/></div>;
+    if (isLoading) return <div><ProductDetailSkeleton /></div>;
     if (error) return <div>Error al cargar los datos</div>;
     if (!motoData) return <div>No se encontró la moto</div>;
 
     return (
         <div>
             <div className="detail-container">
+                {/* columna de la imagen */}
                 <section className="col-detail" id="col-detail-img">
-
                     <MainImage data={motoData} />
-
                     <div className="block-description-container">
                         <header id="header">
                             <div className="name">
@@ -64,6 +63,7 @@ const ProductDetails: React.FC<ProductDetail> = ({ params }) => {
 
                 </section>
                 <div className="vertical-line-section"></div>
+                {/* columna de la cotización */}
                 <QuoteColDetail quoteDefault={defaultQuotes} data={motoData} />
             </div>
 

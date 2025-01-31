@@ -86,7 +86,7 @@ export async function fetchQuotes(
 
     // Ejecutar todas las simulaciones en paralelo
     const simulationResults = await Promise.all(simulationPromises);
-    console.log("simulationResults:", simulationResults[0].data);
+    //console.log("simulationResults:", simulationResults[0].data);
 
     // Transformar resultados a formato Quote[]
     const quotes: Quote[] = simulationResults.map((result, index) => {
@@ -121,7 +121,7 @@ export async function fetchQuotes(
 
       if (user.error === "Not Found") {
         console.log("Lead not found");
-        //const leadSaved = await createLead(createLeadPayload)
+        const leadSaved = await createLead(createLeadPayload)
         //console.log("leadSaved:", leadSaved);
       } else {
         console.log("User found");
@@ -133,7 +133,7 @@ export async function fetchQuotes(
           phone,
         };
         const leadUpdated = await updateLead(updateLeadPayload);
-        console.log("leadUpdated:", leadUpdated);
+        //console.log("leadUpdated:", leadUpdated);
       }
       //console.log("htlm:", cotizacionHTML(quotes, motoData));
 

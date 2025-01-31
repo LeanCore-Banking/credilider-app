@@ -1,5 +1,6 @@
 export function cotizacionHTML(quotes: any[], data: any): string {
   // Función auxiliar para procesar URLs de imágenes de forma segura
+  console.log("data:", data);
   const processImageUrl = (img: string | undefined): string => {
     if (!img) return ''; // URL por defecto o string vacío
     
@@ -47,6 +48,7 @@ export function cotizacionHTML(quotes: any[], data: any): string {
         print-color-adjust:exact !important;
       }   
       .pdf-container {
+        font-family: Arial, Helvetica, sans-serif;
         margin: 0 auto;
       }
       .pdf-data-row {
@@ -64,7 +66,9 @@ export function cotizacionHTML(quotes: any[], data: any): string {
       }
 
       .pdf-quote-number {
-        font-weight: 600;
+        position: relative;
+        top: 13px;
+        font-weight: 700;
         font-size: 80px;
         color: #666;
       }
@@ -86,6 +90,7 @@ export function cotizacionHTML(quotes: any[], data: any): string {
       .pdf-main-img {
         width: 65%;
         height: 100%;
+        background: #fdfdfd;
       }
 
       .pdf-main-img img {
@@ -201,10 +206,7 @@ export function cotizacionHTML(quotes: any[], data: any): string {
                     </div>
                     <div>
                       <h3>Cuota mensual</h3>
-                      <span id="pdf-quote-value">$${(item.monthlyFee).toLocaleString(
-                        undefined,
-                        { minimumFractionDigits: 0, maximumFractionDigits: 0 }
-                      )}</span>
+                      <span id="pdf-quote-value">$${Math.round(item.monthlyFee / 100 || 0).toLocaleString()}</span>
                       <span id="pdf-quote-month">${item.monthlyRate} Meses</span>
                     </div>
                   </div>
@@ -223,18 +225,15 @@ export function cotizacionHTML(quotes: any[], data: any): string {
                     </div>
                     <div>
                       <span>Documentos</span>
-                      <span>$${Math.round(data.documentos || 0).toLocaleString()}</span>
+                      <span>$${Math.round(item.documentos || 0).toLocaleString()}</span>
                     </div>
                     <div>
                       <span>Cuota inicial</span>
-                      <span>$${Math.round(data.initialFee || 0).toLocaleString()}</span>
+                      <span>$${Math.round(item.initialFee || 0).toLocaleString()}</span>
                     </div>
                     <div class="pdf-value-to-pay">
                       <span>Valor a Financiar</span>
-                      <span>$${Math.round(item.financeValue || 0).toLocaleString(undefined, {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })}</span>
+                      <span>$${Math.round(item.financeValue / 100 || 0).toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
