@@ -15,6 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import { defaultUserAttributes, UserAttributes } from "@/types/auth";
 import { getAuthToken } from "@/app/lib/auth";
+import { getAwsConfig } from "./aws-exports";
 
 type AuthContextType = {
     loading: boolean;
@@ -34,6 +35,8 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>(null!);
 
+
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
@@ -41,6 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [authNextStep, setAuthNextStep] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [JWT, setJWT] = useState<string>("");
+
+    useEffect(() => {
+        getAwsConfig();
+    }, []);
 
     // Verificar sesión al cargar
     useEffect(() => {
@@ -244,6 +251,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         authFlowType: "CUSTOM_WITHOUT_SRP",
                     },
                 });
+
+                console.log("nextStep.signInStep:", nextStep.signInStep);
                 
                 if (nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE") {
                     await confirmSignIn({ challengeResponse: token });
@@ -251,7 +260,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
             } catch (error) {
                 console.error("[magicLinkSignIn] error detallado:", error);
-                throw error; // Propagamos el error para mejor manejo
+                throw error;
             }
         },
         [setup]

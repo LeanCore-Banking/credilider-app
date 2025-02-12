@@ -18,11 +18,11 @@ const ZendeskWidget = () => {
 
         // Limpiar cualquier instancia previa del widget
         if (window.zE) {
-            window.zE('webWidget', 'hide');
-            window.zE('webWidget', 'clear');
+            window.zE('webWidget:hide');
+            window.zE('webWidget:clear');
         }
 
-        // Configuración del widget
+        // Configuración actualizada del widget
         window.zESettings = {
             webWidget: {
                 color: { theme: '#11ace8' }, // Color principal de tu app
@@ -31,7 +31,7 @@ const ZendeskWidget = () => {
                     vertical: '20px'
                 },
                 position: { horizontal: 'right', vertical: 'bottom' },
-                locale: 'es', // Configurar idioma español
+                locale: 'es', // El idioma se configura aquí directamente
                 launcher: {
                     label: { '*': 'Ayuda' } // Texto del botón en español
                 }
@@ -44,20 +44,13 @@ const ZendeskWidget = () => {
         script.src = 'https://static.zdassets.com/ekr/snippet.js?key=0e961e39-bf9d-48be-ae7b-bfa9a4bbf1a6';
         script.async = true;
         
-        script.onload = () => {
-            if (window.zE) {
-                // Configurar idioma después de cargar
-                window.zE('webWidget', 'setLocale', 'es');
-            }
-        };
-
         document.head.appendChild(script);
 
         return () => {
             // Limpiar completamente el widget al desmontar
             if (window.zE) {
-                window.zE('webWidget', 'hide');
-                window.zE('webWidget', 'clear');
+                window.zE('webWidget:hide');
+                window.zE('webWidget:clear');
             }
             const existingScript = document.getElementById('ze-snippet');
             if (existingScript) {
