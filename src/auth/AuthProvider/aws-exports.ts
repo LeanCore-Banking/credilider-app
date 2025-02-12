@@ -1,16 +1,28 @@
 'use server'
 
-export async function getAwsConfig() {
-
-  return {
-    aws_project_region: process.env.AUTH_AWS_REGION,
-    aws_user_pools_id: process.env.AUTH_AWS_USER_POOL_ID,
-    aws_user_pools_web_client_id: process.env.AUTH_AWS_USER_POOL_WEB_CLIENT_ID,
-    Auth: {
-      Cognito: {
-        userPoolClientId: process.env.AUTH_AWS_USER_POOL_WEB_CLIENT_ID,
-        userPoolId: process.env.AUTH_AWS_USER_POOL_ID,
-      },
+export const getAwsConfig = async () => {
+    if (!process.env.AUTH_AWS_USER_POOL_ID) {
+        throw new Error('AUTH_AWS_USER_POOL_ID no está definido');
     }
-  };
-}
+    if (!process.env.AUTH_AWS_USER_POOL_WEB_CLIENT_ID) {
+        throw new Error('AUTH_AWS_USER_POOL_WEB_CLIENT_ID no está definido');
+    }
+    if (!process.env.AUTH_AWS_REGION) {
+        throw new Error('AUTH_AWS_REGION no está definido');
+    }
+
+    return {
+        Auth: {
+            Cognito: {
+                userPoolId: process.env.AUTH_AWS_USER_POOL_ID,
+                userPoolClientId: process.env.AUTH_AWS_USER_POOL_WEB_CLIENT_ID,
+                region: process.env.AUTH_AWS_REGION,
+                loginWith: {
+                    username: true,
+                    email: true,
+                    phone: false
+                }
+            }
+        }
+    };
+};
