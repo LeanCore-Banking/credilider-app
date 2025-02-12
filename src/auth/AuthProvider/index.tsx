@@ -221,19 +221,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         async (user: string, token: string) => {
             console.log("user_signInML:", user);
             try {
+                // Agregamos un log para verificar la configuración
+                console.log("Verificando configuración de Amplify...");
+                
                 const username = atob(user);
+                // Agregamos validación adicional
+                if (!username) {
+                    throw new Error('Usuario no válido');
+                }
+
+                // Intentamos obtener la sesión actual primero para verificar la configuración
+                try {
+                    await fetchAuthSession();
+                } catch (configError) {
+                    console.error("Error de configuración de Amplify:", configError);
+                    throw new Error('Error de configuración de autenticación');
+                }
+
                 const { nextStep } = await signIn({
                     username,
                     options: {
                         authFlowType: "CUSTOM_WITHOUT_SRP",
                     },
                 });
+                
                 if (nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE") {
                     await confirmSignIn({ challengeResponse: token });
                     await setup();
                 }
             } catch (error) {
-                console.log("[magicLinkSignIn] error signing in", error);
+                console.error("[magicLinkSignIn] error detallado:", error);
+                throw error; // Propagamos el error para mejor manejo
             }
         },
         [setup]
