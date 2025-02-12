@@ -44,28 +44,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [authNextStep, setAuthNextStep] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [JWT, setJWT] = useState<string>("");
+    const [isConfigured, setIsConfigured] = useState(false);
 
     useEffect(() => {
-        getAwsConfig();
+        const configureAmplify = async () => {
+            try {
+                await getAwsConfig();
+                setIsConfigured(true);
+            } catch (error) {
+                console.error("Error configurando Amplify:", error);
+                setIsConfigured(false);
+            }
+        };
+        configureAmplify();
     }, []);
 
-    // Verificar sesión al cargar
     useEffect(() => {
         checkAuth();
-    }, []);
+    }, [isConfigured]);
 
     const checkAuth = async () => {
+        if (!isConfigured) return;
+        
         console.log("checkAuth");
         try {
-            // Verifica si hay un usuario actual
             const currentUser = await getCurrentUser();
             console.log("currentUser", currentUser);
-            // Verifica si la sesión es válida
             const session = await fetchAuthSession();
             
             if (currentUser && session.tokens) {
                 setIsAuthenticated(true);
-                // Si hay sesión válida, redirigir a products
                 router.replace('/products');
             }
         } catch (error) {
@@ -226,23 +234,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const _signInML = useCallback(
         async (user: string, token: string) => {
+            if (!isConfigured) {
+                throw new Error('Amplify no está configurado correctamente');
+            }
+
             console.log("user_signInML:", user);
             try {
-                // Agregamos un log para verificar la configuración
                 console.log("Verificando configuración de Amplify...");
                 
                 const username = atob(user);
-                // Agregamos validación adicional
                 if (!username) {
                     throw new Error('Usuario no válido');
-                }
-
-                // Intentamos obtener la sesión actual primero para verificar la configuración
-                try {
-                    await fetchAuthSession();
-                } catch (configError) {
-                    console.error("Error de configuración de Amplify:", configError);
-                    throw new Error('Error de configuración de autenticación');
                 }
 
                 const { nextStep } = await signIn({
@@ -263,7 +265,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 throw error;
             }
         },
-        [setup]
+        [setup, isConfigured]
     );
 
     /*  if (isLoading) {
