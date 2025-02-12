@@ -48,12 +48,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const configureAmplify = async () => {
+            setIsLoading(true);
             try {
-                await getAwsConfig();
+                const config = await getAwsConfig();
+                console.log("Amplify configurado exitosamente:", !!config);
                 setIsConfigured(true);
             } catch (error) {
-                console.error("Error configurando Amplify:", error);
+                console.error("Error detallado configurando Amplify:", error);
                 setIsConfigured(false);
+            } finally {
+                setIsLoading(false);
             }
         };
         configureAmplify();
@@ -234,15 +238,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const _signInML = useCallback(
         async (user: string, token: string) => {
-            if (!isConfigured) {
-                throw new Error('Amplify no está configurado correctamente');
+            console.log("Estado de configuración:", isConfigured);
+            console.log("Estado de carga:", isLoading);
+
+            if (isLoading) {
+                throw new Error('El sistema está cargando, por favor espere');
             }
 
-            console.log("user_signInML:", user);
+            if (!isConfigured) {
+                console.error("Configuración actual:", { isConfigured, isLoading });
+                throw new Error('El sistema no está configurado correctamente. Por favor, recargue la página');
+            }
+
             try {
-                console.log("Verificando configuración de Amplify...");
-                
+                console.log("Iniciando proceso de login con Magic Link");
                 const username = atob(user);
+                
                 if (!username) {
                     throw new Error('Usuario no válido');
                 }
@@ -254,18 +265,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     },
                 });
 
-                console.log("nextStep.signInStep:", nextStep.signInStep);
+                console.log("Paso de autenticación:", nextStep.signInStep);
                 
                 if (nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE") {
                     await confirmSignIn({ challengeResponse: token });
                     await setup();
                 }
-            } catch (error) {
-                console.error("[magicLinkSignIn] error detallado:", error);
+            } catch (error: any) {
+                console.error("Error completo en signInML:", {
+                    error,
+                    message: error.message,
+                    isConfigured,
+                    isLoading
+                });
                 throw error;
             }
         },
-        [setup, isConfigured]
+        [setup, isConfigured, isLoading]
     );
 
     /*  if (isLoading) {
@@ -275,7 +291,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return (
         <AuthContext.Provider
             value={{
-                loading: isLoading,
+                loading: isLoading || !isConfigured,
                 attributes,
                 getAccessToken: _getAccessToken,
                 getCurrentFintech: _getCurrentFintech,
