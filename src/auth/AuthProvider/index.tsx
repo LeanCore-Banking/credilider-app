@@ -247,7 +247,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (!isConfigured) {
                 console.error("Configuración actual:", { isConfigured, isLoading });
-                throw new Error('El sistema no está configurado correctamente. Por favor, recargue la página');
+                throw new Error('El sistema no está configurado correctamente');
             }
 
             try {
