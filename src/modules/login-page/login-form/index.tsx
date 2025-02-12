@@ -29,7 +29,7 @@ function LoginForm() {
       setLoading(true);
       setErrorMessage("");
 
-      const fintechId = "993ecefe-6aa1-4804-9865-d5623f018196";
+      const fintechId = "89949613-2a1d-4b46-9961-4379d05b2fc6";
 
       // Solicitar magic link
       const res = await getMagicLink(data.username, fintechId);
@@ -40,6 +40,8 @@ function LoginForm() {
         const params = new URLSearchParams(res.link);
         const user = params.get('user');
         const token = params.get('token');
+        console.log('user:', user);
+        console.log('token:', token);
 
         if (user && token) {
           setErrorMessage("Iniciando sesión...");

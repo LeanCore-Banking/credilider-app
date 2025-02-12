@@ -5,6 +5,7 @@ import "./globals.css";
 import Providers from "@/Providers";
 import { getAwsConfig } from '@/auth/AuthProvider/aws-exports';
 import { Metadata } from 'next'
+import ZendeskWidget from '@/components/common/ZendeskWidget';
 
 async function configureAmplify() {
   const config = await getAwsConfig();
@@ -45,6 +46,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <ZendeskWidget />
       </body>
     </html>
   );
