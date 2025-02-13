@@ -1,3 +1,4 @@
+'use client'
 import { create } from 'zustand'
 import { Quote, Moto } from "@/app/lib/definitions"
 import { fetchQuotes } from "@/app/lib/actions"
@@ -125,7 +126,7 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
     set({ loading: true })
     
     try {
-      const updatedQuotes = await fetchQuotes(
+      const quotesResponse = await fetchQuotes(
         state.initialFee,
         state.discount,
         state.documentos,
@@ -137,9 +138,17 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
         data,
         financialEntityId
       )
-      set({ quotes: updatedQuotes })
+
+      if ('error' in quotesResponse) {
+        // Manejar el error aquí si es necesario
+        console.error(quotesResponse.error)
+        set({ quotes: [] })
+      } else {
+        set({ quotes: quotesResponse })
+      }
     } catch (error) {
       console.error("Error fetching quotes:", error)
+      set({ quotes: [] })
     } finally {
       set({ loading: false })
     }

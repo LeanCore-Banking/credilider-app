@@ -29,13 +29,16 @@ export async function fetchQuotes(
   phone: string,
   motoData: Moto,
   financialEntityId: string,
-): Promise<Quote[]> {
-  console.log('financeValue:', financeValue)
+): Promise<Quote[] | { error: string, statusCode: number }> {
+  // console.log('financeValue:', financeValue);
   try {
     // Obtener token de autorización para el simulador
     const simulatorToken = await getSimulatorAuthToken();
     if (!simulatorToken) {
-      throw new Error("Failed to retrieve simulator auth token.");
+      return {
+        error: "Failed to retrieve simulator auth token.",
+        statusCode: 500
+      };
     }
 
     const token = await getAuthToken();
@@ -46,7 +49,7 @@ export async function fetchQuotes(
     // Obtener datos de Fintech usando el ID recibido
     const fintechData = await dataFintech(token, financialEntityId);
     const loanProduct = fintechData.loan_products[3];
-    //console.log("loanProduct:", loanProduct);
+    // console.log("loanProduct:", loanProduct);
 
     // Preparar payload base
     const basePayload = {
@@ -86,7 +89,7 @@ export async function fetchQuotes(
 
     // Ejecutar todas las simulaciones en paralelo
     const simulationResults = await Promise.all(simulationPromises);
-    //console.log("simulationResults:", simulationResults[0].data);
+    // console.log("simulationResults:", simulationResults[0].data);
 
     // Transformar resultados a formato Quote[]
     const quotes: Quote[] = simulationResults.map((result, index) => {
@@ -104,7 +107,7 @@ export async function fetchQuotes(
       };
     });
 
-    console.log("quotes:", quotes);
+    // console.log("quotes:", quotes);
 
     // Guardar lead si se proporcionaron datos de usuario
     if (name && nit && email && phone) {
@@ -117,14 +120,14 @@ export async function fetchQuotes(
 
       const user = await getLeadByNit(nit);
 
-      //console.log("user:", user);
+      // console.log("user:", user);
 
       if (user.error === "Not Found") {
-        console.log("Lead not found");
-        const leadSaved = await createLead(createLeadPayload)
-        //console.log("leadSaved:", leadSaved);
+        // console.log("Lead not found");
+        const leadSaved = await createLead(createLeadPayload);
+        // console.log("leadSaved:", leadSaved);
       } else {
-        console.log("User found");
+        // console.log("User found");
         const updateLeadPayload = {
           id: user.id,
           name,
@@ -133,14 +136,13 @@ export async function fetchQuotes(
           phone,
         };
         const leadUpdated = await updateLead(updateLeadPayload);
-        //console.log("leadUpdated:", leadUpdated);
+        // console.log("leadUpdated:", leadUpdated);
       }
-      //console.log("htlm:", cotizacionHTML(quotes, motoData));
+      // console.log("htlm:", cotizacionHTML(quotes, motoData));
 
       // Create PDF
       const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
-      console.log("pdf:", pdf);
-      // console.log("PDF Created");
+      // console.log("pdf:", pdf);
       // Send Email
       if (pdf.url) {
         await sendEmail({
@@ -157,20 +159,26 @@ export async function fetchQuotes(
 
     return quotes;
   } catch (error: any) {
-    console.error("Error en fetchQuotes:", error.response.data);
-    throw new Error("Error al obtener las cotizaciones.");
+    console.error("Error en fetchQuotes:", error.response?.data || error);
+    return {
+      error: "Error al obtener las cotizaciones.",
+      statusCode: 500
+    };
   }
 }
 
 export async function createLead(dataIn: any): Promise<any> {
-  console.log("variables from createLead:", process.env.DEV_URL);
-  console.log("dataIn:", dataIn);
+  // console.log("variables from createLead:", process.env.DEV_URL);
+  // console.log("dataIn:", dataIn);
   try {
     // Fetch the auth token using Basic Auth
     const token = await getAuthToken();
 
     if (!token) {
-      throw new Error("Failed to retreive auth token#####.");
+      return {
+        error: "Failed to retrieve auth token.",
+        statusCode: 401
+      };
     }
 
     const response = await axios.post(
@@ -192,10 +200,16 @@ export async function createLead(dataIn: any): Promise<any> {
     if (axios.isAxiosError(error)) {
       console.error("Axios error details:", error.response?.data);
       const errorMessage = error.response?.data.message;
-      throw new Error(traslateError(errorMessage));
+      return {
+        error: traslateError(errorMessage),
+        statusCode: error.response?.status || 500
+      };
     }
 
-    return false;
+    return {
+      error: "Error inesperado",
+      statusCode: 500
+    };
   }
 }
 
@@ -249,8 +263,7 @@ export async function createPdf(
 ): Promise<{ [key: string]: any }> {
   try {
     // Fetch the auth token using Basic Auth
-
-    console.log(".env:", process.env.PDF_URL);
+    // console.log(".env:", process.env.PDF_URL);
 
     const response = await axios.post(
       `${process.env.PDF_URL}/lc-pdf-generator`,
@@ -261,7 +274,7 @@ export async function createPdf(
       }
     );
 
-    //console.log("responsePDF", response.data);
+    // console.log("responsePDF", response.data);
 
     return response.data;
   } catch (error) {
@@ -310,7 +323,7 @@ export async function getLeadByNit(id: string): Promise<any> {
       },
     });
 
-    //console.log("user:", user);
+    // console.log("user:", user);
 
     return user.data;
   } catch (error) {
@@ -331,10 +344,10 @@ export async function generateOtp(
       respSendOtp: "",
     };
 
-    console.log("cedula", cedula);
+    // console.log("cedula", cedula);
 
     if (!cedula) {
-      console.log("cedula is required", cedula);
+      // console.log("cedula is required", cedula);
     }
 
     const response = await axios.post(`${process.env.DEV_URL}/send-otp`, {
@@ -344,7 +357,7 @@ export async function generateOtp(
     });
 
     resp.respSendOtp = response.data;
-    console.log("respSendOtp:", response.data);
+    // console.log("respSendOtp:", response.data);
 
     return resp;
   } catch (error) {
@@ -363,7 +376,7 @@ export async function verifyAndCheckOtp(
       chekOptStatus: "",
     };
 
-    console.log("userIdOtp:", userId);
+    // console.log("userIdOtp:", userId);
 
     const response = await axios.post(`${process.env.DEV_URL}/verify-otp`, {
       fintechId: "41b6f635-077f-4bba-93ce-faa1f469a987",
@@ -375,7 +388,7 @@ export async function verifyAndCheckOtp(
       notify: false,
     });
 
-    console.log("responseVerifyOtp:", response.data);
+    // console.log("responseVerifyOtp:", response.data);
 
     resp.respVerifyOtp = response.data;
 
@@ -383,7 +396,7 @@ export async function verifyAndCheckOtp(
       const responseCheck = await axios.get(
         `${process.env.DEV_URL}/check-otp/${userId}`
       );
-      console.log("responseCheck:", responseCheck.data);
+      // console.log("responseCheck:", responseCheck.data);
       resp.chekOptStatus = responseCheck.data;
     }
 
@@ -414,7 +427,7 @@ export async function checkOtp(userId: string, token: string): Promise<any> {
 export const queryLead = async (userId: string): Promise<any> => {
   const token = await getAuthToken();
   const auth = useAuth();
-  console.log("auth:", auth);
+  // console.log("auth:", auth);
   const result = await axios.get("/lead", {
     params: {
       id: userId,
@@ -438,15 +451,15 @@ const formatAxiosError = (error: any) => {
     };
   }
   return {
-    message: error.response.data.message,
-    code: error.response.data.code,
+    message: error.response?.data.message,
+    code: error.response?.data.code,
   };
 };
 
 export const queryUser = async (req: any): Promise<IUser | null> => {
   const { userId, token } = req;
   try {
-    //console.log("userIdFromQueryUser:", userId);
+    // console.log("userIdFromQueryUser:", userId);
     const result = await axios.get(`${process.env.DEV_URL}/user`, {
       params: {
         id: userId,
@@ -456,7 +469,7 @@ export const queryUser = async (req: any): Promise<IUser | null> => {
       },
     });
 
-    //console.log("resultFromQueryUser:", result.data);
+    // console.log("resultFromQueryUser:", result.data);
     return result.data;
   } catch (error) {
     console.error("Error al consultar usuario:", formatAxiosError(error));
@@ -487,7 +500,6 @@ export const dataFintech = async (token: string, fintechId: string) => {
   });
   return result.data;
 };
-
 
 interface ICPCalculation {
   icp: string;
@@ -520,9 +532,9 @@ export async function calculateICPWithSimulationLoan(
 
     // 1. Obtener datos de Fintech
     const fintechData = await dataFintech(token, '89949613-2a1d-4b46-9961-4379d05b2fc6');
-    //console.log("fintechData:", fintechData);
+    // console.log("fintechData:", fintechData);
     const loanProduct = fintechData.loan_products[3];
-    //console.log("loanProduct:", loanProduct);
+    // console.log("loanProduct:", loanProduct);
 
     // 2. Preparar payload para simulación
     const simulationPayload = {
@@ -561,7 +573,7 @@ export async function calculateICPWithSimulationLoan(
       }
     );
 
-    console.log("simulationResult:", simulationResult.data);
+    // console.log("simulationResult:", simulationResult.data);
 
     // 4. Calcular ICP
     const ingresosMensuales = parseFloat(ingresos);
@@ -570,11 +582,11 @@ export async function calculateICPWithSimulationLoan(
     const deudasTransitoNum = parseFloat(deudasTransito) || 0;
     const cuotaNuevoCredito = simulationResult.data.payment_amount / 100;
     const cuotasActuales = deudasActualesNum + deudasTransitoNum + gastosMensualesNum;
-    console.log("cuotaNuevoCredito:", cuotaNuevoCredito);
+    // console.log("cuotaNuevoCredito:", cuotaNuevoCredito);
 
     const icp = (cuotaNuevoCredito + cuotasActuales) / ingresosMensuales;
-    console.log("icp:", icp);
-    console.log('icpToFixed:', icp.toFixed(4))
+    // console.log("icp:", icp);
+    // console.log('icpToFixed:', icp.toFixed(4));
 
     return {
       icp: icp.toFixed(4),
@@ -588,7 +600,7 @@ export async function calculateICPWithSimulationLoan(
       }
     };
   } catch (error: any) {
-    console.error("Error en el cálculo del ICP:", error.response.data);
+    console.error("Error en el cálculo del ICP:", error.response?.data || error);
     throw error;
   }
 }
