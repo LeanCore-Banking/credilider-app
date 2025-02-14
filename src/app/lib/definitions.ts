@@ -27,6 +27,7 @@ export type Quote = {
     initialFee: number;
     discount: number;
     financeValue: number;
+    documentos: number;
     monthlyFee: number;
     annualEffectiveRate: number;
     monthlyCupDue: number;

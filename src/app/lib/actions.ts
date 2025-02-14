@@ -49,7 +49,7 @@ export async function fetchQuotes(
     // Obtener datos de Fintech usando el ID recibido
     const fintechData = await dataFintech(token, financialEntityId);
     const loanProduct = fintechData.loan_products[3];
-    // console.log("loanProduct:", loanProduct);
+    console.log("loanProduct:", loanProduct);
 
     // Preparar payload base
     const basePayload = {

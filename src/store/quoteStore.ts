@@ -31,6 +31,7 @@ interface QuoteState {
     nit: string
     email: string
     phone: string
+    initialFee: string
   }
   motoValue: number | null
   initialFee: number
@@ -56,7 +57,7 @@ interface QuoteState {
   
   // Acciones compuestas
   fetchQuotesData: (data: Moto, financialEntityId: string) => Promise<void>
-  validateField: (name: string, value: string) => void
+  validateField: (name: string, value: string) => boolean
 
   // Agregar las funciones con debounce
   debouncedSetMotoValue: (value: number | null) => void
@@ -82,7 +83,8 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
     name: "",
     nit: "",
     email: "",
-    phone: ""
+    phone: "",
+    initialFee: ""
   },
   motoValue: null,
   initialFee: 0,
@@ -156,64 +158,96 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
 
   validateField: (name: string, value: string) => {
     let errorMessage = ""
+    let isValid = true;  // Agregamos flag de validación
 
     switch (name) {
       case "name":
         if (!value){
           errorMessage = "El nombre es obligatorio."
+          isValid = false;
         } else if (!/^[a-zA-Z]+$/.test(value)) {
           errorMessage = "El nombre debe contener solo letras."
+          isValid = false;
         }
         break
       case "email":
         if (!value) {
           errorMessage = "El correo es obligatorio."
+          isValid = false;
         } else if (!/\S+@\S+\.\S+/.test(value)) {
           errorMessage = "El formato de correo no es válido."
+          isValid = false;
         }
         break
       case "nit":
         if (!value) {
           errorMessage = "El NIT o Cedula es obligatorio."
+          isValid = false;
         } else if (!/^\d+$/.test(value)) {
           errorMessage = "la cedula o Nit deben ser dígitos."
+          isValid = false;
         }
         break
       case "phone":
         if (!value) {
           errorMessage = "El teléfono es obligatorio."
+          isValid = false;
         } else if (!/^\d{10}$/.test(value)) {
           errorMessage = "El teléfono debe tener 10 dígitos."
+          isValid = false;
         }
         break
+      case "initialFee":
+        const numericValue = Number(value.replace(/[^0-9]/g, ''));
+        const state = get();
+        const minInitialFee = (state.motoValue || 0) * 0.15;
+        
+        if (!value) {
+          errorMessage = "La cuota inicial es obligatoria."
+          isValid = false;
+        } else if (numericValue < minInitialFee) {
+          errorMessage = `La cuota inicial debe ser al menos $${minInitialFee.toLocaleString()}`
+          isValid = false;
+        }
+        break;
     }
 
     set((state) => ({
       errors: { ...state.errors, [name]: errorMessage }
     }))
+
+    return isValid;  // Retornamos el resultado de la validación
   },
 
   // Implementar las funciones con debounce
   debouncedSetMotoValue: debounce((value: number | null) => {
     set({ motoValue: value })
     const state = get()
-    if (value !== null && state.currentMoto) {
+    if (value !== null && state.currentMoto && state.initialFee > 0) {
       state.fetchQuotesData(state.currentMoto, state.financialEntityId)
     }
   }, 2000),
 
   debouncedSetInitialFee: debounce((value: number) => {
-    set({ initialFee: value })
     const state = get()
-    if (state.currentMoto) {
-      state.fetchQuotesData(state.currentMoto, state.financialEntityId)
+    
+    // Validar antes de hacer cualquier cambio
+    const isValid = state.validateField('initialFee', value.toString());
+    
+    if (isValid) {
+      // Solo actualizar el valor y hacer la petición si es válido
+      set({ initialFee: value })
+      
+      if (state.currentMoto && value > 0) {
+        state.fetchQuotesData(state.currentMoto, state.financialEntityId)
+      }
     }
   }, 2000),
 
   debouncedSetDiscount: debounce((value: number) => {
     set({ discount: value })
     const state = get()
-    if (state.currentMoto) {
+    if (state.currentMoto && state.initialFee > 0) {
       state.fetchQuotesData(state.currentMoto, state.financialEntityId)
     }
   }, 2000),
@@ -221,7 +255,7 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
   debouncedSetGarantia: debounce((value: number) => {
     const state = get()
     state.setGarantia(value)
-    if (state.currentMoto) {
+    if (state.currentMoto && state.initialFee > 0) {
       state.fetchQuotesData(state.currentMoto, state.financialEntityId)
     }
   }, 2000),
@@ -229,7 +263,7 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
   debouncedSetDocumentos: debounce((value: number) => {
     set({ documentos: value })
     const state = get()
-    if (state.currentMoto) {
+    if (state.currentMoto && state.initialFee > 0) {
       state.fetchQuotesData(state.currentMoto, state.financialEntityId)
     }
   }, 2000),

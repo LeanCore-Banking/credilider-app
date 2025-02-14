@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import { Moto, Quote } from "@/app/lib/definitions"
 import "./styles.css"
 import Link from "next/link"
-import { CheckCircle, User, Mail, Phone} from "lucide-react"
+import { CheckCircle, User, Mail, Phone } from "lucide-react"
 import { QuotesCardSkeleton } from "../skeletons"
 import { formatNumber } from "@/utils/format"
 import { useQuoteStore } from "@/store/quoteStore"
@@ -17,21 +17,61 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
     const store = useQuoteStore()
     const financialEntityId = '89949613-2a1d-4b46-9961-4379d05b2fc6'
 
+    // Crear array de quotes por defecto
+    const defaultQuotes: Quote[] = [
+        {
+            initialFee: 0,
+            discount: 0,
+            financeValue: 0,
+            documentos: 0,
+            monthlyFee: 0,
+            annualEffectiveRate: 0,
+            monthlyCupDue: 0,
+            monthlyRate: 24,
+            monthLifeInsurance: 0
+        },
+        {
+            initialFee: 0,
+            discount: 0,
+            financeValue: 0,
+            documentos: 0,
+            monthlyFee: 0,
+            annualEffectiveRate: 0,
+            monthlyCupDue: 0,
+            monthlyRate: 36,
+            monthLifeInsurance: 0
+        },
+        {
+            initialFee: 0,
+            discount: 0,
+            financeValue: 0,
+            documentos: 0,
+            monthlyFee: 0,
+            annualEffectiveRate: 0,
+            monthlyCupDue: 0,
+            monthlyRate: 48,
+            monthLifeInsurance: 0
+        }
+    ];
+
+    // Usar los quotes del store si existen, si no usar los por defecto
+    const quotesToShow = store.quotes.length > 0 ? store.quotes : defaultQuotes;
+
     // Efecto inicial para establecer valores por defecto
     useEffect(() => {
         if (data) {
             store.setCurrentMoto(data)
             store.setMotoValue(data.precio)
             // Establecer la garantía inicial
-            const garantiaValue = data.garantia? Number(data.garantia) : 0
+            const garantiaValue = data.garantia ? Number(data.garantia) : 0
             store.setGarantia(garantiaValue)
-            
+
             // Calcular el valor total inicial a financiar
             const totalValue = data.precio + garantiaValue + store.documentos
             store.setFinanceValue(totalValue)
-            
-            // Realizar la petición inicial
-            store.fetchQuotesData(data, store.financialEntityId)
+
+            // Removemos la petición inicial
+            // store.fetchQuotesData(data, store.financialEntityId)
         }
     }, [data])
 
@@ -52,16 +92,18 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
         store.documentos
     ])
 
-    // Efecto para fetchear quotes cuando cambia financeValue
+    // Efecto para fetchear quotes cuando cambia financeValue y existe cuota inicial
     useEffect(() => {
-        if (store.financeValue !== null && store.motoValue && store.initialFee >= 0 && store.discount >= 0 ) {
+        if (store.financeValue !== null &&
+            store.motoValue &&
+            store.initialFee > 0) {  // Solo si hay cuota inicial
             store.fetchQuotesData(data, financialEntityId);
         }
-    }, [store.financeValue])
+    }, [store.financeValue, store.initialFee]) // Agregamos initialFee como dependencia
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        
+
         const { userData } = store
         if (!userData.name || !userData.email || !userData.phone || !userData.nit) {
             Object.entries(userData).forEach(([key, value]) => {
@@ -121,7 +163,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                             />
                         </div>
                         <div id="input-cuota-inicial">
-                            <label>Cuota inicial</label>
+                            <label>Cuota inicial (Min. 15%)</label>
                             <input
                                 type="text"
                                 name="initialFee"
@@ -131,7 +173,11 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                                     e.target.value = formattedValue;
                                     store.debouncedSetInitialFee(Number(numericValue) || 0);
                                 }}
+                                onBlur={(e) => store.validateField('initialFee', e.target.value)}
                             />
+                            {store.errors.initialFee && (
+                                <span className="error-message-quotes">{store.errors.initialFee}</span>
+                            )}
                         </div>
                         <div id="input-descuento">
                             <label>Descuento %</label>
@@ -152,7 +198,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                             <input
                                 type="text"
                                 disabled
-                                value={store.financeValue !== null 
+                                value={store.financeValue !== null
                                     ? `$${store.financeValue.toLocaleString()}`
                                     : "$0"
                                 }
@@ -166,7 +212,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                         {store.loading ? (
                             <QuotesCardSkeleton />
                         ) : (
-                            store.quotes.map((item, index) => (
+                            quotesToShow.map((item, index) => (
                                 <div key={index} className="quote-data-row">
                                     <div className="quote_data-head">
                                         <h3>Cuota mensual</h3>
@@ -176,14 +222,14 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                                         <span id="quote-month">{item?.monthlyRate || 0} Meses</span>
                                     </div>
                                     <div className="quote-body">
-                                        <div>
+                                        {/*<div>
                                             <span>Tasa mensual vencida</span>
                                             <span>{item?.monthlyCupDue || 0}%</span>
-                                        </div>
-                                        <div>
+                                        </div>*/}
+                                        {/*<div>
                                             <span>Seguro vida (mes)</span>
                                             <span>${(item?.monthLifeInsurance || 0).toLocaleString()}</span>
-                                        </div>
+                                        </div>*/}
                                         <div>
                                             <span>Garantía</span>
                                             <span>${(store.garantia || 0).toLocaleString()}</span>
@@ -197,12 +243,9 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                                             <span>${(store.initialFee || 0).toLocaleString()}</span>
                                         </div>
                                         <div className="value-to-pay">
-                                            <span>Valor a Financiar</span>
+                                            <span>Valor a financiar</span>
                                             <span>
-                                                ${(store.financeValue || 0).toLocaleString(undefined, {
-                                                    minimumFractionDigits: 0,
-                                                    maximumFractionDigits: 0
-                                                })}
+                                                ${((store.quotes.length > 0 ? store.financeValue : 0) || 0).toLocaleString()}
                                             </span>
                                         </div>
                                     </div>
@@ -238,7 +281,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                         }}
                         onBlur={() => store.validateField('nit', store.userData.nit)}
                     />
-                    
+
                     <FormInput
                         label="Escribir el correo"
                         name="email"
