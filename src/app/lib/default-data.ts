@@ -7,7 +7,8 @@ export const defaultQuotes = [
         annualEffectiveRate: 0,
         monthlyCupDue: 0,
         monthlyRate: 24,
-        monthLifeInsurance: 0
+        monthLifeInsurance: 0,
+        documentos: 0
     },
     {
         initialFee: 0,
@@ -17,7 +18,8 @@ export const defaultQuotes = [
         annualEffectiveRate: 0,
         monthlyCupDue: 0,
         monthlyRate: 36,
-        monthLifeInsurance: 0
+        monthLifeInsurance: 0,
+        documentos: 0
     }, 
     {
         initialFee: 0,
@@ -27,6 +29,7 @@ export const defaultQuotes = [
         annualEffectiveRate: 0,
         monthlyCupDue: 0,
         monthlyRate: 48,
-        monthLifeInsurance: 0
+        monthLifeInsurance: 0,
+        documentos: 0
     }
 ]

@@ -8,6 +8,7 @@ import { QuotesCardSkeleton } from "../skeletons"
 import { formatNumber } from "@/utils/format"
 import { useQuoteStore } from "@/store/quoteStore"
 import FormInput from "../common/FormInput"
+
 type QuoteColDetailProps = {
     quoteDefault: Quote[]
     data: Moto
@@ -17,7 +18,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
     const store = useQuoteStore()
     const financialEntityId = '89949613-2a1d-4b46-9961-4379d05b2fc6'
 
-    // Crear array de quotes por defecto
+    // Crear array de quotes por defecto con todas las propiedades requeridas
     const defaultQuotes: Quote[] = [
         {
             initialFee: 0,
@@ -111,6 +112,21 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
             })
             return
         }
+
+        // Guardar los datos relevantes en localStorage
+        const formDataToSave = {
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            nit: userData.nit,
+            initialFee: store.initialFee,
+            financeValue: store.financeValue,
+            motoValue: store.motoValue,
+            garantia: store.garantia,
+            documentos: store.documentos,
+            discount: store.discount
+        }
+        localStorage.setItem('formData', JSON.stringify(formDataToSave))
 
         await store.fetchQuotesData(data, financialEntityId);
         store.setPopupVisible(true)

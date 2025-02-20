@@ -212,14 +212,6 @@ export function cotizacionHTML(quotes: any[], data: any): string {
                   </div>
                   <div class="pdf-quote-body">
                     <div>
-                      <span>Tasa mensual vencida</span>
-                      <span>${item.monthlyCupDue}%</span>
-                    </div>
-                    <div>
-                      <span>Seguro vida (mes)</span>
-                      <span>$${Math.round(item.monthLifeInsurance).toLocaleString()}</span>
-                    </div>
-                    <div>
                       <span>Garantía</span>
                       <span>$${Math.round(data.garantia || 0).toLocaleString()}</span>
                     </div>
