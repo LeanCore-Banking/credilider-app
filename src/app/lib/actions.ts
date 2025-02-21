@@ -11,6 +11,7 @@ import axios from "axios";
 import { cotizacionHTML } from "./templates";
 import dotenv from "dotenv";
 import useAuth from "@/auth/hooks";
+import * as Sentry from "@sentry/nextjs";
 
 interface IUser {
   id: string;
@@ -46,15 +47,19 @@ export async function fetchQuotes(
       throw new Error("Failed to retrieve auth token.");
     }
 
+    
+    console.log("fintechId:", financialEntityId);
+
+
     // Obtener datos de Fintech usando el ID recibido
     const fintechData = await dataFintech(token, financialEntityId);
-    const loanProduct = fintechData.loan_products[3];
+    const loanProduct = fintechData.loan_products[5];// seleccionar de produccion
     console.log("loanProduct:", loanProduct);
 
     // Preparar payload base
     const basePayload = {
       user_id: null,
-      financial_entity_id: '89949613-2a1d-4b46-9961-4379d05b2fc6',
+      financial_entity_id: financialEntityId, //'89949613-2a1d-4b46-9961-4379d05b2fc6',
       loan_product_name: loanProduct.name,
       loan_type: loanProduct.loan_type,
       amount: financeValue * 100,
@@ -159,6 +164,7 @@ export async function fetchQuotes(
 
     return quotes;
   } catch (error: any) {
+    Sentry.captureException(error);
     console.error("Error en fetchQuotes:", error.response?.data || error);
     return {
       error: "Error al obtener las cotizaciones.",
@@ -195,7 +201,8 @@ export async function createLead(dataIn: any): Promise<any> {
 
     return response.data;
   } catch (error) {
-    console.error("Error creating lead:", error);
+   /*  Sentry.captureException(error);
+    console.error("Error creating lead:", error); */
 
     if (axios.isAxiosError(error)) {
       console.error("Axios error details:", error.response?.data);

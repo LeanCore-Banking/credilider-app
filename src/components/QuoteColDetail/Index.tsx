@@ -8,6 +8,7 @@ import { QuotesCardSkeleton } from "../skeletons"
 import { formatNumber } from "@/utils/format"
 import { useQuoteStore } from "@/store/quoteStore"
 import FormInput from "../common/FormInput"
+import useAuth from "@/auth/hooks"
 
 type QuoteColDetailProps = {
     quoteDefault: Quote[]
@@ -16,8 +17,10 @@ type QuoteColDetailProps = {
 
 const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) => {
     const store = useQuoteStore()
-    const financialEntityId = '89949613-2a1d-4b46-9961-4379d05b2fc6'
 
+    const auth = useAuth();
+    const financialEntityId = auth.getCurrentFintech()//'89949613-2a1d-4b46-9961-4379d05b2fc6'
+   
     // Crear array de quotes por defecto con todas las propiedades requeridas
     const defaultQuotes: Quote[] = [
         {

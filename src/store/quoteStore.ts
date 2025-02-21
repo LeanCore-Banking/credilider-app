@@ -72,7 +72,7 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
   loading: false,
   popupVisible: false,
   currentMoto: null,
-  financialEntityId: '89949613-2a1d-4b46-9961-4379d05b2fc6',
+  financialEntityId: '',
   userData: {
     name: "",
     nit: "",

@@ -18,8 +18,8 @@ const ZendeskWidget = () => {
 
         // Limpiar cualquier instancia previa del widget
         if (window.zE) {
-            window.zE('webWidget:hide');
-            window.zE('webWidget:clear');
+            window.zE('webWidget', 'hide');
+            window.zE('webWidget', 'clear');
         }
 
         // Configuración actualizada del widget
@@ -49,8 +49,8 @@ const ZendeskWidget = () => {
         return () => {
             // Limpiar completamente el widget al desmontar
             if (window.zE) {
-                window.zE('webWidget:hide');
-                window.zE('webWidget:clear');
+                window.zE('webWidget', 'hide');
+                window.zE('webWidget', 'clear');
             }
             const existingScript = document.getElementById('ze-snippet');
             if (existingScript) {
