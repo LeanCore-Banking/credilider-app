@@ -74,7 +74,7 @@ const ProductCard = ({ product }: { product: Product }) => {
 
                 <div className="info-price">
                     <h3>{`$${priceFormated}`}</h3>
-                    <span>Con papeles</span>
+                    <span>{/*Con papeles*/}</span>
                 </div>
             </div>
             <div className="btn-r-arrow">

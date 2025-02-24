@@ -56,7 +56,7 @@ const ProductDetails: React.FC<ProductDetail> = ({ params }) => {
                         <div id="price-container">
                             <span >Precio desde:  </span>
                             <span className="value-field"> ${motoData?.precio.toLocaleString('es-ES')}</span>
-                            <span id="price-container-disclaimer">Valor con papeles</span>
+                            <span id="price-container-disclaimer">{/*Valor con papeles*/}</span>
                         </div>
 
                     </div>
