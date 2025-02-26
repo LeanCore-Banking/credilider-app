@@ -29,24 +29,24 @@ function LoginForm() {
       setLoading(true);
       setErrorMessage("");
 
-      const fintechId = "89949613-2a1d-4b46-9961-4379d05b2fc6";
+      const fintechId =  "873ddfa1-9d6c-4afc-803e-1e8b7e05835d"//"89949613-2a1d-4b46-9961-4379d05b2fc6";
 
       // Solicitar magic link
       const res = await getMagicLink(data.username, fintechId);
-      console.log('res:', res);
+      //console.log('res:', res);
 
       if (res?.link) {
         // Extraer user y token del link
         const params = new URLSearchParams(res.link);
         const user = params.get('user');
         const token = params.get('token');
-        console.log('user:', user);
-        console.log('token:', token);
+        /* console.log('user:', user);
+        console.log('token:', token); */
 
         if (user && token) {
           setErrorMessage("Iniciando sesión...");
           const ml = await signInML(user, token);
-          console.log('ML:', ml)
+          //console.log('ML:', ml)
         } else {
           setErrorMessage("Error al procesar el magic link.");
         }

@@ -19,6 +19,20 @@ interface IUser {
 
 dotenv.config();
 
+interface LoanProduct {
+  name: string;
+  loan_type: string;
+  interest_rate: number;
+  interest_rate_basis: string;
+  other_expenses: any[];
+  payment_frequency: string;
+  grace_period: number;
+  billing_interval_type: string;
+  arrear_interest_rate: number;
+  arrear_interest_rate_basis: string;
+  arrear_max_interest_rate: number;
+}
+
 export async function fetchQuotes(
   initialFee: number,
   discount: number,
@@ -47,14 +61,16 @@ export async function fetchQuotes(
       throw new Error("Failed to retrieve auth token.");
     }
 
-    
-    console.log("fintechId:", financialEntityId);
-
-
+    //console.log("fintechId---:", financialEntityId);
     // Obtener datos de Fintech usando el ID recibido
     const fintechData = await dataFintech(token, financialEntityId);
-    const loanProduct = fintechData.loan_products[5];// seleccionar de produccion
-    console.log("loanProduct:", loanProduct);
+    const loanProduct = Object.values(fintechData.loan_products as Record<string, LoanProduct>).find(
+        product => product.name === 'febrero 2025'
+    );
+    if (!loanProduct) {
+        throw new Error('Producto de préstamo no encontrado');
+    }
+    //console.log("loanProductRate:", loanProduct.interest_rate);
 
     // Preparar payload base
     const basePayload = {
@@ -145,21 +161,24 @@ export async function fetchQuotes(
       }
       // console.log("htlm:", cotizacionHTML(quotes, motoData));
 
+        destination: `${email}`,
+        template_data: {
+          nombreUsuario: `${name}`,
+          modeloMoto: `${motoData.marcaTipo} ${motoData.modelo}`,
+          urlCotizacion: `${pdf.url}`,
+        },
+      });
+    }
+    
+  } catch (error) {
+    return {
+      error: "Error al crear el PDF.",
+      statusCode: 500,
+    };
+  }
+
       // Create PDF
-      const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
-      // console.log("pdf:", pdf);
-      // Send Email
-      if (pdf.url) {
-        await sendEmail({
-          template_name: "cotizacion", // Constante
-          destination: `${email}`,
-          template_data: {
-            nombreUsuario: `${name}`,
-            modeloMoto: `${motoData.marcaTipo} ${motoData.modelo}`,
-            urlCotizacion: `${pdf.url}`,
-          },
-        });
-      }
+     
     }
 
     return quotes;
@@ -526,7 +545,8 @@ export async function calculateICPWithSimulationLoan(
   ingresos: string,
   gastosMensuales: string,
   deudasActuales: string,
-  deudasTransito: string
+  deudasTransito: string,
+  financialEntity: string
 ): Promise<ICPCalculation> {
   try {
     const token = await getAuthToken();
@@ -537,16 +557,21 @@ export async function calculateICPWithSimulationLoan(
     // Convertir el valor a financiar a centavos (multiplicar por 100)
     const valorFinanciarCentavos = parseFloat(valorFinanciar) * 100;
 
+     //financialEntity dev: '89949613-2a1d-4b46-9961-4379d05b2fc6'
     // 1. Obtener datos de Fintech
-    const fintechData = await dataFintech(token, '89949613-2a1d-4b46-9961-4379d05b2fc6');
-    // console.log("fintechData:", fintechData);
-    const loanProduct = fintechData.loan_products[3];
-    // console.log("loanProduct:", loanProduct);
+    const fintechData = await dataFintech(token, financialEntity);
+    const loanProduct = Object.values(fintechData.loan_products as Record<string, LoanProduct>).find(
+        product => product.name === 'febrero 2025'
+    );
+    if (!loanProduct) {
+        throw new Error('Producto de préstamo no encontrado');
+    }
+    //console.log("loanProduct:", loanProduct);
 
     // 2. Preparar payload para simulación
     const simulationPayload = {
       user_id: null,
-      financial_entity_id: '89949613-2a1d-4b46-9961-4379d05b2fc6',
+      financial_entity_id: financialEntity,//'89949613-2a1d-4b46-9961-4379d05b2fc6',
       loan_product_name: loanProduct.name,
       loan_type: loanProduct.loan_type,
       amount: valorFinanciarCentavos,
@@ -592,7 +617,7 @@ export async function calculateICPWithSimulationLoan(
     // console.log("cuotaNuevoCredito:", cuotaNuevoCredito);
 
     const icp = (cuotaNuevoCredito + cuotasActuales) / ingresosMensuales;
-    // console.log("icp:", icp);
+     //console.log("icp:", icp);
     // console.log('icpToFixed:', icp.toFixed(4));
 
     return {

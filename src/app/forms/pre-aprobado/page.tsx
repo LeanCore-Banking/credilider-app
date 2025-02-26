@@ -12,6 +12,7 @@ import { calculateICPWithSimulationLoan, checkLeadStatus, createLead, dataFintec
 import { getAuthToken } from '@/app/lib/auth';
 import { IFormData, userFormToData, userFormToVariables, } from '@/app/lib/mapper/user';
 import { formatNumber } from '@/utils/format';
+import useAuth from '@/auth/hooks';
 
 
 interface ICreateLead {
@@ -38,6 +39,7 @@ interface User {
 }
 
 const PreaprobadoForm = () => {
+  const auth = useAuth();
   const [popUpOtpOpen, setPopUpOtp] = useState(false);
   const [responseOtp, setOtpResponse] = useState<{ userId: string, respSendOtp: string } | null>(null);
   const [response, setResponse] = useState('');
@@ -45,7 +47,9 @@ const PreaprobadoForm = () => {
   const [formData, setFormData] = useState(() => {
     // Intentar obtener datos del localStorage
     const savedData = localStorage.getItem('formData');
-    console.log("savedData:", savedData);
+    //console.log("savedData:", savedData);
+
+    
 
     if (savedData) {
       try {
@@ -109,6 +113,8 @@ const PreaprobadoForm = () => {
     // Guardar los datos del formulario en localStorage antes de continuar
     localStorage.setItem('formData', JSON.stringify(formData));
 
+    const fintechId = auth.getCurrentFintech();
+
     setIsLoading(true);
     setPopUpOtp(true);
 
@@ -125,7 +131,8 @@ const PreaprobadoForm = () => {
         formData.incomes,
         formData.expenses,
         formData.deudas_actuales,
-        formData.deudas_transito
+        formData.deudas_transito,
+        fintechId
       );
 
       // Procesar el valor del ICP
@@ -257,10 +264,6 @@ const PreaprobadoForm = () => {
     }
   };
 
-  const handleCheckboxChange = (value: string) => {
-    setFormData((prev: any) => ({ ...prev, tipoDocumento: value }));
-  };
-
   const handleCloseBtn = () => {
     setPopUpOtp(false);
     setResponse('');
@@ -350,7 +353,7 @@ const PreaprobadoForm = () => {
     try {
       setLoading?.(true);
       const result = await checkProcess(userId, token);
-      //console.log(`Intento ${10-attempts}/10 - resultCheckProcess:`, result);
+      console.log(`Intento ${10-attempts}/10 - resultCheckProcess:`, result);
 
       // Si el resultado es undefined (no hay respuesta aún), continuamos con los reintentos
       if (result === undefined || result === null && attempts > 1) {

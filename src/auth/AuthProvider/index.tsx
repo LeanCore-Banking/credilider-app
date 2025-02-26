@@ -187,8 +187,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const token = await getAuthToken();
         console.log("username:", username);
         console.log("fintechId:", fintechId); 
+        const appLink = process.env.NEXT_PUBLIC_API_URL;
+        
+        if (!appLink) {
+            throw new Error('URL de API no configurada');
+        }
+
         try {
-            const response = await fetch('https://api.dev-middleware.leancore.co/magic-link', {
+            const response = await fetch(appLink, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
