@@ -161,6 +161,13 @@ export async function fetchQuotes(
       }
       // console.log("htlm:", cotizacionHTML(quotes, motoData));
 
+  try {
+    const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
+    // console.log("pdf:", pdf);
+    // Send Email
+    if (pdf.url) {
+      await sendEmail({
+        template_name: "cotizacion", // Constante
         destination: `${email}`,
         template_data: {
           nombreUsuario: `${name}`,
