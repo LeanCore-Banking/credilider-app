@@ -1,11 +1,6 @@
 "use server";
 import { getAuthToken, getSimulatorAuthToken } from "./auth";
-import {
-  Moto,
-  Quote,
-  Email,
-  PreAprobadoData,
-} from "./definitions";
+import { Moto, Quote, Email, PreAprobadoData } from "./definitions";
 import { createLeadPayload } from "./payloads";
 import axios from "axios";
 import { cotizacionHTML } from "./templates";
@@ -43,8 +38,8 @@ export async function fetchQuotes(
   email: string,
   phone: string,
   motoData: Moto,
-  financialEntityId: string,
-): Promise<Quote[] | { error: string, statusCode: number }> {
+  financialEntityId: string
+): Promise<Quote[] | { error: string; statusCode: number }> {
   // console.log('financeValue:', financeValue);
   try {
     // Obtener token de autorización para el simulador
@@ -52,7 +47,7 @@ export async function fetchQuotes(
     if (!simulatorToken) {
       return {
         error: "Failed to retrieve simulator auth token.",
-        statusCode: 500
+        statusCode: 500,
       };
     }
 
@@ -64,11 +59,11 @@ export async function fetchQuotes(
     //console.log("fintechId---:", financialEntityId);
     // Obtener datos de Fintech usando el ID recibido
     const fintechData = await dataFintech(token, financialEntityId);
-    const loanProduct = Object.values(fintechData.loan_products as Record<string, LoanProduct>).find(
-        product => product.name === 'febrero 2025'
-    );
+    const loanProduct = Object.values(
+      fintechData.loan_products as Record<string, LoanProduct>
+    ).find((product) => product.name === "febrero 2025");
     if (!loanProduct) {
-        throw new Error('Producto de préstamo no encontrado');
+      throw new Error("Producto de préstamo no encontrado");
     }
     //console.log("loanProductRate:", loanProduct.interest_rate);
 
@@ -124,7 +119,8 @@ export async function fetchQuotes(
         annualEffectiveRate: simulationData.annual_effective_rate,
         monthlyCupDue: simulationData.interest_rate,
         monthlyRate: [24, 36, 48][index],
-        monthLifeInsurance: (simulationData.other_expenses?.[0]?.amount || 0) / 100,
+        monthLifeInsurance:
+          (simulationData.other_expenses?.[0]?.amount || 0) / 100,
       };
     });
 
@@ -161,31 +157,29 @@ export async function fetchQuotes(
       }
       // console.log("htlm:", cotizacionHTML(quotes, motoData));
 
-  try {
-    const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
-    // console.log("pdf:", pdf);
-    // Send Email
-    if (pdf.url) {
-      await sendEmail({
-        template_name: "cotizacion", // Constante
-        destination: `${email}`,
-        template_data: {
-          nombreUsuario: `${name}`,
-          modeloMoto: `${motoData.marcaTipo} ${motoData.modelo}`,
-          urlCotizacion: `${pdf.url}`,
-        },
-      });
-    }
-    
-  } catch (error) {
-    return {
-      error: "Error al crear el PDF.",
-      statusCode: 500,
-    };
-  }
+      try {
+        const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
+        // console.log("pdf:", pdf);
+        // Send Email
+        if (pdf.url) {
+          await sendEmail({
+            template_name: "cotizacion", // Constante
+            destination: `${email}`,
+            template_data: {
+              nombreUsuario: `${name}`,
+              modeloMoto: `${motoData.marcaTipo} ${motoData.modelo}`,
+              urlCotizacion: `${pdf.url}`,
+            },
+          });
+        }
+      } catch (error) {
+        return {
+          error: "Error al crear el PDF.",
+          statusCode: 500,
+        };
+      }
 
       // Create PDF
-     
     }
 
     return quotes;
@@ -194,7 +188,7 @@ export async function fetchQuotes(
     console.error("Error en fetchQuotes:", error.response?.data || error);
     return {
       error: "Error al obtener las cotizaciones.",
-      statusCode: 500
+      statusCode: 500,
     };
   }
 }
@@ -209,7 +203,7 @@ export async function createLead(dataIn: any): Promise<any> {
     if (!token) {
       return {
         error: "Failed to retrieve auth token.",
-        statusCode: 401
+        statusCode: 401,
       };
     }
 
@@ -227,36 +221,36 @@ export async function createLead(dataIn: any): Promise<any> {
 
     return response.data;
   } catch (error) {
-   /*  Sentry.captureException(error);
+    /*  Sentry.captureException(error);
     console.error("Error creating lead:", error); */
-
+    console.log("error al crear lead", formatAxiosError(error));
     if (axios.isAxiosError(error)) {
       console.error("Axios error details:", error.response?.data);
       const errorMessage = error.response?.data.message;
       return {
         error: traslateError(errorMessage),
-        statusCode: error.response?.status || 500
+        statusCode: error.response?.status || 500,
       };
     }
 
     return {
       error: "Error inesperado",
-      statusCode: 500
+      statusCode: 500,
     };
   }
 }
 
 function traslateError(message: string) {
   // Verificar si el mensaje contiene "User with nit"
-  if (message.includes('User with nit:')) {
-    return 'El usuario ya existe';
+  if (message.includes("User with nit:")) {
+    return "El usuario ya existe";
   }
 
   const traducciones: { [key: string]: string } = {
     "User already exists": "El usuario ya existe",
     "Invalid Data": "Datos inválidos",
     "Not Found": "No se encontró el usuario",
-    "Bad Request": "Solicitud incorrecta"
+    "Bad Request": "Solicitud incorrecta",
   };
   return traducciones[message] || "Ha ocurrido un error inesperado";
 }
@@ -285,7 +279,7 @@ export async function updateLead(req: any): Promise<any> {
 
     return response.data;
   } catch (error) {
-    console.error("Error updating lead:", error);
+    console.error("Error updating lead:", formatAxiosError(error));
     return false;
   }
 }
@@ -303,7 +297,7 @@ export async function createPdf(
       {
         returnURL: true,
         html: `<div>${template}</div>`,
-        filepath: `${process.env.FINTEC_ID}/${process.env.USER_ID}/cotizaciones/${nit}`,
+        filepath: `${process.env.USER_ID}/${nit}`,
       }
     );
 
@@ -311,7 +305,7 @@ export async function createPdf(
 
     return response.data;
   } catch (error) {
-    console.error("Error creating PDF:", error);
+    console.error("Error creating PDF:", formatAxiosError(error));
     return {};
   }
 }
@@ -338,7 +332,7 @@ export async function sendEmail(dataIn: Email): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error sending email:", formatAxiosError(error));
     return false;
   }
 }
@@ -452,28 +446,33 @@ export async function checkOtp(userId: string, token: string): Promise<any> {
     );
     return response.data;
   } catch (error) {
-    console.error("Error checking opt:", error);
+    console.error("Error checking opt:", formatAxiosError(error));
     return false;
   }
 }
 
 export const queryLead = async (userId: string): Promise<any> => {
-  const token = await getAuthToken();
-  const auth = useAuth();
-  // console.log("auth:", auth);
-  const result = await axios.get("/lead", {
-    params: {
-      id: userId,
-    },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return result.data;
+  try {
+    const token = await getAuthToken();
+
+    const result = await axios.get(`${process.env.DEV_URL}/lead`, {
+      params: {
+        id: userId,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.data;
+  } catch (error) {
+    console.error("Error en queryLead:", formatAxiosError(error));
+    return null;
+  }
 };
 
 // Agregar esta función auxiliar
-const formatAxiosError = (error: any) => {
+export const formatAxiosError = (error: any) => {
   if (error.response) {
     return {
       status: error.response.status,
@@ -492,7 +491,7 @@ const formatAxiosError = (error: any) => {
 export const queryUser = async (req: any): Promise<IUser | null> => {
   const { userId, token } = req;
   try {
-    // console.log("userIdFromQueryUser:", userId);
+    console.log("userIdFromQueryUser:", userId);
     const result = await axios.get(`${process.env.DEV_URL}/user`, {
       params: {
         id: userId,
@@ -502,7 +501,7 @@ export const queryUser = async (req: any): Promise<IUser | null> => {
       },
     });
 
-    // console.log("resultFromQueryUser:", result.data);
+    console.log("resultFromQueryUser:", result.data);
     return result.data;
   } catch (error) {
     console.error("Error al consultar usuario:", formatAxiosError(error));
@@ -513,16 +512,20 @@ export const queryUser = async (req: any): Promise<IUser | null> => {
 export const checkLeadStatus = async (userId: string) => {
   try {
     const leadData = await queryLead(userId);
+
     if (!leadData) {
       return "not_found";
     }
+    console.log("leadData", leadData);
     return leadData.lead_status;
   } catch (error) {
+    console.log("error queryLead", formatAxiosError(error));
     return "not_found";
   }
 };
 
 export const dataFintech = async (token: string, fintechId: string) => {
+  console.log("fintechidFromDataFintech--", fintechId);
   const result = await axios.get(`${process.env.DEV_URL}/financial-entity`, {
     params: {
       uid: fintechId,
@@ -558,27 +561,27 @@ export async function calculateICPWithSimulationLoan(
   try {
     const token = await getAuthToken();
     if (!token) {
-      throw new Error('No se pudo obtener el token de autenticación');
+      throw new Error("No se pudo obtener el token de autenticación");
     }
 
     // Convertir el valor a financiar a centavos (multiplicar por 100)
     const valorFinanciarCentavos = parseFloat(valorFinanciar) * 100;
 
-     //financialEntity dev: '89949613-2a1d-4b46-9961-4379d05b2fc6'
+    //financialEntity dev: '89949613-2a1d-4b46-9961-4379d05b2fc6'
     // 1. Obtener datos de Fintech
     const fintechData = await dataFintech(token, financialEntity);
-    const loanProduct = Object.values(fintechData.loan_products as Record<string, LoanProduct>).find(
-        product => product.name === 'febrero 2025'
-    );
+    const loanProduct = Object.values(
+      fintechData.loan_products as Record<string, LoanProduct>
+    ).find((product) => product.name === "febrero 2025");
     if (!loanProduct) {
-        throw new Error('Producto de préstamo no encontrado');
+      throw new Error("Producto de préstamo no encontrado");
     }
     //console.log("loanProduct:", loanProduct);
 
     // 2. Preparar payload para simulación
     const simulationPayload = {
       user_id: null,
-      financial_entity_id: financialEntity,//'89949613-2a1d-4b46-9961-4379d05b2fc6',
+      financial_entity_id: financialEntity, //'89949613-2a1d-4b46-9961-4379d05b2fc6',
       loan_product_name: loanProduct.name,
       loan_type: loanProduct.loan_type,
       amount: valorFinanciarCentavos,
@@ -593,7 +596,7 @@ export async function calculateICPWithSimulationLoan(
       arrear_interest_rate: loanProduct.arrear_interest_rate,
       arrear_interest_rate_basis: loanProduct.arrear_interest_rate_basis,
       arrear_max_interest_rate: loanProduct.arrear_max_interest_rate,
-      term: parseInt(cuotas)
+      term: parseInt(cuotas),
     };
 
     const simulatorToken = await getSimulatorAuthToken();
@@ -608,7 +611,7 @@ export async function calculateICPWithSimulationLoan(
       {
         headers: {
           Authorization: `Bearer ${simulatorToken}`,
-        }
+        },
       }
     );
 
@@ -620,12 +623,13 @@ export async function calculateICPWithSimulationLoan(
     const deudasActualesNum = parseFloat(deudasActuales) || 0;
     const deudasTransitoNum = parseFloat(deudasTransito) || 0;
     const cuotaNuevoCredito = simulationResult.data.payment_amount / 100;
-    const cuotasActuales = deudasActualesNum + deudasTransitoNum + gastosMensualesNum;
+    const cuotasActuales =
+      deudasActualesNum + deudasTransitoNum + gastosMensualesNum;
     // console.log("cuotaNuevoCredito:", cuotaNuevoCredito);
 
     const icp = (cuotaNuevoCredito + cuotasActuales) / ingresosMensuales;
-     //console.log("icp:", icp);
-    // console.log('icpToFixed:', icp.toFixed(4));
+    console.log("icp:", icp);
+    console.log("icpToFixed:", icp.toFixed(4));
 
     return {
       icp: icp.toFixed(4),
@@ -635,11 +639,14 @@ export async function calculateICPWithSimulationLoan(
         deudas_actuales: deudasActualesNum.toString(),
         deudas_transito: deudasTransitoNum.toString(),
         gastos_mensuales: gastosMensualesNum.toString(),
-        cuota_nuevo_credito: cuotaNuevoCredito.toString()
-      }
+        cuota_nuevo_credito: cuotaNuevoCredito.toString(),
+      },
     };
   } catch (error: any) {
-    console.error("Error en el cálculo del ICP:", error.response?.data || error);
+    console.error(
+      "Error en el cálculo del ICP:",
+      error.response?.data || error
+    );
     throw error;
   }
 }

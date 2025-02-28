@@ -8,7 +8,7 @@ import { robotoCondensed } from '@/app/fonts/fonts';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import PopupSlider from '@/components/DialogOptions/Index';
-import { calculateICPWithSimulationLoan, checkLeadStatus, createLead, dataFintech, generateOtp, getLeadByNit, queryUser, updateLead, verifyAndCheckOtp } from '@/app/lib/actions';
+import { calculateICPWithSimulationLoan, checkLeadStatus, createLead,  generateOtp, getLeadByNit, queryUser, updateLead, verifyAndCheckOtp } from '@/app/lib/actions';
 import { getAuthToken } from '@/app/lib/auth';
 import { IFormData, userFormToData, userFormToVariables, } from '@/app/lib/mapper/user';
 import { formatNumber } from '@/utils/format';
@@ -157,7 +157,6 @@ const PreaprobadoForm = () => {
       };
 
       console.log("updatedFormData:", updatedFormData);
-
       // Guardar en localStorage el formData actualizado
       localStorage.setItem('formData', JSON.stringify(updatedFormData));
 
@@ -174,7 +173,7 @@ const PreaprobadoForm = () => {
       const result = await checkProcessWithRetry(
         userId,
         token,
-        10,
+        5,
         2000,
         setIsLoading,
         setIsError,
@@ -278,7 +277,7 @@ const PreaprobadoForm = () => {
     data,
     token,
     alreadyExists,
-    userId = null,
+    userId,
   }: {
     data: UserForm;
     token: string;
@@ -311,26 +310,22 @@ const PreaprobadoForm = () => {
         return lead.id;
       }
     } catch (error) {
-      console.error("[requestCreateLead] error", error);
+      //console.error("[requestCreateLead] error", formatAxiosError(error));
       throw error;
     }
   };
 
   const checkProcess = async (userId: string, token: string) => {
-    //console.log("userIdFromCheckProcess:", userId);
     const leadStatus = await checkLeadStatus(userId);
 
-    //console.log("leadStatus#####:", leadStatus);
     // Si el lead fue descartado
     if (leadStatus === "discarded") {
       return 'discarded';
     }
     // Si el lead no existe, se consulta el usuario
     if (leadStatus === "not_found") {
-      //console.log("leadNoFound:", leadStatus);
       try {
         const userData = await queryUser({ token, userId });
-        //console.log("userData#####:", userData);
         return userData;
       } catch (error) {
         return null;
@@ -349,11 +344,10 @@ const PreaprobadoForm = () => {
     setUser?: (value: any) => void,
     setIsSuccessful?: (value: boolean) => void
   ): Promise<any> => {
-    //console.log("userIdFromCheckProcessWithRetry:", userId);
     try {
       setLoading?.(true);
       const result = await checkProcess(userId, token);
-      console.log(`Intento ${10-attempts}/10 - resultCheckProcess:`, result);
+      console.log(`Intento ${5-attempts}/5 - resultCheckProcess:`, result);
 
       // Si el resultado es undefined (no hay respuesta aún), continuamos con los reintentos
       if (result === undefined || result === null && attempts > 1) {
@@ -393,7 +387,7 @@ const PreaprobadoForm = () => {
       return undefined;
 
     } catch (error) {
-      console.error(`[checkProcessWithRetry] error en intento ${10 - attempts}/10:`, error);
+      console.error(`[checkProcessWithRetry] error en intento ${5 - attempts}/5:`, error);
       if (attempts <= 1) {
         setIsError?.(true);
         setLoading?.(false);
