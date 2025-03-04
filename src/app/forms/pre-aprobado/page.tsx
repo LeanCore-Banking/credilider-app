@@ -49,8 +49,6 @@ const PreaprobadoForm = () => {
     const savedData = localStorage.getItem('formData');
     //console.log("savedData:", savedData);
 
-    
-
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
@@ -121,7 +119,7 @@ const PreaprobadoForm = () => {
     try {
       const token = await getAuthToken();
       if (!token) {
-        throw new Error('No se pudo obtener el token de autenticación');
+        return { success: false, error: 'No se pudo obtener el token de autenticación' };
       }
 
       // Calcular ICP desde el servidor
@@ -156,7 +154,7 @@ const PreaprobadoForm = () => {
         icp: icpStatus // Sobreescribir el valor numérico con el estado
       };
 
-      console.log("updatedFormData:", updatedFormData);
+      //console.log("updatedFormData:", updatedFormData);
       // Guardar en localStorage el formData actualizado
       localStorage.setItem('formData', JSON.stringify(updatedFormData));
 
@@ -190,22 +188,32 @@ const PreaprobadoForm = () => {
         if (result.available_quota === 0) {
           setPreApprovalMessage('Cupo denegado');
         } else {
-          const formattedQuota = new Intl.NumberFormat('es-CO', {
-            style: 'currency',
-            currency: 'COP'
-          }).format(result.available_quota);
-          setPreApprovalMessage(`${formattedQuota}`);
+          try {
+            const formattedQuota = new Intl.NumberFormat('es-CO', {
+              style: 'currency',
+              currency: 'COP',
+              maximumFractionDigits: 0 // Evitar decimales
+            }).format(result.available_quota);
+            
+            // Asegurarse de que el valor formateado es una cadena válida
+            setPreApprovalMessage(formattedQuota || 'Cupo aprobado');
 
-          const otpResp = await generateOtp(updatedFormData, userId);
-          setPopUpOtp(true);
-          setOtpResponse({ userId: otpResp.userId, respSendOtp: otpResp.respSendOtp });
+            const otpResp = await generateOtp(updatedFormData, userId);
+            setPopUpOtp(true);
+            setOtpResponse({ userId: otpResp.userId, respSendOtp: otpResp.respSendOtp });
+          } catch (formatError) {
+            console.error("Error al formatear el cupo:", formatError);
+            // Fallback seguro en caso de error de formato
+            setPreApprovalMessage(`Cupo aprobado`);
+          }
         }
       }
 
     } catch (error: any) {
       console.error("Error en el proceso:", error);
       setIsError(true);
-      setPreApprovalMessage(error.message || 'Ha ocurrido un error en el proceso');
+      // Mensaje genérico para evitar filtrar detalles sensibles
+      setPreApprovalMessage('Ha ocurrido un error en el proceso');
     } finally {
       setIsLoading(false);
     }
@@ -214,13 +222,13 @@ const PreaprobadoForm = () => {
   const otpSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault()
     const otp = formData.otp
-    console.log("otp:", otp);
-    console.log('otpFromOtpSubmit:', responseOtp)
+    //console.log("otp:", otp);
+    //console.log('otpFromOtpSubmit:', responseOtp)
 
     if (responseOtp) {
       try {
         const response = await verifyAndCheckOtp(otp, responseOtp.userId);
-        console.log('responseVeriFyAndCheckOpt:', response)
+        //console.log('responseVeriFyAndCheckOpt:', response)
         setOtpResponse(response.chekOptStatus)
 
         // Verificar si el OTP fue verificado correctamente
@@ -675,9 +683,14 @@ const PreaprobadoForm = () => {
           ) : preApprovalMessage ? (
             <div className="otp-response">
               <span>
-                {preApprovalMessage === 'Cupo denegado' || preApprovalMessage === 'Error en el proceso' || preApprovalMessage === 'El usuario ya existe' ? (
+                {preApprovalMessage === 'Cupo denegado' || 
+                 preApprovalMessage === 'Error en el proceso' || 
+                 preApprovalMessage === 'El usuario ya existe' || 
+                 preApprovalMessage.includes('error') ? (
+                  // Mensaje de error
                   <>{preApprovalMessage}</>
                 ) : (
+                  // Mensaje de éxito
                   <>
                     ¡Felicidades! Cupo preaprobado por:
                     <strong>{preApprovalMessage}</strong>
@@ -685,7 +698,12 @@ const PreaprobadoForm = () => {
                 )}
               </span>
 
-              {preApprovalMessage !== 'Cupo denegado' && preApprovalMessage !== 'Error en el proceso' && (
+              {/* Solo mostrar el ícono de check para mensajes de éxito */}
+              {preApprovalMessage && 
+               !preApprovalMessage.includes('error') &&
+               preApprovalMessage !== 'Cupo denegado' && 
+               preApprovalMessage !== 'Error en el proceso' && 
+               preApprovalMessage !== 'El usuario ya existe' && (
                 <CheckCircle size={80} color="#B4924E" />
               )}
             </div>

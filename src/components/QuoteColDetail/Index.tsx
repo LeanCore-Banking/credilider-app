@@ -18,9 +18,8 @@ type QuoteColDetailProps = {
 const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) => {
     const store = useQuoteStore()
 
-    const auth = useAuth();
-    const financialEntityId = auth.getCurrentFintech()//'89949613-2a1d-4b46-9961-4379d05b2fc6'
-   
+    //const auth = useAuth();
+    const financialEntityId = "873ddfa1-9d6c-4afc-803e-1e8b7e05835d"//auth.getCurrentFintech()//'89949613-2a1d-4b46-9961-4379d05b2fc6'
     // Crear array de quotes por defecto con todas las propiedades requeridas
     const defaultQuotes: Quote[] = [
         {
@@ -74,8 +73,8 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
             const totalValue = data.precio + garantiaValue + store.documentos
             store.setFinanceValue(totalValue)
 
-            // Removemos la petición inicial
-            // store.fetchQuotesData(data, store.financialEntityId)
+            // Aquí está el problema - usando store.financialEntityId en lugar de financialEntityId
+            store.fetchQuotesData(data, financialEntityId) // <-- Usar el financialEntityId del componente
         }
     }, [data])
 

@@ -7,6 +7,7 @@ import { cotizacionHTML } from "./templates";
 import dotenv from "dotenv";
 import useAuth from "@/auth/hooks";
 import * as Sentry from "@sentry/nextjs";
+import { ServerActionError, createServerAction } from "./action-utils";
 
 interface IUser {
   id: string;
@@ -28,7 +29,7 @@ interface LoanProduct {
   arrear_max_interest_rate: number;
 }
 
-export async function fetchQuotes(
+export const fetchQuotesAction = createServerAction(async (
   initialFee: number,
   discount: number,
   documentos: number,
@@ -39,43 +40,39 @@ export async function fetchQuotes(
   phone: string,
   motoData: Moto,
   financialEntityId: string
-): Promise<Quote[] | { error: string; statusCode: number }> {
-  // console.log('financeValue:', financeValue);
+): Promise<Quote[]> => {
+  console.log("[financialEntityId]----:", financialEntityId);
   try {
     // Obtener token de autorización para el simulador
     const simulatorToken = await getSimulatorAuthToken();
     if (!simulatorToken) {
-      return {
-        error: "Failed to retrieve simulator auth token.",
-        statusCode: 500,
-      };
+      throw new ServerActionError("No se pudo obtener el token de autenticación del simulador.");
     }
 
     const token = await getAuthToken();
     if (!token) {
-      throw new Error("Failed to retrieve auth token.");
+      throw new ServerActionError("No se pudo obtener el token de autenticación.");
     }
 
-    //console.log("fintechId---:", financialEntityId);
     // Obtener datos de Fintech usando el ID recibido
     const fintechData = await dataFintech(token, financialEntityId);
     const loanProduct = Object.values(
       fintechData.loan_products as Record<string, LoanProduct>
     ).find((product) => product.name === "febrero 2025");
-    if (!loanProduct) {
-      throw new Error("Producto de préstamo no encontrado");
-    }
-    //console.log("loanProductRate:", loanProduct.interest_rate);
 
+    if (!loanProduct) {
+      throw new ServerActionError("Producto de préstamo no encontrado");
+    }
+    console.log("[loanProductRate]:", loanProduct.interest_rate);
     // Preparar payload base
     const basePayload = {
       user_id: null,
-      financial_entity_id: financialEntityId, //'89949613-2a1d-4b46-9961-4379d05b2fc6',
+      financial_entity_id: process.env.FINTECH_ID,
       loan_product_name: loanProduct.name,
       loan_type: loanProduct.loan_type,
       amount: financeValue * 100,
-      interest_rate: loanProduct.interest_rate,
-      interest_rate_basis: loanProduct.interest_rate_basis,
+      interest_rate: loanProduct.interest_rate ,
+      interest_rate_basis: "monthly",
       other_expenses: loanProduct.other_expenses,
       payment_frequency: loanProduct.payment_frequency,
       assignment_date: new Date(),
@@ -86,6 +83,8 @@ export async function fetchQuotes(
       arrear_interest_rate_basis: loanProduct.arrear_interest_rate_basis,
       arrear_max_interest_rate: loanProduct.arrear_max_interest_rate,
     };
+
+    console.log("[basePayload]:", basePayload);
 
     // Crear las tres simulaciones con diferentes plazos
     const simulationPromises = [24, 36, 48].map((term) =>
@@ -105,7 +104,7 @@ export async function fetchQuotes(
 
     // Ejecutar todas las simulaciones en paralelo
     const simulationResults = await Promise.all(simulationPromises);
-    // console.log("simulationResults:", simulationResults[0].data);
+    console.log("[simulationResults]:", simulationResults[0].data);
 
     // Transformar resultados a formato Quote[]
     const quotes: Quote[] = simulationResults.map((result, index) => {
@@ -124,8 +123,6 @@ export async function fetchQuotes(
       };
     });
 
-    // console.log("quotes:", quotes);
-
     // Guardar lead si se proporcionaron datos de usuario
     if (name && nit && email && phone) {
       // Save Lead to BD
@@ -137,14 +134,9 @@ export async function fetchQuotes(
 
       const user = await getLeadByNit(nit);
 
-      // console.log("user:", user);
-
       if (user.error === "Not Found") {
-        // console.log("Lead not found");
         const leadSaved = await createLead(createLeadPayload);
-        // console.log("leadSaved:", leadSaved);
       } else {
-        // console.log("User found");
         const updateLeadPayload = {
           id: user.id,
           name,
@@ -153,14 +145,10 @@ export async function fetchQuotes(
           phone,
         };
         const leadUpdated = await updateLead(updateLeadPayload);
-        // console.log("leadUpdated:", leadUpdated);
       }
-      // console.log("htlm:", cotizacionHTML(quotes, motoData));
 
       try {
         const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
-        // console.log("pdf:", pdf);
-        // Send Email
         if (pdf.url) {
           await sendEmail({
             template_name: "cotizacion", // Constante
@@ -173,21 +161,62 @@ export async function fetchQuotes(
           });
         }
       } catch (error) {
-        return {
-          error: "Error al crear el PDF.",
-          statusCode: 500,
-        };
+        throw new ServerActionError("Error al crear el PDF o enviar el correo.");
       }
-
-      // Create PDF
     }
 
     return quotes;
   } catch (error: any) {
     Sentry.captureException(error);
     console.error("Error en fetchQuotes:", error.response?.data || error);
+    
+    if (error instanceof ServerActionError) {
+      throw error;
+    }
+    
+    throw new ServerActionError("Error al obtener las cotizaciones. Por favor, inténtelo de nuevo más tarde.");
+  }
+});
+
+export async function fetchQuotes(
+  initialFee: number,
+  discount: number,
+  documentos: number,
+  financeValue: number,
+  name: string,
+  nit: string,
+  email: string,
+  phone: string,
+  motoData: Moto,
+  financialEntityId: string
+): Promise<Quote[] | { error: string; statusCode: number }> {
+  try {
+    const result = await fetchQuotesAction(
+      initialFee,
+      discount,
+      documentos,
+      financeValue,
+      name,
+      nit,
+      email,
+      phone,
+      motoData,
+      financialEntityId
+    );
+    
+    if (!result.success) {
+      return {
+        error: result.error,
+        statusCode: 500,
+      };
+    }
+    
+    return result.value;
+  } catch (error: any) {
+    Sentry.captureException(error);
+    console.error("Error en fetchQuotes:", error);
     return {
-      error: "Error al obtener las cotizaciones.",
+      error: "Error al obtener las cotizaciones." + error,
       statusCode: 500,
     };
   }
@@ -549,7 +578,7 @@ interface ICPCalculation {
   };
 }
 
-export async function calculateICPWithSimulationLoan(
+export const calculateICPWithSimulationLoanAction = createServerAction(async (
   valorFinanciar: string,
   cuotas: string,
   ingresos: string,
@@ -557,36 +586,34 @@ export async function calculateICPWithSimulationLoan(
   deudasActuales: string,
   deudasTransito: string,
   financialEntity: string
-): Promise<ICPCalculation> {
+): Promise<ICPCalculation> => {
   try {
     const token = await getAuthToken();
     if (!token) {
-      throw new Error("No se pudo obtener el token de autenticación");
+      throw new ServerActionError("No se pudo obtener el token de autenticación");
     }
 
     // Convertir el valor a financiar a centavos (multiplicar por 100)
     const valorFinanciarCentavos = parseFloat(valorFinanciar) * 100;
 
-    //financialEntity dev: '89949613-2a1d-4b46-9961-4379d05b2fc6'
     // 1. Obtener datos de Fintech
     const fintechData = await dataFintech(token, financialEntity);
     const loanProduct = Object.values(
       fintechData.loan_products as Record<string, LoanProduct>
     ).find((product) => product.name === "febrero 2025");
     if (!loanProduct) {
-      throw new Error("Producto de préstamo no encontrado");
+      throw new ServerActionError("Producto de préstamo no encontrado");
     }
-    //console.log("loanProduct:", loanProduct);
 
     // 2. Preparar payload para simulación
     const simulationPayload = {
       user_id: null,
-      financial_entity_id: financialEntity, //'89949613-2a1d-4b46-9961-4379d05b2fc6',
+      financial_entity_id: financialEntity,
       loan_product_name: loanProduct.name,
       loan_type: loanProduct.loan_type,
       amount: valorFinanciarCentavos,
       interest_rate: loanProduct.interest_rate,
-      interest_rate_basis: loanProduct.interest_rate_basis,
+      interest_rate_basis: "monthly",
       other_expenses: loanProduct.other_expenses,
       payment_frequency: loanProduct.payment_frequency,
       assignment_date: new Date(),
@@ -601,7 +628,7 @@ export async function calculateICPWithSimulationLoan(
 
     const simulatorToken = await getSimulatorAuthToken();
     if (!simulatorToken) {
-      throw new Error("Failed to retrieve simulator auth token.");
+      throw new ServerActionError("No se pudo obtener el token de autenticación del simulador");
     }
 
     // 3. Realizar simulación del crédito
@@ -615,8 +642,6 @@ export async function calculateICPWithSimulationLoan(
       }
     );
 
-    // console.log("simulationResult:", simulationResult.data);
-
     // 4. Calcular ICP
     const ingresosMensuales = parseFloat(ingresos);
     const gastosMensualesNum = parseFloat(gastosMensuales) || 0;
@@ -625,11 +650,8 @@ export async function calculateICPWithSimulationLoan(
     const cuotaNuevoCredito = simulationResult.data.payment_amount / 100;
     const cuotasActuales =
       deudasActualesNum + deudasTransitoNum + gastosMensualesNum;
-    // console.log("cuotaNuevoCredito:", cuotaNuevoCredito);
 
     const icp = (cuotaNuevoCredito + cuotasActuales) / ingresosMensuales;
-    console.log("icp:", icp);
-    console.log("icpToFixed:", icp.toFixed(4));
 
     return {
       icp: icp.toFixed(4),
@@ -647,6 +669,42 @@ export async function calculateICPWithSimulationLoan(
       "Error en el cálculo del ICP:",
       error.response?.data || error
     );
+    
+    if (error instanceof ServerActionError) {
+      throw error;
+    }
+    
+    throw new ServerActionError("Error en el cálculo del ICP. Por favor, inténtelo de nuevo más tarde.");
+  }
+});
+
+export async function calculateICPWithSimulationLoan(
+  valorFinanciar: string,
+  cuotas: string,
+  ingresos: string,
+  gastosMensuales: string,
+  deudasActuales: string,
+  deudasTransito: string,
+  financialEntity: string
+): Promise<ICPCalculation> {
+  try {
+    const result = await calculateICPWithSimulationLoanAction(
+      valorFinanciar,
+      cuotas,
+      ingresos,
+      gastosMensuales,
+      deudasActuales,
+      deudasTransito,
+      financialEntity
+    );
+    
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+    
+    return result.value;
+  } catch (error: any) {
+    console.error("Error en calculateICPWithSimulationLoan:", error);
     throw error;
   }
 }

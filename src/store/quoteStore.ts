@@ -128,6 +128,13 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
     set({ loading: true })
     
     try {
+      // Validar que tengamos los datos necesarios
+      if (!data || !financialEntityId) {
+        console.error("Datos faltantes:", { data, financialEntityId })
+        set({ quotes: [] })
+        return
+      }
+
       const quotesResponse = await fetchQuotes(
         state.initialFee,
         state.discount,
@@ -142,7 +149,6 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
       )
 
       if ('error' in quotesResponse) {
-        // Manejar el error aquí si es necesario
         console.error(quotesResponse.error)
         set({ quotes: [] })
       } else {
