@@ -58,7 +58,7 @@ export const fetchQuotesAction = createServerAction(async (
     const fintechData = await dataFintech(token, financialEntityId);
     const loanProduct = Object.values(
       fintechData.loan_products as Record<string, LoanProduct>
-    ).find((product) => product.name === "febrero 2025");
+    ).find((product) => product.name === "simulador");
 
     if (!loanProduct) {
       throw new ServerActionError("Producto de préstamo no encontrado");
@@ -600,7 +600,7 @@ export const calculateICPWithSimulationLoanAction = createServerAction(async (
     const fintechData = await dataFintech(token, financialEntity);
     const loanProduct = Object.values(
       fintechData.loan_products as Record<string, LoanProduct>
-    ).find((product) => product.name === "febrero 2025");
+    ).find((product) => product.name === "simulador");
     if (!loanProduct) {
       throw new ServerActionError("Producto de préstamo no encontrado");
     }
