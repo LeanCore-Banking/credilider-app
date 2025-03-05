@@ -214,7 +214,7 @@ export const fetchQuotesAction = createServerAction(async (
       errorMessage += error.message || "Error inesperado. ";
     }
 
-    errorMessage += "Por favor, inténtelo de nuevo más tarde.";
+    errorMessage ;
     
     throw new ServerActionError(errorMessage);
   }
@@ -716,7 +716,7 @@ export const calculateICPWithSimulationLoanAction = createServerAction(async (
       throw error;
     }
     
-    throw new ServerActionError("Error en el cálculo del ICP. Por favor, inténtelo de nuevo más tarde.");
+    throw new ServerActionError("Error en el cálculo del ICP");
   }
 });
 
