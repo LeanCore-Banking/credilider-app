@@ -174,7 +174,49 @@ export const fetchQuotesAction = createServerAction(async (
       throw error;
     }
     
-    throw new ServerActionError("Error al obtener las cotizaciones. Por favor, inténtelo de nuevo más tarde.");
+    // Obtener más detalles del error
+    let errorMessage = "Error al obtener las cotizaciones. ";
+    
+    if (axios.isAxiosError(error)) {
+      // Error de red o respuesta del servidor
+      if (error.response) {
+        // El servidor respondió con un estado de error
+        switch (error.response.status) {
+          case 400:
+            errorMessage += "Los datos proporcionados no son válidos. ";
+            break;
+          case 401:
+            errorMessage += "No está autorizado para realizar esta operación. ";
+            break;
+          case 404:
+            errorMessage += "No se encontró el recurso solicitado. ";
+            break;
+          case 500:
+            errorMessage += "Error interno del servidor. ";
+            break;
+          default:
+            errorMessage += `Error del servidor (${error.response.status}). `;
+        }
+        
+        // Agregar detalles específicos si están disponibles
+        if (error.response.data?.message) {
+          errorMessage += `Detalle: ${error.response.data.message}`;
+        }
+      } else if (error.request) {
+        // La solicitud se realizó pero no se recibió respuesta
+        errorMessage += "No se pudo conectar con el servidor. Verifique su conexión a internet. ";
+      } else {
+        // Error al configurar la solicitud
+        errorMessage += "Error al procesar la solicitud. ";
+      }
+    } else {
+      // Error no relacionado con Axios
+      errorMessage += error.message || "Error inesperado. ";
+    }
+
+    errorMessage += "Por favor, inténtelo de nuevo más tarde.";
+    
+    throw new ServerActionError(errorMessage);
   }
 });
 
