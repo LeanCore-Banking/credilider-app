@@ -608,7 +608,7 @@ export const calculateICPWithSimulationLoanAction = createServerAction(async (
     // 2. Preparar payload para simulación
     const simulationPayload = {
       user_id: null,
-      financial_entity_id: financialEntity,
+      financial_entity_id: '873ddfa1-9d6c-4afc-803e-1e8b7e05835d',
       loan_product_name: loanProduct.name,
       loan_type: loanProduct.loan_type,
       amount: valorFinanciarCentavos,
