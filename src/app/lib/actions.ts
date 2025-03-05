@@ -5,7 +5,7 @@ import { createLeadPayload } from "./payloads";
 import axios from "axios";
 import { cotizacionHTML } from "./templates";
 import dotenv from "dotenv";
-import useAuth from "@/auth/hooks";
+//import useAuth from "@/auth/hooks";
 import * as Sentry from "@sentry/nextjs";
 import { ServerActionError, createServerAction } from "./action-utils";
 
@@ -67,7 +67,7 @@ export const fetchQuotesAction = createServerAction(async (
     // Preparar payload base
     const basePayload = {
       user_id: null,
-      financial_entity_id: process.env.FINTECH_ID,
+      financial_entity_id: '873ddfa1-9d6c-4afc-803e-1e8b7e05835d',
       loan_product_name: loanProduct.name,
       loan_type: loanProduct.loan_type,
       amount: financeValue * 100,
@@ -99,73 +99,153 @@ export const fetchQuotesAction = createServerAction(async (
             Authorization: `Bearer ${simulatorToken}`,
           },
         }
-      )
+      ).catch(error => {
+        // Capturar error específico de la simulación
+        const errorDetails = {
+          term,
+          status: error.response?.status,
+          message: error.response?.data?.message || error.message,
+          data: error.response?.data
+        };
+        console.error(`Error en simulación para término ${term}:`, errorDetails);
+        throw new ServerActionError(
+          `Error en simulación (plazo ${term} meses): ${errorDetails.message}. ` +
+          `Estado: ${errorDetails.status}. ` +
+          `Detalles: ${JSON.stringify(error.response?.data || {})}`
+        );
+      })
     );
 
-    // Ejecutar todas las simulaciones en paralelo
-    const simulationResults = await Promise.all(simulationPromises);
-    console.log("[simulationResults]:", simulationResults[0].data);
+    try {
+      // Ejecutar todas las simulaciones en paralelo
+      const simulationResults = await Promise.all(simulationPromises);
+      console.log("[simulationResults]:", simulationResults[0].data);
 
-    // Transformar resultados a formato Quote[]
-    const quotes: Quote[] = simulationResults.map((result, index) => {
-      const simulationData = result.data;
-      return {
-        initialFee,
-        discount,
-        financeValue,
-        documentos,
-        monthlyFee: (simulationData?.payment_amount || 0) / 100,
-        annualEffectiveRate: simulationData.annual_effective_rate,
-        monthlyCupDue: simulationData.interest_rate,
-        monthlyRate: [24, 36, 48][index],
-        monthLifeInsurance:
-          (simulationData.other_expenses?.[0]?.amount || 0) / 100,
-      };
-    });
-
-    // Guardar lead si se proporcionaron datos de usuario
-    if (name && nit && email && phone) {
-      // Save Lead to BD
-      createLeadPayload.nit = nit;
-      createLeadPayload.name = name;
-      createLeadPayload.phone = phone;
-      createLeadPayload.email = email;
-      createLeadPayload.created_at = new Date().toISOString();
-
-      const user = await getLeadByNit(nit);
-
-      if (user.error === "Not Found") {
-        const leadSaved = await createLead(createLeadPayload);
-      } else {
-        const updateLeadPayload = {
-          id: user.id,
-          name,
-          nit,
-          email,
-          phone,
+      // Transformar resultados a formato Quote[]
+      const quotes: Quote[] = simulationResults.map((result, index) => {
+        const simulationData = result.data;
+        return {
+          initialFee,
+          discount,
+          financeValue,
+          documentos,
+          monthlyFee: (simulationData?.payment_amount || 0) / 100,
+          annualEffectiveRate: simulationData.annual_effective_rate,
+          monthlyCupDue: simulationData.interest_rate,
+          monthlyRate: [24, 36, 48][index],
+          monthLifeInsurance:
+            (simulationData.other_expenses?.[0]?.amount || 0) / 100,
         };
-        const leadUpdated = await updateLead(updateLeadPayload);
-      }
+      });
 
-      try {
-        const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
-        if (pdf.url) {
-          await sendEmail({
-            template_name: "cotizacion", // Constante
-            destination: `${email}`,
-            template_data: {
-              nombreUsuario: `${name}`,
-              modeloMoto: `${motoData.marcaTipo} ${motoData.modelo}`,
-              urlCotizacion: `${pdf.url}`,
-            },
-          });
+      // Guardar lead si se proporcionaron datos de usuario
+      if (name && nit && email && phone) {
+        // Save Lead to BD
+        createLeadPayload.nit = nit;
+        createLeadPayload.name = name;
+        createLeadPayload.phone = phone;
+        createLeadPayload.email = email;
+        createLeadPayload.created_at = new Date().toISOString();
+
+        const user = await getLeadByNit(nit);
+
+        if (user.error === "Not Found") {
+          const leadSaved = await createLead(createLeadPayload);
+        } else {
+          const updateLeadPayload = {
+            id: user.id,
+            name,
+            nit,
+            email,
+            phone,
+          };
+          const leadUpdated = await updateLead(updateLeadPayload);
         }
-      } catch (error) {
-        throw new ServerActionError("Error al crear el PDF o enviar el correo.");
-      }
-    }
 
-    return quotes;
+        try {
+          const pdf = await createPdf(cotizacionHTML(quotes, motoData), nit);
+          if (pdf.url) {
+            await sendEmail({
+              template_name: "cotizacion", // Constante
+              destination: `${email}`,
+              template_data: {
+                nombreUsuario: `${name}`,
+                modeloMoto: `${motoData.marcaTipo} ${motoData.modelo}`,
+                urlCotizacion: `${pdf.url}`,
+              },
+            });
+          }
+        } catch (error) {
+          throw new ServerActionError("Error al crear el PDF o enviar el correo.");
+        }
+      }
+
+      return quotes;
+    } catch (error: any) {
+      Sentry.captureException(error);
+      console.error("Error en fetchQuotes:", error.response?.data || error);
+      
+      if (error instanceof ServerActionError) {
+        throw error;
+      }
+      
+      // Obtener más detalles del error
+      let errorMessage = "Error al obtener las cotizaciones. ";
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const errorData = error.response.data;
+          errorMessage += `[${error.response.status}] `;
+          
+          switch (error.response.status) {
+            case 400:
+              errorMessage += "Datos inválidos en la solicitud. ";
+              break;
+            case 401:
+              errorMessage += "No autorizado. ";
+              break;
+            case 404:
+              errorMessage += "Recurso no encontrado. ";
+              break;
+            case 415:
+              errorMessage += "Tipo de contenido no soportado. ";
+              break;
+            case 500:
+              errorMessage += "Error interno del servidor. ";
+              break;
+            default:
+              errorMessage += `Error del servidor (${error.response.status}). `;
+          }
+          
+          // Agregar detalles específicos del error
+          if (errorData) {
+            if (errorData.message) {
+              errorMessage += `Mensaje: ${errorData.message}. `;
+            }
+            if (errorData.code) {
+              errorMessage += `Código: ${errorData.code}. `;
+            }
+            if (errorData.details) {
+              errorMessage += `Detalles: ${JSON.stringify(errorData.details)}. `;
+            }
+          }
+        } else if (error.request) {
+          errorMessage += "No se recibió respuesta del servidor. Verifique su conexión. ";
+        } else {
+          errorMessage += `Error de configuración: ${error.message}. `;
+        }
+        
+        // Agregar información del payload para debugging
+        errorMessage += `\nPayload: ${JSON.stringify({
+          ...basePayload,
+          amount: basePayload.amount / 100, // Convertir centavos a unidades para legibilidad
+        })}`;
+      } else {
+        errorMessage += error.message || "Error inesperado";
+      }
+      
+      throw new ServerActionError(errorMessage);
+    }
   } catch (error: any) {
     Sentry.captureException(error);
     console.error("Error en fetchQuotes:", error.response?.data || error);
