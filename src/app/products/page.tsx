@@ -38,12 +38,12 @@ const Products: React.FC = () => {
     refetchInterval: 5 * 60 * 1000, // Refresca cada 5 minutos
   });
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (motos) {
       console.log('Datos obtenidos:', motos);
       console.log('Usando caché:', !isFetching && !isLoading);
     }
-  }, [motos, isFetching]);
+  }, [motos, isFetching]); */
 
   useEffect(() => {
     if (motos) {

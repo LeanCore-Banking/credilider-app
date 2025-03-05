@@ -203,11 +203,11 @@ const SolicitudCreditoForm = () => {
 
           <div className="form-row-solicitud-credito">
             <div className="form-group-solicitud-credito">
-              <label htmlFor="antigüedad_empresa">Antigüedad en la Empresa</label>
+              <label htmlFor="antiguedad_empresa">antiguedad en la Empresa</label>
               <select
-                id="antigüedad_empresa"
-                name="antigüedad_empresa"
-                value={formData.antigüedad_empresa || ''}
+                id="antiguedad_empresa"
+                name="antiguedad_empresa"
+                value={formData.antiguedad_empresa || ''}
                 onChange={handleChange}
                 required
               >
@@ -216,7 +216,7 @@ const SolicitudCreditoForm = () => {
                 <option value="Entre 12 y 24 meses">Entre 12 y 24 meses</option>
                 <option value="Entre 6 y 12 meses">Entre 6 y 12 meses</option>
                 <option value="Menos de 6 meses">Menos de 6 meses</option>
-                <option value="sin_antiguedad">Sin antigüedad</option>
+                <option value="sin_antiguedad">Sin antiguedad</option>
               </select>
             </div>
             <div className="form-group-solicitud-credito">

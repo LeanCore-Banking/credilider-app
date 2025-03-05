@@ -30,7 +30,7 @@ interface UserForm extends IFormData {
   'number-dependants': string;
   deudas_transito: string;
   deudas_actuales: string;
-  antigüedad_empresa: string;
+  antiguedad_empresa: string;
   cuota_inicial: string;
 }
 
@@ -67,7 +67,7 @@ const PreaprobadoForm = () => {
           valor_financiar: parsedData.financeValue?.toString() || '',
           otp: '',
           contrato_laboral: '',
-          antigüedad_empresa: '',
+          antiguedad_empresa: '',
           'number-dependants': '',
           deudas_transito: '',
           deudas_actuales: '',
@@ -92,7 +92,7 @@ const PreaprobadoForm = () => {
       valor_financiar: '',
       otp: '',
       contrato_laboral: '',
-      antigüedad_empresa: '',
+      antiguedad_empresa: '',
       'number-dependants': '',
       deudas_transito: '',
       deudas_actuales: '',
@@ -607,11 +607,11 @@ const PreaprobadoForm = () => {
               />
             </div>
             <div className="pre-aprobado-form-group">
-              <label htmlFor="antigüedad_empresa">Antigüedad en la Empresa</label>
+              <label htmlFor="antiguedad_empresa">Antigüedad en la Empresa</label>
               <select
-                id="antigüedad_empresa"
-                name="antigüedad_empresa"
-                value={formData.antigüedad_empresa}
+                id="antiguedad_empresa"
+                name="antiguedad_empresa"
+                value={formData.antiguedad_empresa}
                 onChange={handleSelectChange}
                 required
               >
@@ -620,7 +620,7 @@ const PreaprobadoForm = () => {
                 <option value="Entre 12 y 24 meses">Entre 12 y 24 meses</option>
                 <option value="Entre 6 y 12 meses">Entre 6 y 12 meses</option>
                 <option value="Menos de 6 meses">Menos de 6 meses</option>
-                <option value="sin_antiguedad">Sin antigüedad</option>
+                <option value="sin_antiguedad">Sin antiguedad</option>
               </select>
             </div>
             <div className="pre-aprobado-form-group">

@@ -34,7 +34,7 @@ export interface ICreateLead {
     cuota_inicial: string;
     valor_financiar: string;
     'number-dependants': string;
-    antigüedad_empresa: string;
+    antiguedad_empresa: string;
     deudas_transito: string;
     deudas_actuales: string;
     contrato_laboral: string;
@@ -98,8 +98,8 @@ export interface ICreateLead {
         label: "Número de personas a cargo"
       },
       {
-        key: "antigüedad_empresa",
-        value: data.antigüedad_empresa,
+        key: "antiguedad_empresa",
+        value: data.antiguedad_empresa,
         type: "array",
         label: "Antigüedad Empresa"
       },

@@ -73,7 +73,7 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
             const totalValue = data.precio + garantiaValue + store.documentos
             store.setFinanceValue(totalValue)
 
-            // Aquí está el problema - usando store.financialEntityId en lugar de financialEntityId
+            // usando store.financialEntityId en lugar de financialEntityId
             store.fetchQuotesData(data, financialEntityId) // <-- Usar el financialEntityId del componente
         }
     }, [data])
@@ -203,11 +203,26 @@ const QuoteColDetail: React.FC<QuoteColDetailProps> = ({ quoteDefault, data }) =
                                 type="text"
                                 name="discount"
                                 onChange={(e) => {
-                                    const formattedValue = formatNumber(e.target.value);
-                                    const numericValue = e.target.value.replace(/[^0-9]/g, '');
-                                    e.target.value = formattedValue;
-                                    store.debouncedSetDiscount(Number(numericValue) || 0);
+                                    // Permitir solo números y limitar a 2 decimales
+                                    const value = e.target.value.replace(/[^0-9.]/g, '');
+                                    const numericValue = parseFloat(value);
+                                    
+                                    // Validar que sea un porcentaje válido (0-100)
+                                    if (!isNaN(numericValue)) {
+                                        if (numericValue > 100) {
+                                            e.target.value = '100';
+                                            store.debouncedSetDiscount(100);
+                                        } else {
+                                            e.target.value = numericValue.toString();
+                                            store.debouncedSetDiscount(numericValue);
+                                        }
+                                    } else {
+                                        e.target.value = '';
+                                        store.debouncedSetDiscount(0);
+                                    }
                                 }}
+                                placeholder="0"
+                                maxLength={5} // Permite hasta 100.0
                             />
                         </div>
 
